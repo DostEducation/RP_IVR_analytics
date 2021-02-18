@@ -1,0 +1,22 @@
+from api.mixins import TimestampMixin
+from api import db
+
+class CallLog(TimestampMixin, db.Model):
+    __tablename__ = 'call_log'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    registration_id = db.Column(db.Integer, db.ForeignKey('registration.id'))
+    user_module_content_id = db.Column(db.Integer, db.ForeignKey('user_module_content.id'))
+    call_sid = db.Column(db.Integer)
+    flow_run_uuid = db.Column(db.String(255))
+    call_type = db.Column(db.String(50))
+    scheduled_by = db.Column(db.String(100))
+    user_phone_number = db.Column(db.String(50), nullable=False)
+    system_phone_number = db.Column(db.String(50))
+    circle = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    listen_seconds = db.Column(db.String(50))
+    recording_url  = db.Column(db.String(1000))
+    dial_time = db.Column(db.DateTime)
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
