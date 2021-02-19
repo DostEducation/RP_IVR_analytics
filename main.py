@@ -1,9 +1,10 @@
-from __future__ import absolute_import
-from api import app
-from api import views
+from api import services, models, db
 
-# The routes will be going it's specific directory/files
-
-# if __name__ =="__main__":
-# app.run(debug=True);
-app.run(host='0.0.0.0', debug=True, use_reloader=True)
+def webhook(request):
+    if request.method == 'POST':
+        try:
+            if (request.json['contact'] and request.json['contact']['flow_category']):
+                services.handle_registration(request.json)
+        except IndexError:
+            print("Failed to update")
+    return 'Success'
