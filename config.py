@@ -1,9 +1,9 @@
 """Flask configuration."""
 from os import environ, path
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-basedir = path.abspath(path.dirname(__file__))
-load_dotenv(path.join(basedir, '.env'))
+# basedir = path.abspath(path.dirname(__file__))
+# load_dotenv(path.join(basedir, '.env'))
 
 TESTING = environ.get('TESTING')
 DEBUG = environ.get('DEBUG')
@@ -23,4 +23,4 @@ POSTGRES = {
 SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s' % POSTGRES
 
 WTF_CSRF_ENABLED = True
-SECRET_KEY = environ.get('SECRET_KEY'),
+SECRET_KEY = environ.get('SECRET_KEY')

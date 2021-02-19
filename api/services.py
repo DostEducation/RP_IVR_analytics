@@ -6,7 +6,7 @@ def handle_registration(jsonData):
     try:
         contact = jsonData['contact']
         user_phone = contact['urn']
-        print(jsonData['results'])
+        print(jsonData)
         registrant = models.Registration(
             user_phone = user_phone.replace("tel:+", ""),
             system_phone='3455456652',
