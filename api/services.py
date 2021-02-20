@@ -1,6 +1,7 @@
 # This file is treated as service layer
 from api import models, db
 
+### Main function, used to getting called from cloud function
 def handle_registration(jsonData):
     try:
         contact = jsonData['contact']
@@ -16,7 +17,7 @@ def register(user_phone, jsonData):
     system_phone = jsonData['system_phone']
     system_phone_details = models.SystemPhone.query.get_by_phone(system_phone)
     split_prompt_by_hyphen = get_split_prompt_by_hyphen(jsonData)
-    split_prompt_by_underscore = get_split_prompt_by_underscore(split_prompt_by_hyphen[0])
+    split_prompt_by_underscore = get_split_prompt_by_underscore(split_prompt_by_hyphen[-1])
     if system_phone_details:
         registrant_state = system_phone_details.state
         registrant = models.Registration(
@@ -30,15 +31,7 @@ def register(user_phone, jsonData):
         db.session.commit()
 
 def add_prompt_response(user_phone, jsonData):
-    print("hello")
-    # registrant = models.Registration(
-    #         user_phone = user_phone.replace("tel:+", ""),
-    #         system_phone=system_phone,
-    #         state=registrant_state,
-    #         status='Pending'
-    #     )
-    #     db.session.add(registrant)
-    #     db.session.commit()
+    # to capture prompt response
 
 def get_split_prompt_by_hyphen(data):
     prompt = data['program_details']['categories'][0]
