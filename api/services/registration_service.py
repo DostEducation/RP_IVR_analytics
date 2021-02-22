@@ -7,8 +7,10 @@ class RegistrationService:
         try:
             contact = jsonData['contact']
             user_phone = contact['urn']
-            self.register(user_phone, jsonData)
-            # add_prompt_response(user_phone, jsonData)
+            # self.register(user_phone, jsonData)
+            if len(jsonData['results']):
+                self.add_prompt_response(user_phone, jsonData['results'])
+            # self.add_prompt_response(user_phone, jsonData)
 
         except IndexError:
             print("Failed to register")
@@ -31,6 +33,8 @@ class RegistrationService:
             db.session.add(registrant)
             db.session.commit()
 
-    def add_prompt_response(self, user_phone, jsonData):
-    # to capture prompt response
-        return "Test"
+    def add_prompt_response(self, user_phone, data):
+        for key in data:
+            if key != 'result' and len(data[key]['category']):
+                prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
+                print(prompt_name)
