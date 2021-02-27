@@ -1,6 +1,5 @@
 def get_split_prompt_by_hyphen(data):
-    prompt = data['program_details']['categories'][0]
-    split_prompt = prompt.split('-')
+    split_prompt = data.split('-')
     return split_prompt
 
 def get_split_prompt_by_underscore(data):
@@ -12,3 +11,8 @@ def remove_last_string_separated_by(dataString, separator = '_'):
 
 def sanitize_phone_string(phoneString):
 	return phoneString.replace("tel:+", "")
+
+def fetch_by_key(key, data):
+    if key in data:
+        return data[key]
+    return None
