@@ -1,8 +1,15 @@
 
 from api.mixins import TimestampMixin
 from api import db
+from flask_sqlalchemy import BaseQuery
+
+class UserQuery(BaseQuery):
+
+    def get_by_phone(self, phone):
+        return self.filter(User.phone == phone).first()
 
 class User(TimestampMixin, db.Model):
+    query_class = UserQuery
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), unique=True, nullable=False)

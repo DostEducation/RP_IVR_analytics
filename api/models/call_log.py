@@ -1,7 +1,14 @@
 from api.mixins import TimestampMixin
 from api import db
+from flask_sqlalchemy import BaseQuery
+
+class CallLogQuery(BaseQuery):
+
+    def get_by_flow_run_uuid(self, flow_run_uuid):
+        return self.filter(CallLog.flow_run_uuid == flow_run_uuid).first()
 
 class CallLog(TimestampMixin, db.Model):
+    query_class = CallLogQuery
     __tablename__ = 'call_log'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

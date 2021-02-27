@@ -6,7 +6,7 @@ def webhook(request):
         try:
             jsonData = request.get_json()
             if 'contact' in jsonData and 'run_uuid' in jsonData and 'flow_category' in jsonData:
-                flow_category = request.json['flow_category']
+                flow_category = jsonData['flow_category']
                 # Conditions based on the flow categories
                 if flow_category == 'registration':
                     registration = services.RegistrationService()

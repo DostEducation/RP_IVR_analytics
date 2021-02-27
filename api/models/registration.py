@@ -1,7 +1,14 @@
 from api.mixins import TimestampMixin
 from api import db
+from flask_sqlalchemy import BaseQuery
+
+class RegistrationQuery(BaseQuery):
+
+    def get_by_id(self, id):
+        return self.filter(Registration.id == id).first()
 
 class Registration(TimestampMixin, db.Model):
+    query_class = RegistrationQuery
     __tablename__ = 'registration'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
