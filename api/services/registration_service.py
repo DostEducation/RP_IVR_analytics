@@ -2,13 +2,12 @@
 from api import models, db, helpers
 
 class RegistrationService:
-    ### Main function, used to getting called from cloud function
     def handle_registration(self, jsonData):
         try:
             contact = jsonData['contact']
             user_phone = contact['urn']
             self.register(user_phone, jsonData)
-            if len(jsonData['results']):
+            if 'results' in jsonData:
                 self.add_prompt_response(user_phone, jsonData['results'])
 
         except IndexError:
@@ -23,7 +22,7 @@ class RegistrationService:
         split_prompt_by_underscore = helpers.get_split_prompt_by_underscore(split_prompt_by_hyphen[-1])
         if system_phone_details:
             registrant = models.Registration(
-                user_phone = user_phone.replace("tel:+", ""),
+                user_phone = helpers.sanitize_phone_string(user_phone),
                 system_phone = system_phone,
                 state = system_phone_details.state,
                 status ='Pending',
@@ -36,7 +35,7 @@ class RegistrationService:
     # Insert Different prompt response
     def add_prompt_response(self, user_phone, data):
         for key in data:
-            if key != 'result' and len(data[key]['category']):
+            if key != 'result' and 'category' in data[key]:
                 prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
                 irv_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
                 if irv_prompt_details:
