@@ -13,7 +13,7 @@ class CallLogService(object):
             user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
             self.system_phone = helpers.fetch_by_key('address', jsonData['channel'])
             self.user_phone = helpers.sanitize_phone_string(user_phone)
-            self.flow_run_uuid = helpers.get_by_key('run_uuid', jsonData)
+            self.flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
             if self.flow_run_uuid:
                 call_log = models.CallLog.query.get_by_flow_run_uuid(self.flow_run_uuid)
                 if call_log:

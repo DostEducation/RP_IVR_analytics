@@ -19,7 +19,7 @@ class RegistrationService(object):
                 else:
                     self.register(jsonData)
 
-            # All the prompt responses are captured with result
+            # All the prompt responses are captured with results
             if 'results' in jsonData:
                 self.add_prompt_response(jsonData['results'])
 
@@ -53,7 +53,7 @@ class RegistrationService(object):
         user_id = None
         if registration:
             if selected_program_id:
-                user_id = self.create_user(registration.user_phone, jsonData)
+                user_id = self.create_user(jsonData)
 
             registration.program_id = selected_program_id
             if user_id:
