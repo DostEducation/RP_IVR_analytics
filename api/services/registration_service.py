@@ -55,7 +55,7 @@ class RegistrationService:
             registration.program_id = selected_program_id
             if user_id:
                 registration.user_id = user_id
-                registrant.status = 'complete'
+                registration.status = 'complete'
             db.session.commit()
 
     # Insert Different prompt response
@@ -77,19 +77,21 @@ class RegistrationService:
     def get_program_prompt_id(self, jsonData):
         if 'program_details' in jsonData:
             program_categories = helpers.fetch_by_key('categories', jsonData['program_details'])
-            if 0 in program_categories:
+            if len(program_categories) > 0:
                 split_prompt_by_hyphen = helpers.get_split_prompt_by_hyphen(program_categories[0])
                 split_prompt_by_underscore = helpers.get_split_prompt_by_underscore(split_prompt_by_hyphen[-1])
-                return helpers.fetch_by_key(1, split_prompt_by_underscore)
+                return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
         return None
 
-    def create_user(user_phone, jsonData):
+    def create_user(self, user_phone, jsonData):
+        helpers.sanitize_phone_string(user_phone)
         user = models.User.query.get_by_phone(user_phone)
+        system_phone = jsonData['system_phone']
+        system_phone_details = models.SystemPhone.query.get_by_phone(system_phone)
         if not user:
             user = models.User(
-                system_phone = system_phone,
                 state = system_phone_details.state,
-                phone = helpers.sanitize_phone_string(user_phone),
+                phone = user_phone,
                 partner_id = helpers.get_partner_id_by_system_phone(system_phone)
             )
             db.session.add(user)

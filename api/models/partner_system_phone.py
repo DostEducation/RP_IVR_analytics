@@ -4,8 +4,8 @@ from flask_sqlalchemy import BaseQuery
 
 class PartnerSystemPhoneQuery(BaseQuery):
 
-    def get_by_system_phone_id(self, system_phone):
-        return self.filter(PartnerSystemPhone.system_phone == system_phone).first()
+    def get_by_system_phone_id(self, system_phone_id):
+        return self.filter(PartnerSystemPhone.system_phone_id == system_phone_id).first()
 
 class PartnerSystemPhone(TimestampMixin, db.Model):
 	query_class = PartnerSystemPhoneQuery

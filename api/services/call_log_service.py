@@ -31,12 +31,13 @@ class CallLogService:
 
     def create_call_logs(self, user_phone, jsonData):
         try:
+            user_phone = helpers.sanitize_phone_string(user_phone)
             registration_data = models.Registration.query.get_by_phone(user_phone)
             new_call_log = models.CallLog(
                 flow_run_uuid = self.fetch_flow_run_uuid(jsonData),
                 call_type =  self.fetch_call_type(jsonData),
                 scheduled_by =  self.fetch_call_scheduled_by(jsonData),
-                user_phone_number =  helpers.sanitize_phone_string(user_phone),
+                user_phone_number =  user_phone,
                 system_phone_number = helpers.sanitize_phone_string(jsonData['system_phone']),
                 registration_id = registration_data.id if registration_data else None,
             )
