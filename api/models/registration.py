@@ -7,6 +7,9 @@ class RegistrationQuery(BaseQuery):
     def get_by_id(self, id):
         return self.filter(Registration.id == id).first()
 
+    def get_by_phone(self, phone):
+        return self.filter(Registration.user_phone == phone).first()
+
 class Registration(TimestampMixin, db.Model):
     query_class = RegistrationQuery
     __tablename__ = 'registration'

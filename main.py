@@ -10,11 +10,11 @@ def webhook(request):
                 # Conditions based on the flow categories
                 if flow_category == 'registration':
                     registration = services.RegistrationService()
-                    registration.handle_registration(request.json)
+                    registration.handle_registration(jsonData)
                 
                 # Handle call logs
                 calllog = services.CallLogService()
-                calllog.handle_call_log(request.json)
+                calllog.handle_call_log(jsonData)
                 
         except IndexError:
             return jsonify(message="Invalid data"), 400

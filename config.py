@@ -20,6 +20,7 @@ POSTGRES = {
     'port': environ.get('DB_PORT'),
 }
 
+SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s' % POSTGRES
 
 WTF_CSRF_ENABLED = True
