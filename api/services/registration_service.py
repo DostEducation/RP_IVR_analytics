@@ -7,6 +7,7 @@ class RegistrationService(object):
         self.user_phone = None
         self.user_id = None
         self.selected_program_id = None
+        self.selected_time_slot = None
 
     def handle_registration(self, jsonData):
         try:
@@ -26,7 +27,7 @@ class RegistrationService(object):
                 self.add_prompt_response(jsonData['results'])
 
             if self.user_id and self.selected_program_id:
-                models.UserProgram.query.upsert_user_program()
+                models.UserProgram.query.upsert_user_program(self.user_id, self.selected_program_id, self.selected_time_slot)
 
         except IndexError:
             print("Failed to register")
@@ -67,13 +68,17 @@ class RegistrationService(object):
         for key in data:
             if key != 'result' and 'category' in data[key]:
                 prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
-                irv_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
-                if irv_prompt_details:
+                ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
+                if ivr_prompt_details:
+                    if "TIME-OPTIN" in ivr_prompt_details.prompt_name:
+                        self.selected_time_slot = helpers.fetch_prompt_response(data[key]['category'])
+
                     ivr_prompt_response = models.IvrPromptResponse(
-                        prompt_name = irv_prompt_details.prompt_name,
-                        prompt_question = irv_prompt_details.prompt_question,
+                        prompt_name = ivr_prompt_details.prompt_name,
+                        prompt_question = ivr_prompt_details.prompt_question,
                         user_phone = self.user_phone,
-                        content_id = irv_prompt_details.content_id
+                        response = data[key]['category'],
+                        content_id = ivr_prompt_details.content_id
                     )
                     db.session.add(ivr_prompt_response)
                     db.session.commit()
