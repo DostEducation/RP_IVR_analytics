@@ -82,8 +82,8 @@ class RegistrationService(object):
         if 'program_details' in jsonData:
             program_categories = helpers.fetch_by_key('categories', jsonData['program_details'])
             if len(program_categories) > 0:
-                split_prompt_by_hyphen = helpers.get_split_prompt_by_hyphen(program_categories[0])
-                split_prompt_by_underscore = helpers.get_split_prompt_by_underscore(split_prompt_by_hyphen[-1])
+                split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(program_categories[0])
+                split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
                 return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
         return None
 
