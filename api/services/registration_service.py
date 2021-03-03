@@ -5,6 +5,8 @@ class RegistrationService(object):
     def __init__(self):
         self.system_phone = None
         self.user_phone = None
+        self.user_id = None
+        self.selected_program_id = None
 
     def handle_registration(self, jsonData):
         try:
@@ -23,41 +25,40 @@ class RegistrationService(object):
             if 'results' in jsonData:
                 self.add_prompt_response(jsonData['results'])
 
+            if self.user_id and self.selected_program_id:
+                models.UserProgram.query.upsert_user_program()
+
         except IndexError:
             print("Failed to register")
 
     # Handle new user registration
     def register(self, jsonData):
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
-        selected_program_id = self.get_program_prompt_id(jsonData)
-        user_id = None
-        if selected_program_id:
-            user_id = self.create_user(jsonData)
+        self.selected_program_id = self.get_program_prompt_id(jsonData)
+        if self.selected_program_id:
+            self.user_id = self.create_user(jsonData)
 
-        registration_status = 'in-progress' if selected_program_id else 'pending'
+        registration_status = 'in-progress' if self.selected_program_id else 'pending'
         if system_phone_details:
             registrant = models.Registration(
                 user_phone = self.user_phone,
                 system_phone = self.system_phone,
                 state = system_phone_details.state,
-                status = 'complete' if user_id else registration_status,
-                program_id = selected_program_id,
-                user_id = user_id
+                status = 'complete' if self.user_id else registration_status,
+                program_id = self.selected_program_id,
+                user_id = self.user_id
             )
             db.session.add(registrant)
             db.session.commit()
 
     def update_registration(self, registration_id, jsonData):
         registration = models.Registration.query.get_by_id(registration_id)
-        selected_program_id = self.get_program_prompt_id(jsonData)
-        user_id = None
+        self.selected_program_id = self.get_program_prompt_id(jsonData)
         if registration:
-            if selected_program_id:
-                user_id = self.create_user(jsonData)
-
-            registration.program_id = selected_program_id
-            if user_id:
-                registration.user_id = user_id
+            self.user_id = self.create_user(jsonData) if self.selected_program_id else None
+            registration.program_id = self.selected_program_id
+            if self.user_id:
+                registration.user_id = self.user_id
                 registration.status = 'complete'
             db.session.commit()
 
