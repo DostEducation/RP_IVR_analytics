@@ -11,6 +11,7 @@ class UserProgramQuery(BaseQuery):
                 user_id = user_id, 
                 program_id = program_id,
                 preferred_time_slot = preferred_time_slot,
+                status = 'active'
             )
             db.session.add(user_program)
             db.session.commit()

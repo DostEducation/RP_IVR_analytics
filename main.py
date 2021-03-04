@@ -9,12 +9,17 @@ def webhook(request):
                 flow_category = jsonData['flow_category']
                 # Conditions based on the flow categories
                 if flow_category == 'registration':
-                    registration = services.RegistrationService()
-                    registration.handle_registration(jsonData)
+                    registration_service = services.RegistrationService()
+                    registration_service.handle_registration(jsonData)
                 
                 # Handle call logs
-                calllog = services.CallLogService()
-                calllog.handle_call_log(jsonData)
+                calllog_service = services.CallLogService()
+                calllog_service.handle_call_log(jsonData)
+
+                # All the prompt responses are captured with results
+                if 'results' in jsonData:
+                    prompt_service = services.PromptService()
+                    prompt_service.add_prompt_response(jsonData)
                 
         except IndexError:
             return jsonify(message="Invalid data"), 400

@@ -22,10 +22,6 @@ class RegistrationService(object):
                 else:
                     self.register(jsonData)
 
-            # All the prompt responses are captured with results
-            if 'results' in jsonData:
-                self.add_prompt_response(jsonData['results'])
-
             if self.user_id and self.selected_program_id:
                 models.UserProgram.query.upsert_user_program(self.user_id, self.selected_program_id, self.selected_time_slot)
 
@@ -64,24 +60,24 @@ class RegistrationService(object):
             db.session.commit()
 
     # Insert Different prompt response
-    def add_prompt_response(self, data):
-        for key in data:
-            if key != 'result' and 'category' in data[key]:
-                prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
-                ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
-                if ivr_prompt_details:
-                    if "TIME-OPTIN" in ivr_prompt_details.prompt_name:
-                        self.selected_time_slot = helpers.fetch_prompt_response(data[key]['category'])
+    # def add_prompt_response(self, data):
+    #     for key in data:
+    #         if key != 'result' and 'category' in data[key]:
+    #             prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
+    #             ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
+    #             if ivr_prompt_details:
+    #                 if "TIME-OPTIN" in ivr_prompt_details.prompt_name:
+    #                     self.selected_time_slot = self.fetch_prompt_response(data[key]['category'])
 
-                    ivr_prompt_response = models.IvrPromptResponse(
-                        prompt_name = ivr_prompt_details.prompt_name,
-                        prompt_question = ivr_prompt_details.prompt_question,
-                        user_phone = self.user_phone,
-                        response = data[key]['category'],
-                        content_id = ivr_prompt_details.content_id
-                    )
-                    db.session.add(ivr_prompt_response)
-                    db.session.commit()
+    #                 ivr_prompt_response = models.IvrPromptResponse(
+    #                     prompt_name = ivr_prompt_details.prompt_name,
+    #                     prompt_question = ivr_prompt_details.prompt_question,
+    #                     user_phone = self.user_phone,
+    #                     response = data[key]['category'],
+    #                     content_id = ivr_prompt_details.content_id
+    #                 )
+    #                 db.session.add(ivr_prompt_response)
+    #                 db.session.commit()
 
     def get_program_prompt_id(self, jsonData):
         if 'program_details' in jsonData:
@@ -105,4 +101,9 @@ class RegistrationService(object):
             db.session.commit()
             return user.id
         return None
+
+    # def fetch_prompt_response(self, prompt):
+    #     split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
+    #     split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
+    #     return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
 
