@@ -3,11 +3,14 @@ from api import models, db, helpers
 class PromptService(object):
     def __init__(self):
         self.user_phone = None
+        self.selected_time_slot = None
 
     def add_prompt_response(self, jsonData):
         data = jsonData['results']
         user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
+        updated_registration_data = {}
+        updated_user_data = {}
         for key in data:
             if key != 'result' and 'category' in data[key]:
                 prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
@@ -15,6 +18,14 @@ class PromptService(object):
                 if ivr_prompt_details:
                     if "TIME-OPTIN" in ivr_prompt_details.prompt_name:
                         self.selected_time_slot = self.fetch_prompt_response(data[key]['category'])
+
+                    if "DISTRICT" in ivr_prompt_details.prompt_name:
+                        user_district = self.fetch_prompt_response(data[key]['category'])
+                        updated_registration_data['district'] = user_district
+                        updated_user_data['district'] = user_district
+
+                    if "PARENT" in ivr_prompt_details.prompt_name:
+                        updated_registration_data['parent_type'] = self.fetch_prompt_response(data[key]['category'])
 
                     ivr_prompt_response = models.IvrPromptResponse(
                         prompt_name = ivr_prompt_details.prompt_name,
@@ -25,6 +36,36 @@ class PromptService(object):
                     )
                     db.session.add(ivr_prompt_response)
                     db.session.commit()
+
+        if updated_user_data:
+            self.update_user_details(updated_user_data)
+
+    def update_user_details(self, data):
+        user_details = models.User.query.get_by_phone(self.user_phone)
+        if user_details:
+            try:
+                for key, value in data.items():
+                    user_details.key = value
+                db.session.commit()
+
+                user_program_id = helpers.get_program_prompt_id(jsonData)
+                if self.selected_time_slot:
+                    models.UserProgram.query.upsert_user_program(user_details.user_id, user_program_id, self.selected_time_slot)
+            except IndexError:
+                # Need to log this
+                return "Failed to udpate user details"
+                
+    def update_registration_details(user_phone, data):
+        registrant = models.Registration.query.get_by_phone(self.user_phone)
+        if registrant:
+            try:
+                for key, value in data.items():
+                    registrant.key = value
+
+                db.session.commit()
+            except IndexError:
+                # Need to log this
+                return "Failed to udpate registration details"
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)

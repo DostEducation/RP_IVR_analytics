@@ -1,4 +1,4 @@
-from api import models
+from api import models, helpers
 
 # TODO: Need to refactor this and try using ORM
 def get_partner_id_by_system_phone(system_phone):
@@ -8,3 +8,12 @@ def get_partner_id_by_system_phone(system_phone):
 		if partner_system_phone:
 			return partner_system_phone.partner_id
 	return None
+
+def get_program_prompt_id(jsonData):
+    if 'program_details' in jsonData:
+        program_categories = helpers.fetch_by_key('categories', jsonData['program_details'])
+        if len(program_categories) > 0:
+            split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(program_categories[0])
+            split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
+            return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
+    return None

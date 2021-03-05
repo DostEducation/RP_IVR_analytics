@@ -4,7 +4,7 @@ from flask_sqlalchemy import BaseQuery
 
 class UserProgramQuery(BaseQuery):
 
-    def upsert_user_program(self, user_id, program_id, preferred_time_slot = 'morning'):
+    def upsert_user_program(self, user_id, program_id, preferred_time_slot = None):
         user_program_data = self.get_by_user_and_program_ids(user_id, program_id)
         if not user_program_data:
             user_program = UserProgram(
