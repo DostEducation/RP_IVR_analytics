@@ -31,7 +31,7 @@ class RegistrationService(object):
     # Handle new user registration
     def register(self, jsonData):
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
-        self.selected_program_id = self.get_program_prompt_id(jsonData)
+        self.selected_program_id = helpers.get_program_prompt_id(jsonData)
         if self.selected_program_id:
             self.user_id = self.create_user(jsonData)
 
@@ -50,7 +50,7 @@ class RegistrationService(object):
 
     def update_registration(self, registration_id, jsonData):
         registration = models.Registration.query.get_by_id(registration_id)
-        self.selected_program_id = self.get_program_prompt_id(jsonData)
+        self.selected_program_id = helpers.get_program_prompt_id(jsonData)
         if registration:
             self.user_id = self.create_user(jsonData) if self.selected_program_id else None
             registration.program_id = self.selected_program_id
@@ -58,15 +58,6 @@ class RegistrationService(object):
                 registration.user_id = self.user_id
                 registration.status = 'complete'
             db.session.commit()
-
-    def get_program_prompt_id(self, jsonData):
-        if 'program_details' in jsonData:
-            program_categories = helpers.fetch_by_key('categories', jsonData['program_details'])
-            if len(program_categories) > 0:
-                split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(program_categories[0])
-                split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
-                return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
-        return None
 
     def create_user(self, jsonData):
         user = models.User.query.get_by_phone(self.user_phone)
