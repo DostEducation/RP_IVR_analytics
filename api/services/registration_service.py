@@ -23,7 +23,9 @@ class RegistrationService(object):
                     self.register(jsonData)
 
             if self.user_id and self.selected_program_id:
-                models.UserProgram.query.upsert_user_program(self.user_id, self.selected_program_id, self.selected_time_slot)
+                user_program_data = {}
+                user_program_data['selected_time_slot'] = self.selected_time_slot
+                models.UserProgram.query.upsert_user_program(self.user_id, self.selected_program_id, user_program_data)
 
         except IndexError:
             print("Failed to register")

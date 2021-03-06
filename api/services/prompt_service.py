@@ -48,9 +48,13 @@ class PromptService(object):
 
         if updated_user_data:
             user_details = self.update_user_details(updated_user_data)
-            user_program_id = helpers.get_program_prompt_id(jsonData)
+            prompt_program_id = helpers.get_program_prompt_id(jsonData)
             if self.selected_time_slot and user_details:
-                models.UserProgram.query.upsert_user_program(user_details.user_id, user_program_id, self.selected_time_slot)
+                user_program_data= {}
+                user_program_data['selected_time_slot'] = self.selected_time_slot
+                models.UserProgram.query.upsert_user_program(user_details.user_id, prompt_program_id, user_program_data)
+        if updated_registration_data:
+            self.update_registration_details(updated_registration_data)
 
     def check_if_already_exists(self, ivr_prompt_response_details, prompt_name, prompt_response):
         for row in ivr_prompt_response_details:
