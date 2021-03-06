@@ -15,8 +15,8 @@ class IvrPrompt(TimestampMixin, db.Model):
     __tablename__ = 'ivr_prompt'
 
     class IvrStatus(object):
-        ACTIVE = 'Active'
-        INACTIVE = 'Inactive'
+        ACTIVE = 'active'
+        INACTIVE = 'inactive'
 
     id = db.Column(db.Integer, primary_key=True)
     prompt_name = db.Column(db.String(255), nullable=False)
