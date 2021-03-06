@@ -19,7 +19,7 @@ POSTGRES = {
     'connection_name': environ.get('CONNECTION_NAME'),
 }
 # For socket based connection
-SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s/%(database)s?host=/cloudsql/%(connection_name)s/'  % POSTGRES
+SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s/%(database)s?host=%(connection_name)s/'  % POSTGRES
 if FLASK_ENV == 'development':
 	SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s' % POSTGRES
 
