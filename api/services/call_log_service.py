@@ -26,6 +26,7 @@ class CallLogService(object):
     def create_call_logs(self, jsonData):
         try:
             registration_data = models.Registration.query.get_by_phone(self.user_phone)
+            user_data = models.User.query.get_by_phone(self.user_phone)
             new_call_log = models.CallLog(
                 flow_run_uuid = self.flow_run_uuid,
                 call_type =  self.fetch_call_type(),
@@ -33,6 +34,7 @@ class CallLogService(object):
                 user_phone_number =  self.user_phone,
                 system_phone_number = helpers.sanitize_phone_string(self.system_phone),
                 registration_id = registration_data.id if registration_data else None,
+                user_id = user_data.id if user_data else None,
             )
             db.session.add(new_call_log)
             db.session.commit()
