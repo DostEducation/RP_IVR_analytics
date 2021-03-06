@@ -59,6 +59,7 @@ class RegistrationService(object):
             if self.user_id:
                 registration.user_id = self.user_id
                 registration.status = 'complete'
+                registration.partner_id = helpers.get_partner_id_by_system_phone(self.system_phone)
             db.session.commit()
 
     def create_user(self, jsonData):

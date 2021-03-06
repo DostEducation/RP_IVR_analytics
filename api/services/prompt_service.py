@@ -67,20 +67,23 @@ class PromptService(object):
         if user_details:
             try:
                 for key, value in data.items():
-                    user_details.key = value
+                    if key == 'district':
+                        user_details.district = value
                 db.session.commit()
                 return user_details
             except IndexError:
                 # Need to log this
                 return "Failed to udpate user details"
 
-    def update_registration_details(user_phone, data):
+    def update_registration_details(self, data):
         registrant = models.Registration.query.get_by_phone(self.user_phone)
         if registrant:
             try:
                 for key, value in data.items():
-                    registrant.key = value
-
+                    if key == 'district':
+                        registrant.district = value
+                    if key == 'parent_type':
+                        registrant.parent_type = value
                 db.session.commit()
             except IndexError:
                 # Need to log this
