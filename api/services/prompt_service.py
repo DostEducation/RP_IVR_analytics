@@ -49,7 +49,10 @@ class PromptService(object):
                         db.session.commit()
 
         if updated_user_data:
-            self.update_user_details(updated_user_data)
+            user_details = self.update_user_details(updated_user_data)
+            user_program_id = helpers.get_program_prompt_id(jsonData)
+            if self.selected_time_slot and user_details:
+                models.UserProgram.query.upsert_user_program(user_details.user_id, user_program_id, self.selected_time_slot)
 
     def check_if_already_exists(self, ivr_prompt_response_details, prompt_name, prompt_response):
         for row in ivr_prompt_response_details:
@@ -64,14 +67,11 @@ class PromptService(object):
                 for key, value in data.items():
                     user_details.key = value
                 db.session.commit()
-                user_program_id = helpers.get_program_prompt_id(jsonData)
-
-                if self.selected_time_slot:
-                    models.UserProgram.query.upsert_user_program(user_details.user_id, user_program_id, self.selected_time_slot)
+                return user_details
             except IndexError:
                 # Need to log this
                 return "Failed to udpate user details"
-                
+
     def update_registration_details(user_phone, data):
         registrant = models.Registration.query.get_by_phone(self.user_phone)
         if registrant:
