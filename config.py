@@ -16,8 +16,15 @@ POSTGRES = {
     'database': environ.get('DB_NAME'),
     'host': environ.get('DB_HOST'),
     'port': environ.get('DB_PORT'),
+    'connection_name': environ.get('CONNECTION_NAME'),
 }
-SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s' % POSTGRES
+# For socket based connection
+SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s/%(database)s?host=%(connection_name)s/'  % POSTGRES
+if FLASK_ENV == 'development':
+	# For TCP based conneciton
+	SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s' % POSTGRES
+
+
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
 SECRET_KEY = environ.get('SECRET_KEY')
