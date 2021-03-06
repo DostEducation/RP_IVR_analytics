@@ -4,17 +4,31 @@ from flask_sqlalchemy import BaseQuery
 
 class UserProgramQuery(BaseQuery):
 
-    def upsert_user_program(self, user_id, program_id, preferred_time_slot = None):
-        user_program_data = self.get_by_user_and_program_ids(user_id, program_id)
-        if not user_program_data:
+    def upsert_user_program(self, user_id, data):
+        user_program_details = self.get_by_user_and_program_ids(user_id, program_id)
+        if user_program_details:
+            program_data = {}
+            program_data['preferred_time_slot'] = preferred_time_slot if preferred_time_slot in data else None
+            program_data['status'] = status if status in data else None
+            self.update(user_program_details, data)
+        else:
             user_program = UserProgram(
-                user_id = user_id, 
+                user_id = user_id,
                 program_id = program_id,
                 preferred_time_slot = preferred_time_slot,
-                status = 'active'
+                status = 'in-progress'
             )
             db.session.add(user_program)
             db.session.commit()
+
+    def update(self, user_program_details, data):
+        try:
+            for key, value in data.items():
+                if value:
+                    user_program_details.key = value
+            db.session.commit()
+        except IndexError:
+            return "Failed to udpate user program details"
 
     def get_by_user_and_program_ids(self, user_id, program_id):
         return self.filter(UserProgram.user_id == user_id, UserProgram.program_id == program_id).first()
