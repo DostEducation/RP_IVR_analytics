@@ -5,10 +5,15 @@ class PromptService(object):
         self.user_phone = None
         self.selected_time_slot = None
 
-    def add_prompt_response(self, jsonData):
+    def handle_prompt_response(self, jsonData):
         data = jsonData['results']
         user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
+        flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
+        call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
+        ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(call_log_details.id)
+        print('Here we are with call logs for previous flows')
+        print(call_log_details)
         updated_registration_data = {}
         updated_user_data = {}
         for key in data:
@@ -27,18 +32,30 @@ class PromptService(object):
                     if "PARENT" in ivr_prompt_details.prompt_name:
                         updated_registration_data['parent_type'] = self.fetch_prompt_response(data[key]['category'])
 
-                    ivr_prompt_response = models.IvrPromptResponse(
-                        prompt_name = ivr_prompt_details.prompt_name,
-                        prompt_question = ivr_prompt_details.prompt_question,
-                        user_phone = self.user_phone,
-                        response = data[key]['category'],
-                        content_id = ivr_prompt_details.content_id
-                    )
-                    db.session.add(ivr_prompt_response)
-                    db.session.commit()
+                    response_exists = False
+                    if ivr_prompt_response_details:
+                        response_exists = self.check_if_already_exists(ivr_prompt_response_details, prompt_name, data[key]['category'])
+
+                    if not response_exists:
+                        ivr_prompt_response = models.IvrPromptResponse(
+                            prompt_name = ivr_prompt_details.prompt_name,
+                            prompt_question = ivr_prompt_details.prompt_question,
+                            user_phone = self.user_phone,
+                            response = data[key]['category'],
+                            content_id = ivr_prompt_details.content_id,
+                            call_log_id = call_log_details.id
+                        )
+                        db.session.add(ivr_prompt_response)
+                        db.session.commit()
 
         if updated_user_data:
             self.update_user_details(updated_user_data)
+
+    def check_if_already_exists(self, ivr_prompt_response_details, prompt_name, prompt_response):
+        for row in ivr_prompt_response_details:
+            if row.response == prompt_response and row.prompt_name == prompt_name:
+                return True
+        return False
 
     def update_user_details(self, data):
         user_details = models.User.query.get_by_phone(self.user_phone)
@@ -47,8 +64,8 @@ class PromptService(object):
                 for key, value in data.items():
                     user_details.key = value
                 db.session.commit()
-
                 user_program_id = helpers.get_program_prompt_id(jsonData)
+
                 if self.selected_time_slot:
                     models.UserProgram.query.upsert_user_program(user_details.user_id, user_program_id, self.selected_time_slot)
             except IndexError:

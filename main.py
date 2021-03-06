@@ -19,7 +19,7 @@ def webhook(request):
                 # All the prompt responses are captured with results
                 if 'results' in jsonData:
                     prompt_service = services.PromptService()
-                    prompt_service.add_prompt_response(jsonData)
+                    prompt_service.handle_prompt_response(jsonData)
                 
         except IndexError:
             return jsonify(message="Invalid data"), 400

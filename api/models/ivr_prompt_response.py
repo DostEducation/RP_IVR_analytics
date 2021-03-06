@@ -1,7 +1,14 @@
 from api.mixins import TimestampMixin
 from api import db
+from flask_sqlalchemy import BaseQuery
+
+class IvrPromptResponseQuery(BaseQuery):
+
+    def get_by_call_log_id(self, call_log_id):
+        return self.filter(IvrPromptResponse.call_log_id == call_log_id).all()
 
 class IvrPromptResponse(TimestampMixin, db.Model):
+    query_class = IvrPromptResponseQuery
     __tablename__ = 'ivr_prompt_response'
     id = db.Column(db.Integer, primary_key=True)
     prompt_name = db.Column(db.String(255), nullable=False)
