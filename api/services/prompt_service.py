@@ -12,8 +12,6 @@ class PromptService(object):
         flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
         ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(call_log_details.id)
-        print('Here we are with call logs for previous flows')
-        print(call_log_details)
         updated_registration_data = {}
         updated_user_data = {}
         for key in data:

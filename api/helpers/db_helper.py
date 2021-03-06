@@ -10,6 +10,10 @@ def get_partner_id_by_system_phone(system_phone):
 	return None
 
 def get_program_prompt_id(jsonData):
+    """
+    Expected program_details categories format (for ex): INTRO_1-SIGNUP_1-SELECTION_PROGRAM-OPTIN_2
+    Value returned by this function: 2
+    """
     if 'program_details' in jsonData:
         program_categories = helpers.fetch_by_key('categories', jsonData['program_details'])
         if len(program_categories) > 0:
