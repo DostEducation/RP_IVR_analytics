@@ -4,6 +4,7 @@ class PromptService(object):
     def __init__(self):
         self.user_phone = None
         self.selected_time_slot = None
+        self.call_log_id = None
 
     def handle_prompt_response(self, jsonData):
         data = jsonData['results']
@@ -11,6 +12,7 @@ class PromptService(object):
         self.user_phone = helpers.sanitize_phone_string(user_phone)
         flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
+        self.call_log_id = call_log_details.id
         ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(call_log_details.id)
         user_details = models.User.query.get_by_phone(self.user_phone)
         updated_registration_data = {}
@@ -36,17 +38,7 @@ class PromptService(object):
                         response_exists = self.check_if_already_exists(ivr_prompt_response_details, prompt_name, data[key]['category'])
 
                     if not response_exists:
-                        ivr_prompt_response = models.IvrPromptResponse(
-                            prompt_name = ivr_prompt_details.prompt_name,
-                            prompt_question = ivr_prompt_details.prompt_question,
-                            user_phone = self.user_phone,
-                            response = data[key]['category'],
-                            content_id = ivr_prompt_details.content_id,
-                            call_log_id = call_log_details.id
-                        )
-                        db.session.add(ivr_prompt_response)
-                        db.session.commit()
-
+                        self.add_prompt_response(ivr_prompt_details, data[key]['category'])
                         self.add_user_module_content(user_details, ivr_prompt_details.content_id)
 
         if updated_user_data:
@@ -64,6 +56,21 @@ class PromptService(object):
             if row.response == prompt_response and row.prompt_name == prompt_name:
                 return True
         return False
+
+    def add_prompt_response(self, ivr_prompt_details, ivr_prompt_response):
+        try:
+            ivr_prompt_response = models.IvrPromptResponse(
+                prompt_name = ivr_prompt_details.prompt_name,
+                prompt_question = ivr_prompt_details.prompt_question,
+                user_phone = self.user_phone,
+                response = ivr_prompt_response,
+                content_id = ivr_prompt_details.content_id,
+                call_log_id = self.call_log_id
+            )
+            helpers.save(ivr_prompt_response)
+        except IndexError:
+            print('Exception occured')
+        
 
     def update_user_details(self, user_details, data):
         if user_details:
@@ -100,10 +107,10 @@ class PromptService(object):
         module_content_details = models.ModuleContent.query.get_by_content_id(content_id)
         program_module_details = models.ProgramModule.query.get_by_module_id(module_content_details.module_id)
         user_program_details = get_by_user_and_program_ids(user_details.id, program_module_details.program_id)
-        data = models.IvrPromptResponse(
+        user_module_content = models.UserModuleContent(
             module_content_id = module_content_data.id,
             program_module_id = program_module_details.id,
             user_program_id = user_program_details.id,
-            status = call_log_details.id
+            status = 'complete'
         )
-        helpers.save(data)
+        helpers.save(user_module_content)
