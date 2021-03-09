@@ -1,4 +1,5 @@
 from api import models, db, services
+from flask import jsonify
 
 ### Endpoint for Cloud function
 def webhook(request):
@@ -22,12 +23,16 @@ def webhook(request):
                 
         except IndexError:
             return jsonify(message="Invalid data"), 400
-    return 'Currently, the system do not accept a GET request.'
+        return jsonify(message = "Success"), 200
+    else:
+        return jsonify(message = "Currently, the system do not accept a GET request"), 405
 
 def handle_flow_category_data(jsonData):
+    registration_service = services.RegistrationService()
     if jsonData['flow_category'] == 'registration':
-        registration_service = services.RegistrationService()
         registration_service.handle_registration(jsonData)
+    elif jsonData['flow_category'] == 'intro':
+        registration_service.update_registration_details(jsonData)
 
 def handle_prompts(jsonData):
     prompt_service = services.PromptService()

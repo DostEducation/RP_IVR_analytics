@@ -9,26 +9,26 @@ class RegistrationService(object):
         self.selected_program_id = None
         self.selected_time_slot = None
 
+    def set_init_data(self, jsonData):
+        user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
+        self.system_phone = helpers.fetch_by_key('address', jsonData['channel'])
+        self.user_phone = helpers.sanitize_phone_string(user_phone)
+
     def handle_registration(self, jsonData):
         try:
-            user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
-            self.system_phone = helpers.fetch_by_key('address', jsonData['channel'])
-            self.user_phone = helpers.sanitize_phone_string(user_phone)
-            flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
-            if flow_run_uuid:
-                call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
-                if call_log:
-                    self.update_registration(call_log.registration_id, jsonData)
-                else:
-                    self.register(jsonData)
-
-            if self.user_id and self.selected_program_id:
-                user_program_data = {}
-                user_program_data['selected_time_slot'] = self.selected_time_slot
-                models.UserProgram.query.upsert_user_program(self.user_id, self.selected_program_id, user_program_data)
-
+            self.set_init_data(jsonData)
+            self.register(jsonData)
         except IndexError:
             print("Failed to register")
+
+    def update_registration_details(self, jsonData):
+        try:
+            self.set_init_data(jsonData)
+            registration_details = models.Registration.query.get_last_by_phone(self.user_phone)
+            if registration_details:
+                self.update(registration_details.id, jsonData)
+        except IndexError:
+            print("Failed to update registeration data")
 
     # Handle new user registration
     def register(self, jsonData):
@@ -49,7 +49,7 @@ class RegistrationService(object):
             )
             helpers.save(registrant)
 
-    def update_registration(self, registration_id, jsonData):
+    def update(self, registration_id, jsonData):
         registration = models.Registration.query.get_by_id(registration_id)
         self.selected_program_id = helpers.get_program_prompt_id(jsonData)
         if registration:
