@@ -3,7 +3,7 @@ from api import models, db, helpers
 class PromptService(object):
     def __init__(self):
         self.user_phone = None
-        self.selected_time_slot = None
+        self.preferred_time_slot = None
         self.call_log_id = None
 
     def handle_prompt_response(self, jsonData):
@@ -15,6 +15,7 @@ class PromptService(object):
         self.call_log_id = call_log_details.id
         ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(call_log_details.id)
         user_details = models.User.query.get_by_phone(self.user_phone)
+        prompt_program_id = helpers.get_program_prompt_id(jsonData)
         updated_registration_data = {}
         updated_user_data = {}
         for key in data:
@@ -23,7 +24,7 @@ class PromptService(object):
                 ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
                 if ivr_prompt_details:
                     if "TIME-OPTIN" in ivr_prompt_details.prompt_name:
-                        self.selected_time_slot = self.fetch_prompt_response(data[key]['category'])
+                        self.preferred_time_slot = self.fetch_prompt_response(data[key]['category'])
 
                     if "DISTRICT" in ivr_prompt_details.prompt_name:
                         user_district = self.fetch_prompt_response(data[key]['category'])
@@ -41,13 +42,15 @@ class PromptService(object):
                         self.add_prompt_response(ivr_prompt_details, data[key]['category'])
                         self.add_user_module_content(user_details, ivr_prompt_details.content_id)
 
+
+
         if updated_user_data:
-            user_details = self.update_user_details(user_details, updated_user_data)
-            prompt_program_id = helpers.get_program_prompt_id(jsonData)
-            if self.selected_time_slot and user_details:
-                user_program_data= {}
-                user_program_data['selected_time_slot'] = self.selected_time_slot
-                models.UserProgram.query.upsert_user_program(user_details.user_id, prompt_program_id, user_program_data)
+            self.update_user_details(user_details, updated_user_data)
+        if self.preferred_time_slot and user_details:
+            user_program_data= {}
+            user_program_data['preferred_time_slot'] = self.preferred_time_slot
+            user_program_data['status'] = 'complete'
+            models.UserProgram.query.upsert_user_program(user_details.id, prompt_program_id, user_program_data)
         if updated_registration_data:
             self.update_registration_details(updated_registration_data)
 
@@ -106,11 +109,11 @@ class PromptService(object):
     def add_user_module_content(self, user_details, content_id):
         module_content_details = models.ModuleContent.query.get_by_content_id(content_id)
         program_module_details = models.ProgramModule.query.get_by_module_id(module_content_details.module_id)
-        user_program_details = get_by_user_and_program_ids(user_details.id, program_module_details.program_id)
+        user_program_details = models.UserProgram.query.get_by_user_and_program_ids(user_details.id, program_module_details.program_id)
         user_module_content = models.UserModuleContent(
-            module_content_id = module_content_data.id,
+            module_content_id = module_content_details.id,
             program_module_id = program_module_details.id,
-            user_program_id = user_program_details.id,
+            user_program_id = user_program_details.id if user_program_details else None,
             status = 'complete'
         )
         helpers.save(user_module_content)

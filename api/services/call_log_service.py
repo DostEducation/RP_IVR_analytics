@@ -36,8 +36,7 @@ class CallLogService(object):
                 registration_id = registration_data.id if registration_data else None,
                 user_id = user_data.id if user_data else None,
             )
-            db.session.add(new_call_log)
-            db.session.commit()
+            helpers.save(new_call_log)
         except IndexError:
             # Need to log this
             return "Failed to create call log"

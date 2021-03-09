@@ -25,8 +25,10 @@ class UserProgramQuery(BaseQuery):
     def update(self, user_program_details, data):
         try:
             for key, value in data.items():
-                if value:
-                    user_program_details.key = value
+                if key == 'preferred_time_slot':
+                    user_program_details.preferred_time_slot = value
+                elif key == 'status':
+                    user_program_details.status = value
             db.session.commit()
         except IndexError:
             return "Failed to udpate user program details"

@@ -47,8 +47,7 @@ class RegistrationService(object):
                 program_id = self.selected_program_id,
                 user_id = self.user_id
             )
-            db.session.add(registrant)
-            db.session.commit()
+            helpers.save(registrant)
 
     def update_registration(self, registration_id, jsonData):
         registration = models.Registration.query.get_by_id(registration_id)
