@@ -12,6 +12,7 @@ class PromptService(object):
         flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
         ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(call_log_details.id)
+        user_details = models.User.query.get_by_phone(self.user_phone)
         updated_registration_data = {}
         updated_user_data = {}
         for key in data:
@@ -46,8 +47,10 @@ class PromptService(object):
                         db.session.add(ivr_prompt_response)
                         db.session.commit()
 
+                        self.add_user_module_content(user_details, ivr_prompt_details.content_id)
+
         if updated_user_data:
-            user_details = self.update_user_details(updated_user_data)
+            user_details = self.update_user_details(user_details, updated_user_data)
             prompt_program_id = helpers.get_program_prompt_id(jsonData)
             if self.selected_time_slot and user_details:
                 user_program_data= {}
@@ -62,8 +65,7 @@ class PromptService(object):
                 return True
         return False
 
-    def update_user_details(self, data):
-        user_details = models.User.query.get_by_phone(self.user_phone)
+    def update_user_details(self, user_details, data):
         if user_details:
             try:
                 for key, value in data.items():
@@ -93,3 +95,15 @@ class PromptService(object):
         split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
         split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
         return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
+
+    def add_user_module_content(self, user_details, content_id):
+        module_content_details = models.ModuleContent.query.get_by_content_id(content_id)
+        program_module_details = models.ProgramModule.query.get_by_module_id(module_content_details.module_id)
+        user_program_details = get_by_user_and_program_ids(user_details.id, program_module_details.program_id)
+        data = models.IvrPromptResponse(
+            module_content_id = module_content_data.id,
+            program_module_id = program_module_details.id,
+            user_program_id = user_program_details.id,
+            status = call_log_details.id
+        )
+        helpers.save(data)

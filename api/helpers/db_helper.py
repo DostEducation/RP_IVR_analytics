@@ -21,3 +21,7 @@ def get_program_prompt_id(jsonData):
             split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
             return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
     return None
+
+def save(data):
+    db.session.add(data)
+    db.session.commit()
