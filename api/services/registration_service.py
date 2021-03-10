@@ -72,7 +72,6 @@ class RegistrationService(object):
                 phone = self.user_phone,
                 partner_id = helpers.get_partner_id_by_system_phone(self.system_phone)
             )
-            db.session.add(user)
-            db.session.commit()
+            helpers.save(user)
             return user.id
-        return None
+    return None

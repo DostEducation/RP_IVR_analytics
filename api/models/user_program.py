@@ -1,5 +1,5 @@
 from api.mixins import TimestampMixin
-from api import db
+from api import db, helpers
 from flask_sqlalchemy import BaseQuery
 
 class UserProgramQuery(BaseQuery):
@@ -19,8 +19,7 @@ class UserProgramQuery(BaseQuery):
                 preferred_time_slot = preferred_time_slot,
                 status = data['status'] if 'status' in data else 'in-progress'
             )
-            db.session.add(user_program)
-            db.session.commit()
+            helpers.save(user_program)
 
     def update(self, user_program_details, data):
         try:
