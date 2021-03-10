@@ -5,8 +5,7 @@ __pycache__/
 
 # Environments
 .env
-env/
 venv/
-
 .vscode
 .DS_Store
+.python-version

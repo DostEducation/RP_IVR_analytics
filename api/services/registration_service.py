@@ -9,24 +9,26 @@ class RegistrationService(object):
         self.selected_program_id = None
         self.selected_time_slot = None
 
+    def set_init_data(self, jsonData):
+        user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
+        self.system_phone = helpers.fetch_by_key('address', jsonData['channel'])
+        self.user_phone = helpers.sanitize_phone_string(user_phone)
+
     def handle_registration(self, jsonData):
         try:
-            user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
-            self.system_phone = helpers.fetch_by_key('address', jsonData['channel'])
-            self.user_phone = helpers.sanitize_phone_string(user_phone)
-            flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
-            if flow_run_uuid:
-                call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
-                if call_log:
-                    self.update_registration(call_log.registration_id, jsonData)
-                else:
-                    self.register(jsonData)
-
-            if self.user_id and self.selected_program_id:
-                models.UserProgram.query.upsert_user_program(self.user_id, self.selected_program_id, self.selected_time_slot)
-
+            self.set_init_data(jsonData)
+            self.register(jsonData)
         except IndexError:
             print("Failed to register")
+
+    def update_registration_details(self, jsonData):
+        try:
+            self.set_init_data(jsonData)
+            registration_details = models.Registration.query.get_latest_by_phone(self.user_phone)
+            if registration_details:
+                self.update(registration_details.id, jsonData)
+        except IndexError:
+            print("Failed to update registeration data")
 
     # Handle new user registration
     def register(self, jsonData):
@@ -43,12 +45,12 @@ class RegistrationService(object):
                 state = system_phone_details.state,
                 status = 'complete' if self.user_id else registration_status,
                 program_id = self.selected_program_id,
-                user_id = self.user_id
+                user_id = self.user_id,
+                has_dropped_missedcall = True
             )
-            db.session.add(registrant)
-            db.session.commit()
+            helpers.save(registrant)
 
-    def update_registration(self, registration_id, jsonData):
+    def update(self, registration_id, jsonData):
         registration = models.Registration.query.get_by_id(registration_id)
         self.selected_program_id = helpers.get_program_prompt_id(jsonData)
         if registration:
@@ -57,6 +59,8 @@ class RegistrationService(object):
             if self.user_id:
                 registration.user_id = self.user_id
                 registration.status = 'complete'
+                registration.has_received_callback = True
+                registration.partner_id = helpers.get_partner_id_by_system_phone(self.system_phone)
             db.session.commit()
 
     def create_user(self, jsonData):
@@ -68,7 +72,6 @@ class RegistrationService(object):
                 phone = self.user_phone,
                 partner_id = helpers.get_partner_id_by_system_phone(self.system_phone)
             )
-            db.session.add(user)
-            db.session.commit()
+            helpers.save(user)
             return user.id
-        return None
+    return None
