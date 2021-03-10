@@ -10,7 +10,7 @@ class RegistrationQuery(BaseQuery):
     def get_by_phone(self, phone):
         return self.filter(Registration.user_phone == phone).first()
 
-    def get_last_by_phone(self, phone):
+    def get_latest_by_phone(self, phone):
         return self.filter(Registration.user_phone == phone).order_by(Registration.id.desc()).first()
 
 class Registration(TimestampMixin, db.Model):

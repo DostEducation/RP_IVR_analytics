@@ -24,7 +24,7 @@ class RegistrationService(object):
     def update_registration_details(self, jsonData):
         try:
             self.set_init_data(jsonData)
-            registration_details = models.Registration.query.get_last_by_phone(self.user_phone)
+            registration_details = models.Registration.query.get_latest_by_phone(self.user_phone)
             if registration_details:
                 self.update(registration_details.id, jsonData)
         except IndexError:
