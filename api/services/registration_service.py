@@ -74,4 +74,4 @@ class RegistrationService(object):
             )
             helpers.save(user)
             return user.id
-    return None
+        return None
