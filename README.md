@@ -12,7 +12,7 @@ This is a cloud function based webhook that is being using to get webhook calls 
     ```sh
     git clone https://github.com/DostEducation/RP_IVR_analytics.git
     ```
-2. Switch to project folder and setup the project environment
+2. Switch to project folder and setup the vertual environment
     ```sh
     cd RP_IVR_analytics
     python -m venv venv
@@ -23,13 +23,17 @@ This is a cloud function based webhook that is being using to get webhook calls 
     ```
 4. Install the dependencies:
     ```sh
-    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
     ```
 5. Set up your .env file by copying .env.example
     ```sh
     cp .env.example .env
     ```
 6. Add/update variables in your `.env` file for your environment.
+7. Start the server by following command
+    ```sh
+    functions_framework --target=webhook --debug
+    ```
 
 ## License
 GNU Affero General Public License v3.0
