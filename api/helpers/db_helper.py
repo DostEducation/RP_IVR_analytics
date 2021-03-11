@@ -1,4 +1,4 @@
-from api import models, helpers
+from api import models, db, helpers
 
 # TODO: Need to refactor this and try using ORM
 def get_partner_id_by_system_phone(system_phone):
@@ -21,3 +21,7 @@ def get_program_prompt_id(jsonData):
             split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
             return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
     return None
+
+def save(data):
+    db.session.add(data)
+    db.session.commit()
