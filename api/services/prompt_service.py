@@ -39,7 +39,7 @@ class PromptService(object):
                         response_exists = self.check_if_already_exists(ivr_prompt_response_details, prompt_name, data[key]['category'])
 
                     if not response_exists:
-                        self.add_prompt_response(ivr_prompt_details, data[key]['category'])
+                        self.add_prompt_response(ivr_prompt_details,  self.fetch_prompt_response(data[key]['category']))
                         self.add_user_module_content(user_details, ivr_prompt_details.content_id)
 
 
