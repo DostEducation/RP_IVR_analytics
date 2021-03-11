@@ -36,14 +36,15 @@ class PromptService(object):
                 response_exists = False
                 if ivr_prompt_response_details:
                     response_exists = self.check_if_already_exists(ivr_prompt_response_details, prompt_name, prompt_response)
-                    if not response_exists:
-                        ivr_prompt_data = {}
-                        ivr_prompt_data['prompt_name'] = prompt_name
-                        ivr_prompt_data['prompt_response'] = self.fetch_prompt_response(prompt_response)
-                        ivr_prompt_data['keypress'] = data[key]['value']
-                        self.add_prompt_response(ivr_prompt_details, data)
-                        prompt_content_id = ivr_prompt_details.content_id if ivr_prompt_details else None
-                        self.add_user_module_content(user_details, prompt_content_id)
+
+                if not response_exists:
+                    ivr_prompt_data = {}
+                    ivr_prompt_data['prompt_name'] = prompt_name
+                    ivr_prompt_data['prompt_response'] = self.fetch_prompt_response(prompt_response)
+                    ivr_prompt_data['keypress'] = data[key]['value']
+                    self.add_prompt_response(ivr_prompt_details, ivr_prompt_data)
+                    prompt_content_id = ivr_prompt_details.content_id if ivr_prompt_details else None
+                    self.add_user_module_content(user_details, prompt_content_id)
 
         if updated_user_data:
             self.update_user_details(user_details, updated_user_data)
@@ -69,7 +70,7 @@ class PromptService(object):
                 prompt_name = data['prompt_name'],
                 prompt_question = ivr_prompt_details.prompt_question if ivr_prompt_details else None,
                 user_phone = self.user_phone,
-                response = data['ivr_prompt_response'],
+                response = data['prompt_response'],
                 content_id = ivr_prompt_details.content_id if ivr_prompt_details else None,
                 call_log_id = self.call_log_id,
                 keypress = data['keypress']

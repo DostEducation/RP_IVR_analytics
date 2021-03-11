@@ -28,14 +28,6 @@ class RegistrationService(object):
         except IndexError:
             print("Failed to handle registeration")
 
-    # def update_registration(self, jsonData):
-    #     try:
-    #         registration_details = models.Registration.query.get_latest_by_phone(self.user_phone)
-    #         if registration_details:
-    #             self.update(registration_details.id, jsonData)
-    #     except IndexError:
-    #         print("Failed to update registeration data")
-
     # Handle new user registration
     def register(self, jsonData):
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
