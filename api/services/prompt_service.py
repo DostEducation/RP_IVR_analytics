@@ -19,34 +19,35 @@ class PromptService(object):
         updated_registration_data = {}
         updated_user_data = {}
         for key in data:
-            if key != 'result' and 'category' in data[key]:
-                prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
+            if key != 'result' and 'category' in data[key] and 'name' in data[key]:
+                prompt_response = data[key]['category']
+                prompt_name = data[key]['name']
                 ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
                 if ivr_prompt_details:
-                    if "TIME-OPTIN" in ivr_prompt_details.prompt_name:
-                        self.preferred_time_slot = self.fetch_prompt_response(data[key]['category'])
-
-                    if "DISTRICT" in ivr_prompt_details.prompt_name:
-                        user_district = self.fetch_prompt_response(data[key]['category'])
+                    if "TIME-OPTIN" in prompt_name:
+                        self.preferred_time_slot = self.fetch_prompt_response(prompt_response)
+                    elif "DISTRICT" in prompt_name:
+                        user_district = self.fetch_prompt_response(prompt_response)
                         updated_registration_data['district'] = user_district
                         updated_user_data['district'] = user_district
+                    elif "PARENT" in prompt_name:
+                        updated_registration_data['parent_type'] = self.fetch_prompt_response(prompt_response)
 
-                    if "PARENT" in ivr_prompt_details.prompt_name:
-                        updated_registration_data['parent_type'] = self.fetch_prompt_response(data[key]['category'])
-
-                    response_exists = False
-                    if ivr_prompt_response_details:
-                        response_exists = self.check_if_already_exists(ivr_prompt_response_details, prompt_name, data[key]['category'])
-
+                response_exists = False
+                if ivr_prompt_response_details:
+                    response_exists = self.check_if_already_exists(ivr_prompt_response_details, prompt_name, prompt_response)
                     if not response_exists:
-                        self.add_prompt_response(ivr_prompt_details,  self.fetch_prompt_response(data[key]['category']))
-                        self.add_user_module_content(user_details, ivr_prompt_details.content_id)
-
-
+                        ivr_prompt_data = {}
+                        ivr_prompt_data['prompt_name'] = prompt_name
+                        ivr_prompt_data['prompt_response'] = self.fetch_prompt_response(prompt_response)
+                        ivr_prompt_data['keypress'] = data[key]['value']
+                        self.add_prompt_response(ivr_prompt_details, data)
+                        prompt_content_id = ivr_prompt_details.content_id if ivr_prompt_details else None
+                        self.add_user_module_content(user_details, prompt_content_id)
 
         if updated_user_data:
             self.update_user_details(user_details, updated_user_data)
-        if self.preferred_time_slot and user_details:
+        if self.preferred_time_slot and user_details and prompt_program_id:
             user_program_data= {}
             user_program_data['preferred_time_slot'] = self.preferred_time_slot
             user_program_data['status'] = 'complete'
@@ -55,25 +56,27 @@ class PromptService(object):
             self.update_registration_details(updated_registration_data)
 
     def check_if_already_exists(self, ivr_prompt_response_details, prompt_name, prompt_response):
+        if not ivr_prompt_response_details:
+            return False
         for row in ivr_prompt_response_details:
             if row.response == prompt_response and row.prompt_name == prompt_name:
                 return True
         return False
 
-    def add_prompt_response(self, ivr_prompt_details, ivr_prompt_response):
+    def add_prompt_response(self, ivr_prompt_details, data):
         try:
             ivr_prompt_response = models.IvrPromptResponse(
-                prompt_name = ivr_prompt_details.prompt_name,
-                prompt_question = ivr_prompt_details.prompt_question,
+                prompt_name = data['prompt_name'],
+                prompt_question = ivr_prompt_details.prompt_question if ivr_prompt_details else None,
                 user_phone = self.user_phone,
-                response = ivr_prompt_response,
-                content_id = ivr_prompt_details.content_id,
-                call_log_id = self.call_log_id
+                response = data['ivr_prompt_response'],
+                content_id = ivr_prompt_details.content_id if ivr_prompt_details else None,
+                call_log_id = self.call_log_id,
+                keypress = data['keypress']
             )
             helpers.save(ivr_prompt_response)
         except IndexError:
             print('Exception occured')
-        
 
     def update_user_details(self, user_details, data):
         if user_details:

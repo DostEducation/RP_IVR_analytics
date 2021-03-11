@@ -20,7 +20,6 @@ def webhook(request):
                     handle_prompts(jsonData)
             else:
                 return jsonify(message = "Contact or Flow Run UUID is missing"), 400
-                
         except IndexError:
             return jsonify(message="Invalid data"), 400
         return jsonify(message = "Success"), 200
@@ -31,8 +30,6 @@ def handle_flow_category_data(jsonData):
     registration_service = services.RegistrationService()
     if jsonData['flow_category'] == 'registration':
         registration_service.handle_registration(jsonData)
-    elif jsonData['flow_category'] == 'intro':
-        registration_service.update_registration_details(jsonData)
 
 def handle_prompts(jsonData):
     prompt_service = services.PromptService()
