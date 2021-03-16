@@ -42,8 +42,6 @@ class PromptService(object):
                         self.add_prompt_response(ivr_prompt_details, data[key]['category'])
                         self.add_user_module_content(user_details, ivr_prompt_details.content_id)
 
-
-
         if updated_user_data:
             self.update_user_details(user_details, updated_user_data)
         if self.preferred_time_slot and user_details:
@@ -85,7 +83,7 @@ class PromptService(object):
                 return user_details
             except IndexError:
                 # Need to log this
-                return "Failed to udpate user details"
+                return "Failed to update user details"
 
     def update_registration_details(self, data):
         registrant = models.Registration.query.get_by_phone(self.user_phone)
@@ -107,13 +105,17 @@ class PromptService(object):
         return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
 
     def add_user_module_content(self, user_details, content_id):
-        module_content_details = models.ModuleContent.query.get_by_content_id(content_id)
-        program_module_details = models.ProgramModule.query.get_by_module_id(module_content_details.module_id)
-        user_program_details = models.UserProgram.query.get_by_user_and_program_ids(user_details.id, program_module_details.program_id)
-        user_module_content = models.UserModuleContent(
-            module_content_id = module_content_details.id,
-            program_module_id = program_module_details.id,
-            user_program_id = user_program_details.id if user_program_details else None,
-            status = 'complete'
-        )
-        helpers.save(user_module_content)
+        try:
+            module_content_details = models.ModuleContent.query.get_by_content_id(content_id)
+            program_module_details = models.ProgramModule.query.get_by_module_id(module_content_details.module_id)
+            user_program_details = models.UserProgram.query.get_by_user_and_program_ids(user_details.id, program_module_details.program_id)
+            user_module_content = models.UserModuleContent(
+                module_content_id = module_content_details.id,
+                program_module_id = program_module_details.id,
+                user_program_id = user_program_details.id if user_program_details else None,
+                status = 'complete'
+            )
+            helpers.save(user_module_content)
+        except IndexError:
+            # Need to log this
+            return "Failed to add user module content"
