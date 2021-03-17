@@ -6,14 +6,17 @@ class PromptService(object):
         self.preferred_time_slot = None
         self.call_log_id = None
 
-    def handle_prompt_response(self, jsonData):
-        data = jsonData['results']
+    def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
         flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
         self.call_log_id = call_log_details.id
-        ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(call_log_details.id)
+
+    def handle_prompt_response(self, jsonData):
+        self.set_init_data(jsonData)
+        data = jsonData['results']
+        ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(self.call_log_id)
         user_details = models.User.query.get_by_phone(self.user_phone)
         prompt_program_id = helpers.get_program_prompt_id(jsonData)
         updated_registration_data = {}
@@ -23,16 +26,17 @@ class PromptService(object):
                 prompt_name = helpers.remove_last_string_separated_by(data[key]['category'])
                 ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
                 if ivr_prompt_details:
+                    response_data = self.fetch_prompt_response(data[key]['category'])
                     if "TIME-OPTIN" in ivr_prompt_details.prompt_name:
-                        self.preferred_time_slot = self.fetch_prompt_response(data[key]['category'])
+                        self.preferred_time_slot = response_data
 
                     if "DISTRICT" in ivr_prompt_details.prompt_name:
-                        user_district = self.fetch_prompt_response(data[key]['category'])
+                        user_district = response_data
                         updated_registration_data['district'] = user_district
                         updated_user_data['district'] = user_district
 
                     if "PARENT" in ivr_prompt_details.prompt_name:
-                        updated_registration_data['parent_type'] = self.fetch_prompt_response(data[key]['category'])
+                        updated_registration_data['parent_type'] = response_data
 
                     response_exists = False
                     if ivr_prompt_response_details:
@@ -69,7 +73,6 @@ class PromptService(object):
             helpers.save(ivr_prompt_response)
         except IndexError:
             print('Exception occured')
-        
 
     def update_user_details(self, user_details, data):
         if user_details:
