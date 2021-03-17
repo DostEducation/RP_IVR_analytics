@@ -38,3 +38,4 @@ class ContentService(object):
         except IndexError:
             # Need to log this
             print("Failed to add user module content")
+            return None
