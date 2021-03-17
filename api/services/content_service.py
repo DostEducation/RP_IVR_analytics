@@ -17,14 +17,14 @@ class ContentService(object):
             if not user_details:
                 # Need to log this
                 print('User not available')
-                return None;
+                return None
             module_content_details = models.ModuleContent.query.get_by_content_id(self.content_id)
             program_module_details = models.ProgramModule.query.get_by_module_id(module_content_details.module_id)
             user_program_details = models.UserProgram.query.get_latest_active_user_program(user_details.id)
             if not user_program_details:
                 # Need to log this
                 print('User program details are not available')
-                return None;
+                return None
             user_module_content_data = models.UserModuleContent.query.get_user_module_content(user_program_details.id, program_module_details.id, module_content_details.id)
             if not user_module_content_data:
                 user_module_content = models.UserModuleContent(
