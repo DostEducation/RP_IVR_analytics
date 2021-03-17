@@ -9,16 +9,22 @@ class CallLogService(object):
         self.flow_run_uuid = None
         self.call_log = None
 
+    def set_init_data(self, jsonData):
+        user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
+        self.system_phone = helpers.fetch_by_key('address', jsonData['channel'])
+        self.user_phone = helpers.sanitize_phone_string(user_phone)
+        self.flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
+
     def handle_call_log(self, jsonData):
         try:
-            user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
-            self.system_phone = helpers.fetch_by_key('address', jsonData['channel'])
-            self.user_phone = helpers.sanitize_phone_string(user_phone)
-            self.flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
+            self.set_init_data(jsonData)
             if self.flow_run_uuid:
                 self.call_log = models.CallLog.query.get_by_flow_run_uuid(self.flow_run_uuid)
                 if self.call_log:
-                    self.update_call_logs(jsonData)
+                    data = {}
+                    user_data = models.User.query.get_by_phone(self.user_phone)
+                    data['user_id'] = user_data.id if user_data else None
+                    self.update_call_logs(data)
                 else:
                     self.create_call_logs(jsonData)
         except IndexError:
@@ -45,8 +51,10 @@ class CallLogService(object):
     def update_call_logs(self, data):
         try:
             self.call_log.updated_on = datetime.now()
+            if 'user_id' in data:
+                self.call_log.user_id = data['user_id']
             if 'user_module_content_id' in data:
-                 self.call_log.user_module_content_id = data['user_module_content_id']
+                self.call_log.user_module_content_id = data['user_module_content_id']
             db.session.commit()
         except IndexError:
              # Need to log this

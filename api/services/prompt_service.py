@@ -48,8 +48,7 @@ class PromptService(object):
                     ivr_prompt_data['keypress'] = data[key]['value']
                     self.add_prompt_response(ivr_prompt_details, ivr_prompt_data)
                     prompt_content_id = ivr_prompt_details.content_id if ivr_prompt_details else None
-                    self.add_user_module_content(user_details, prompt_content_id)
-                    
+
         if updated_user_data:
             self.update_user_details(user_details, updated_user_data)
         if self.preferred_time_slot and user_details and prompt_program_id:
