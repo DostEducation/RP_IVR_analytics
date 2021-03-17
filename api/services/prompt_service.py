@@ -6,14 +6,17 @@ class PromptService(object):
         self.preferred_time_slot = None
         self.call_log_id = None
 
-    def handle_prompt_response(self, jsonData):
-        data = jsonData['results']
+    def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key('urn', jsonData['contact'])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
         flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
         self.call_log_id = call_log_details.id
-        ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(call_log_details.id)
+
+    def handle_prompt_response(self, jsonData):
+        self.set_init_data(jsonData)
+        data = jsonData['results']
+        ivr_prompt_response_details = models.IvrPromptResponse.query.get_by_call_log_id(self.call_log_id)
         user_details = models.User.query.get_by_phone(self.user_phone)
         prompt_program_id = helpers.get_program_prompt_id(jsonData)
         updated_registration_data = {}
@@ -24,14 +27,15 @@ class PromptService(object):
                 prompt_name = data[key]['name']
                 ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
                 if ivr_prompt_details:
+                    response_data = self.fetch_prompt_response(data[key]['category'])
                     if "TIME-OPTIN" in prompt_name:
-                        self.preferred_time_slot = self.fetch_prompt_response(prompt_response)
+                        self.preferred_time_slot = response_data
                     elif "DISTRICT" in prompt_name:
-                        user_district = self.fetch_prompt_response(prompt_response)
+                        user_district = response_data
                         updated_registration_data['district'] = user_district
                         updated_user_data['district'] = user_district
                     elif "PARENT" in prompt_name:
-                        updated_registration_data['parent_type'] = self.fetch_prompt_response(prompt_response)
+                        updated_registration_data['parent_type'] = response_data
 
                 response_exists = False
                 if ivr_prompt_response_details:
@@ -44,14 +48,12 @@ class PromptService(object):
                     ivr_prompt_data['keypress'] = data[key]['value']
                     self.add_prompt_response(ivr_prompt_details, ivr_prompt_data)
                     prompt_content_id = ivr_prompt_details.content_id if ivr_prompt_details else None
-                    self.add_user_module_content(user_details, prompt_content_id)
 
         if updated_user_data:
             self.update_user_details(user_details, updated_user_data)
         if self.preferred_time_slot and user_details and prompt_program_id:
             user_program_data= {}
             user_program_data['preferred_time_slot'] = self.preferred_time_slot
-            user_program_data['status'] = 'complete'
             models.UserProgram.query.upsert_user_program(user_details.id, prompt_program_id, user_program_data)
         if updated_registration_data:
             self.update_registration_details(updated_registration_data)
@@ -86,10 +88,9 @@ class PromptService(object):
                     if key == 'district':
                         user_details.district = value
                 db.session.commit()
-                return user_details
             except IndexError:
                 # Need to log this
-                return "Failed to udpate user details"
+                print("Failed to update user details")
 
     def update_registration_details(self, data):
         registrant = models.Registration.query.get_by_phone(self.user_phone)
@@ -103,21 +104,9 @@ class PromptService(object):
                 db.session.commit()
             except IndexError:
                 # Need to log this
-                return "Failed to udpate registration details"
+                print("Failed to udpate registration details")
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
         split_prompt_by_underscore = helpers.split_prompt_by_underscore(split_prompt_by_hyphen[-1])
         return split_prompt_by_underscore[1] if len(split_prompt_by_underscore) > 1 else None
-
-    def add_user_module_content(self, user_details, content_id):
-        module_content_details = models.ModuleContent.query.get_by_content_id(content_id)
-        program_module_details = models.ProgramModule.query.get_by_module_id(module_content_details.module_id)
-        user_program_details = models.UserProgram.query.get_by_user_and_program_ids(user_details.id, program_module_details.program_id)
-        user_module_content = models.UserModuleContent(
-            module_content_id = module_content_details.id,
-            program_module_id = program_module_details.id,
-            user_program_id = user_program_details.id if user_program_details else None,
-            status = 'complete'
-        )
-        helpers.save(user_module_content)

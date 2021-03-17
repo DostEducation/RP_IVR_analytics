@@ -1,5 +1,6 @@
 # This file is treated as service layer
 from api import models, db, helpers
+from datetime import datetime
 
 class RegistrationService(object):
     def __init__(self):
@@ -54,6 +55,7 @@ class RegistrationService(object):
             self.user_id = self.create_user(jsonData) if self.selected_program_id else None
             registration.program_id = self.selected_program_id
             if self.user_id:
+                registration.signup_date = datetime.now()
                 registration.user_id = self.user_id
                 registration.status = 'complete'
                 registration.has_received_callback = True
