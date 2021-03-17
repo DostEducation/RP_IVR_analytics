@@ -26,7 +26,6 @@ def webhook(request):
                     calllog_service.update_user_module_content_id_in_call_log(user_module_content_id)
             else:
                 return jsonify(message = "Contact or Flow Run UUID is missing"), 400
-                
         except IndexError:
             return jsonify(message="Invalid data"), 400
         return jsonify(message = "Success"), 200

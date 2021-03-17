@@ -19,7 +19,6 @@ class RegistrationService(object):
         try:
             self.set_init_data(jsonData)
             flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
-            call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
             if flow_run_uuid:
                 call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
                 if call_log:
@@ -27,7 +26,7 @@ class RegistrationService(object):
                 else:
                     self.register(jsonData)
         except IndexError:
-            print("Failed to handle registeration")
+            print("Failed to handle registration")
 
     # Handle new user registration
     def register(self, jsonData):
