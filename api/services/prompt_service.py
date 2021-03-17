@@ -88,10 +88,9 @@ class PromptService(object):
                     if key == 'district':
                         user_details.district = value
                 db.session.commit()
-                return user_details
             except IndexError:
                 # Need to log this
-                return "Failed to update user details"
+                print("Failed to update user details")
 
     def update_registration_details(self, data):
         registrant = models.Registration.query.get_by_phone(self.user_phone)
