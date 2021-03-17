@@ -18,6 +18,11 @@ def webhook(request):
                 # All the prompt responses are captured with results
                 if 'results' in jsonData:
                     handle_prompts(jsonData)
+
+                # Handle content details
+                if 'content_id' in jsonData:
+                    content_service = services.ContentService()
+                    content_service.add_user_module_content(jsonData)
             else:
                 return jsonify(message = "Contact or Flow Run UUID is missing"), 400
                 

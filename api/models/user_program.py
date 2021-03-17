@@ -10,7 +10,8 @@ class UserProgramQuery(BaseQuery):
         if user_program_details:
             program_data = {}
             program_data['preferred_time_slot'] = preferred_time_slot
-            program_data['status'] = data['status'] if 'status' in data else None
+            if 'status' in data:
+                program_data['status'] = data['status']
             self.update(user_program_details, data)
         else:
             user_program = UserProgram(
@@ -34,6 +35,9 @@ class UserProgramQuery(BaseQuery):
 
     def get_by_user_and_program_ids(self, user_id, program_id):
         return self.filter(UserProgram.user_id == user_id, UserProgram.program_id == program_id).first()
+
+    def get_latest_active_user_program(self, user_id):
+        return self.filter(UserProgram.user_id == user_id, UserProgram.status != 'complete').order_by(UserProgram.id.desc()).first()
 
 class UserProgram(TimestampMixin, db.Model):
     query_class = UserProgramQuery
