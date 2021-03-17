@@ -104,7 +104,7 @@ class PromptService(object):
                 db.session.commit()
             except IndexError:
                 # Need to log this
-                return "Failed to udpate registration details"
+                print("Failed to udpate registration details")
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
