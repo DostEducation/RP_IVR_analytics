@@ -18,18 +18,16 @@ class RegistrationService(object):
     def handle_registration(self, jsonData):
         try:
             self.set_init_data(jsonData)
-            self.register(jsonData)
+            flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
+            call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
+            if flow_run_uuid:
+                call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
+                if call_log:
+                    self.update_registration(call_log.registration_id, jsonData)
+                else:
+                    self.register(jsonData)
         except IndexError:
-            print("Failed to register")
-
-    def update_registration_details(self, jsonData):
-        try:
-            self.set_init_data(jsonData)
-            registration_details = models.Registration.query.get_latest_by_phone(self.user_phone)
-            if registration_details:
-                self.update(registration_details.id, jsonData)
-        except IndexError:
-            print("Failed to update registeration data")
+            print("Failed to handle registeration")
 
     # Handle new user registration
     def register(self, jsonData):
@@ -51,7 +49,7 @@ class RegistrationService(object):
             )
             helpers.save(registrant)
 
-    def update(self, registration_id, jsonData):
+    def update_registration(self, registration_id, jsonData):
         registration = models.Registration.query.get_by_id(registration_id)
         self.selected_program_id = helpers.get_program_prompt_id(jsonData)
         if registration:

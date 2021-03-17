@@ -37,8 +37,6 @@ def handle_flow_category_data(jsonData):
     registration_service = services.RegistrationService()
     if jsonData['flow_category'] == 'registration':
         registration_service.handle_registration(jsonData)
-    elif jsonData['flow_category'] == 'intro':
-        registration_service.update_registration_details(jsonData)
 
 def handle_prompts(jsonData):
     prompt_service = services.PromptService()
