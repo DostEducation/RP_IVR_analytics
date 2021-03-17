@@ -7,6 +7,7 @@ class CallLogService(object):
         self.system_phone = None
         self.user_phone = None
         self.flow_run_uuid = None
+        self.call_log = None
 
     def handle_call_log(self, jsonData):
         try:
@@ -15,9 +16,9 @@ class CallLogService(object):
             self.user_phone = helpers.sanitize_phone_string(user_phone)
             self.flow_run_uuid = helpers.fetch_by_key('run_uuid', jsonData)
             if self.flow_run_uuid:
-                call_log = models.CallLog.query.get_by_flow_run_uuid(self.flow_run_uuid)
-                if call_log:
-                    self.update_call_logs(call_log, jsonData)
+                self.call_log = models.CallLog.query.get_by_flow_run_uuid(self.flow_run_uuid)
+                if self.call_log:
+                    self.update_call_logs(jsonData)
                 else:
                     self.create_call_logs(jsonData)
         except IndexError:
@@ -41,10 +42,11 @@ class CallLogService(object):
             # Need to log this
             return "Failed to create call log"
 
-    def update_call_logs(self, call_log, jsonData):
+    def update_call_logs(self, data):
         try:
-            call_log.flow_run_uuid = self.flow_run_uuid
-            call_log.updated_on = datetime.now()
+            self.call_log.updated_on = datetime.now()
+            if 'user_module_content_id' in data:
+                 self.call_log.user_module_content_id = data['user_module_content_id']
             db.session.commit()
         except IndexError:
              # Need to log this
@@ -55,3 +57,9 @@ class CallLogService(object):
 
     def fetch_call_scheduled_by(self):
         return 'rapidpro' # TODO: Need to pass dynamic value
+
+    def update_user_module_content_id_in_call_log(self, user_module_content_id):
+        if self.call_log and user_module_content_id:
+            data = {}
+            data['user_module_content_id'] = user_module_content_id
+            self.update_call_logs(data)

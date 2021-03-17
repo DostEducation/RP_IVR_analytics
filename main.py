@@ -22,7 +22,8 @@ def webhook(request):
                 # Handle content details
                 if 'content_id' in jsonData:
                     content_service = services.ContentService()
-                    content_service.add_user_module_content(jsonData)
+                    user_module_content_id = content_service.add_user_module_content(jsonData)
+                    calllog_service.update_user_module_content_id_in_call_log(user_module_content_id)
             else:
                 return jsonify(message = "Contact or Flow Run UUID is missing"), 400
                 
