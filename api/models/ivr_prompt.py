@@ -24,3 +24,4 @@ class IvrPrompt(TimestampMixin, db.Model):
     possible_response = db.Column(db.String(255))
     status = db.Column(db.String(50))
     content_id = db.Column(db.Integer, db.ForeignKey('content.id'))
+    keypress = db.Column(db.Integer)
