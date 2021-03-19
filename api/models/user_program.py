@@ -6,21 +6,22 @@ class UserProgramQuery(BaseQuery):
 
     def upsert_user_program(self, user_id, program_id, data):
         user_program_details = self.get_by_user_and_program_ids(user_id, program_id)
-        preferred_time_slot = data['preferred_time_slot'] if 'preferred_time_slot' in data else None
-        if user_program_details:
-            program_data = {}
-            program_data['preferred_time_slot'] = preferred_time_slot
-            if 'status' in data:
+        program_data = {}
+        if 'preferred_time_slot' in data:
+            program_data['preferred_time_slot'] = data['preferred_time_slot']
+        if 'status' in data:
                 program_data['status'] = data['status']
-            self.update(user_program_details, data)
-        else:
+
+        if not user_program_details:
             user_program = UserProgram(
                 user_id = user_id,
                 program_id = program_id,
-                preferred_time_slot = preferred_time_slot,
+                preferred_time_slot = program_data['preferred_time_slot'] if 'preferred_time_slot' in program_data else None,
                 status = data['status'] if 'status' in data else 'in-progress'
             )
             helpers.save(user_program)
+        elif user_program_details and program_data:
+            self.update(user_program_details, data)
 
     def update(self, user_program_details, data):
         try:

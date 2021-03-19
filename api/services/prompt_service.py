@@ -51,9 +51,10 @@ class PromptService(object):
 
         if updated_user_data:
             self.update_user_details(user_details, updated_user_data)
-        if self.preferred_time_slot and user_details and prompt_program_id:
-            user_program_data= {}
-            user_program_data['preferred_time_slot'] = self.preferred_time_slot
+        if user_details and prompt_program_id:
+            user_program_data = {}
+            if self.preferred_time_slot:
+                user_program_data['preferred_time_slot'] = self.preferred_time_slot
             models.UserProgram.query.upsert_user_program(user_details.id, prompt_program_id, user_program_data)
         if updated_registration_data:
             self.update_registration_details(updated_registration_data)
