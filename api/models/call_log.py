@@ -2,18 +2,21 @@ from api.mixins import TimestampMixin
 from api import db
 from flask_sqlalchemy import BaseQuery
 
-class CallLogQuery(BaseQuery):
 
+class CallLogQuery(BaseQuery):
     def get_by_flow_run_uuid(self, flow_run_uuid):
         return self.filter(CallLog.flow_run_uuid == flow_run_uuid).first()
 
+
 class CallLog(TimestampMixin, db.Model):
     query_class = CallLogQuery
-    __tablename__ = 'call_log'
+    __tablename__ = "call_log"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    registration_id = db.Column(db.Integer, db.ForeignKey('registration.id'))
-    user_module_content_id = db.Column(db.Integer, db.ForeignKey('user_module_content.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    registration_id = db.Column(db.Integer, db.ForeignKey("registration.id"))
+    user_module_content_id = db.Column(
+        db.Integer, db.ForeignKey("user_module_content.id")
+    )
     call_sid = db.Column(db.Integer)
     flow_run_uuid = db.Column(db.String(255))
     call_type = db.Column(db.String(50))
@@ -23,7 +26,7 @@ class CallLog(TimestampMixin, db.Model):
     circle = db.Column(db.String(50))
     status = db.Column(db.String(50))
     listen_seconds = db.Column(db.String(50))
-    recording_url  = db.Column(db.String(1000))
+    recording_url = db.Column(db.String(1000))
     dial_time = db.Column(db.DateTime)
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
