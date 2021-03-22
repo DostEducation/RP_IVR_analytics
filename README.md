@@ -30,7 +30,11 @@ This is a cloud function based webhook that is being using to get webhook calls 
     cp .env.example .env
     ```
 6. Add/update variables in your `.env` file for your environment.
-7. Start the server by following command
+7. Run the following command to get started with pre-commit
+    ```sh
+    pre-commit install
+    ```
+8. Start the server by following command
     ```sh
     functions_framework --target=webhook --debug
     ```
