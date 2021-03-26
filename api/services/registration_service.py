@@ -55,6 +55,7 @@ class RegistrationService(object):
                 program_id=self.selected_program_id,
                 user_id=self.user_id,
                 has_dropped_missedcall=True,
+                has_received_callback=True,
             )
             helpers.save(registrant)
 
@@ -74,7 +75,6 @@ class RegistrationService(object):
                 registration.signup_date = datetime.now()
                 registration.user_id = self.user_id
                 registration.status = "complete"
-                registration.has_received_callback = True  # Need to revisit
                 registration.partner_id = helpers.get_partner_id_by_system_phone(
                     self.system_phone
                 )
