@@ -53,6 +53,7 @@ class RegistrationService(object):
                 state=system_phone_details.state,
                 status="complete" if self.user_id else registration_status,
                 program_id=self.selected_program_id,
+                partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
                 user_id=self.user_id,
                 has_dropped_missedcall=True,
                 has_received_callback=True,
@@ -75,9 +76,6 @@ class RegistrationService(object):
                 registration.signup_date = datetime.now()
                 registration.user_id = self.user_id
                 registration.status = "complete"
-                registration.partner_id = helpers.get_partner_id_by_system_phone(
-                    self.system_phone
-                )
             db.session.commit()
 
     def create_user(self, jsonData):
