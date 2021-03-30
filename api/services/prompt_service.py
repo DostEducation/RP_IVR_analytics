@@ -49,14 +49,9 @@ class PromptService(object):
                 if not response_exists:
                     ivr_prompt_data = {}
                     ivr_prompt_data["prompt_name"] = prompt_name
-                    ivr_prompt_data["prompt_response"] = self.fetch_prompt_response(
-                        prompt_response
-                    )
+                    ivr_prompt_data["prompt_response"] = prompt_response
                     ivr_prompt_data["keypress"] = data[key]["value"]
                     self.add_prompt_response(ivr_prompt_details, ivr_prompt_data)
-                    prompt_content_id = (
-                        ivr_prompt_details.content_id if ivr_prompt_details else None
-                    )
 
         if updated_user_data:
             self.update_user_details(user_details, updated_user_data)
