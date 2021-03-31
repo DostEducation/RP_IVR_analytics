@@ -23,7 +23,7 @@
 - [ ] The code follows the style guidelines of this project.
 - [ ] The code changes are passing the CI checks
 - [ ] I have documented my code wherever required.
-- [ ] The change requires a change to the documentation.
+- [ ] The changes requires a change to the documentation.
 - [ ] I have updated the documentation based on the my changes.
 <!--- TODO: need to uncomment these two checklist once we start with test cases.
 - [ ] I have added tests to cover my changes (if not applicable, please state why)
