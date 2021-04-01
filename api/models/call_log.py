@@ -46,3 +46,5 @@ class CallLog(TimestampMixin, db.Model):
     end_time = db.Column(db.DateTime)
     flow_category = db.Column(db.String(50))
     call_category = db.Column(db.String(50))
+    parent_flow_run_uuid = db.Column(db.String(255))
+    parent_flow_name = db.Column(db.String(255))
