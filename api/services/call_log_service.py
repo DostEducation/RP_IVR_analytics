@@ -49,6 +49,10 @@ class CallLogService(object):
                 system_phone_number=helpers.sanitize_phone_string(self.system_phone),
                 registration_id=registration_data.id if registration_data else None,
                 user_id=user_data.id if user_data else None,
+                call_category=self.call_category,
+                flow_category=jsonData["flow_category"]
+                if "flow_category" in jsonData
+                else self.flow_category,
             )
             helpers.save(new_call_log)
         except IndexError:
