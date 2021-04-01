@@ -10,6 +10,20 @@ class CallLogQuery(BaseQuery):
 
 class CallLog(TimestampMixin, db.Model):
     query_class = CallLogQuery
+
+    class CallCategories(object):
+        SCHEDULED = "scheduled"
+        CALLBACK = "callback"
+        LIVECALL = "livecall"
+
+    class FlowCategories(object):
+        REGISTRATION = "registration"
+        CONTENT = "content"
+        NUDGE = "nudge"
+        SURVEY = "survey"
+        BLAST = "blast"
+        OTHER = "other"
+
     __tablename__ = "call_log"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -30,3 +44,5 @@ class CallLog(TimestampMixin, db.Model):
     dial_time = db.Column(db.DateTime)
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
+    flow_category = db.Column(db.String(50))
+    call_category = db.Column(db.String(50))
