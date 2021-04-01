@@ -12,3 +12,7 @@ def fetch_by_key(key, data):
     if key in data:
         return data[key]
     return None
+
+
+def is_string_contains_key(key, string):
+    return key in string
