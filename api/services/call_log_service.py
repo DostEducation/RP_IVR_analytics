@@ -40,7 +40,7 @@ class CallLogService(object):
         try:
             registration_data = models.Registration.query.get_by_phone(self.user_phone)
             user_data = models.User.query.get_by_phone(self.user_phone)
-            self.handle_parent_flow(jsonData)
+            parent_flow_data = self.handle_parent_flow(jsonData)
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
                 call_type=self.fetch_call_type(),
@@ -50,6 +50,8 @@ class CallLogService(object):
                 registration_id=registration_data.id if registration_data else None,
                 user_id=user_data.id if user_data else None,
                 call_category=self.call_category,
+                parent_flow_name=parent_flow_data["parent_flow_name"],
+                parent_flow_run_uuid=parent_flow_data["parent_flow_run_uuid"],
                 flow_category=jsonData["flow_category"]
                 if "flow_category" in jsonData
                 else self.flow_category,
@@ -84,8 +86,12 @@ class CallLogService(object):
             self.update_call_logs(data)
 
     def handle_parent_flow(self, jsonData):
+        parent_flow_data = {}
+        parent_flow_data["parent_flow_name"] = None
+        parent_flow_data["parent_flow_run_uuid"] = None
         if "parent" in jsonData and "flow" in jsonData["parent"]:
             parent_flow = jsonData["parent"]["flow"]
+            parent_flow_data["parent_flow_name"] = parent_flow["name"]
             is_contains_missedcall_category = helpers.is_string_contains_key(
                 self.missedcall_flow_identifier, parent_flow["name"]
             )
@@ -94,3 +100,6 @@ class CallLogService(object):
                 For that, the missed call flow name should contains string "missedcall"
                 """
                 self.call_category = models.CallLog.CallCategories.CALLBACK
+            if "uuid" in jsonData["parent"]:
+                parent_flow_data["parent_flow_run_uuid"] = jsonData["parent"]["uuid"]
+        return parent_flow_data
