@@ -94,4 +94,3 @@ class CallLogService(object):
                 For that, the missed call flow name should contains string "missedcall"
                 """
                 self.call_category = models.CallLog.CallCategories.CALLBACK
-        return False
