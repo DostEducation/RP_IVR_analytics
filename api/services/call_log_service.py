@@ -9,6 +9,9 @@ class CallLogService(object):
         self.user_phone = None
         self.flow_run_uuid = None
         self.call_log = None
+        self.missedcall_flow_identifier = "missedcall"
+        self.call_category = models.CallLog.CallCategories.SCHEDULED
+        self.flow_category = models.CallLog.FlowCategories.OTHER
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
