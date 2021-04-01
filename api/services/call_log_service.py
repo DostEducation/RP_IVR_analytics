@@ -40,6 +40,7 @@ class CallLogService(object):
         try:
             registration_data = models.Registration.query.get_by_phone(self.user_phone)
             user_data = models.User.query.get_by_phone(self.user_phone)
+            self.handle_parent_flow(jsonData)
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
                 call_type=self.fetch_call_type(),
@@ -77,3 +78,16 @@ class CallLogService(object):
             data = {}
             data["user_module_content_id"] = user_module_content_id
             self.update_call_logs(data)
+
+    def handle_parent_flow(self, jsonData):
+        if "parent" in jsonData and "flow" in jsonData["parent"]:
+            parent_flow = jsonData["parent"]["flow"]
+            is_contains_missedcall_category = helpers.is_string_contains_key(
+                self.missedcall_flow_identifier, parent_flow["name"]
+            )
+            if is_contains_missedcall_category:
+                """The call category is set to call back if missedcall flow has ran.
+                For that, the missed call flow name should contains string "missedcall"
+                """
+                self.call_category = models.CallLog.CallCategories.CALLBACK
+        return False
