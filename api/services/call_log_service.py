@@ -9,7 +9,7 @@ class CallLogService(object):
         self.user_phone = None
         self.flow_run_uuid = None
         self.call_log = None
-        self.missedcall_flow_identifier = "missedcall"
+        self.missedcall_flow_identifier = ["missedcall", "missed-call"]
         self.call_category = models.CallLog.CallCategories.SCHEDULED
         self.flow_category = models.CallLog.FlowCategories.OTHER
 
@@ -92,8 +92,8 @@ class CallLogService(object):
         if "parent" in jsonData and "flow" in jsonData["parent"]:
             parent_flow = jsonData["parent"]["flow"]
             parent_flow_data["parent_flow_name"] = parent_flow["name"]
-            is_contains_missedcall_category = helpers.is_string_contains_key(
-                self.missedcall_flow_identifier, parent_flow["name"]
+            is_contains_missedcall_category = helpers.string_contains_list_item(
+                parent_flow["name"], self.missedcall_flow_identifier
             )
             if is_contains_missedcall_category:
                 """The call category is set to call back if missedcall flow has ran.

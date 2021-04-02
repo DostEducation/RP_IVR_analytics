@@ -16,7 +16,7 @@ def fetch_by_key(key, data):
         data (json): The json array in which we are going to make the search
 
     Returns:
-        string: It will be either string or null
+        string: It will return either string or null if not available
     """
     if key in data:
         return data[key]
