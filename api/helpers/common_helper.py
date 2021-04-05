@@ -23,7 +23,7 @@ def fetch_by_key(key, data):
     return None
 
 
-def string_contains_list_item(input_string, list_data):
+def list_having_string(input_string, list_data):
     """The function checks whether the input string contains one of the list item.
     The list items will act as sub string.
 

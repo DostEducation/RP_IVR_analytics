@@ -92,10 +92,10 @@ class CallLogService(object):
         if "parent" in jsonData and "flow" in jsonData["parent"]:
             parent_flow = jsonData["parent"]["flow"]
             parent_flow_data["parent_flow_name"] = parent_flow["name"]
-            is_contains_missedcall_category = helpers.string_contains_list_item(
+            missedcall_category_list = helpers.list_having_string(
                 parent_flow["name"], self.missedcall_flow_identifier
             )
-            if is_contains_missedcall_category:
+            if missedcall_category_list:
                 """The call category is set to call back if missedcall flow has ran.
                 For that, the missed call flow name should contains string "missedcall"
                 """
