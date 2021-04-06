@@ -9,6 +9,9 @@ class CallLogService(object):
         self.user_phone = None
         self.flow_run_uuid = None
         self.call_log = None
+        self.missedcall_flow_identifier = ["missedcall", "missed-call"]
+        self.call_category = models.CallLog.CallCategories.SCHEDULED
+        self.flow_category = models.CallLog.FlowCategories.OTHER
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
@@ -37,6 +40,7 @@ class CallLogService(object):
         try:
             registration_data = models.Registration.query.get_by_phone(self.user_phone)
             user_data = models.User.query.get_by_phone(self.user_phone)
+            parent_flow_data = self.handle_parent_flow(jsonData)
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
                 call_type=self.fetch_call_type(),
@@ -45,6 +49,12 @@ class CallLogService(object):
                 system_phone_number=helpers.sanitize_phone_string(self.system_phone),
                 registration_id=registration_data.id if registration_data else None,
                 user_id=user_data.id if user_data else None,
+                call_category=self.call_category,
+                parent_flow_name=parent_flow_data["parent_flow_name"],
+                parent_flow_run_uuid=parent_flow_data["parent_flow_run_uuid"],
+                flow_category=jsonData["flow_category"]
+                if "flow_category" in jsonData
+                else self.flow_category,
             )
             helpers.save(new_call_log)
         except IndexError:
@@ -74,3 +84,22 @@ class CallLogService(object):
             data = {}
             data["user_module_content_id"] = user_module_content_id
             self.update_call_logs(data)
+
+    def handle_parent_flow(self, jsonData):
+        parent_flow_data = {}
+        parent_flow_data["parent_flow_name"] = None
+        parent_flow_data["parent_flow_run_uuid"] = None
+        if "parent" in jsonData and "flow" in jsonData["parent"]:
+            parent_flow = jsonData["parent"]["flow"]
+            parent_flow_data["parent_flow_name"] = parent_flow["name"]
+            missedcall_category_list = helpers.list_having_string(
+                parent_flow["name"], self.missedcall_flow_identifier
+            )
+            if missedcall_category_list:
+                """The call category is set to call back if missedcall flow has ran.
+                For that, the missed call flow name should contains string "missedcall"
+                """
+                self.call_category = models.CallLog.CallCategories.CALLBACK
+            if "uuid" in jsonData["parent"]:
+                parent_flow_data["parent_flow_run_uuid"] = jsonData["parent"]["uuid"]
+        return parent_flow_data
