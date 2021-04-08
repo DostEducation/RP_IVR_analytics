@@ -41,7 +41,7 @@ def save(data):
     db.session.commit()
 
 
-def get_class_by_tablename(tablename="user"):
+def get_class_by_tablename(tablename):
     """Return class reference mapped to table.
 
     :param tablename: String with name of table.
