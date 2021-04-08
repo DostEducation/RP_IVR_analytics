@@ -53,3 +53,4 @@ def get_class_by_tablename(tablename):
             and classObject.__tablename__ == tablename
         ):
             return classObject
+    return None
