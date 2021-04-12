@@ -30,15 +30,23 @@ class PromptService(object):
                 prompt_name = data[key]["name"]
                 ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
                 if ivr_prompt_details:
-                    response_data = self.fetch_prompt_response(data[key]["category"])
+                    self.handle_prompt_mapping(
+                        data[key],
+                        user_details,
+                        ivr_prompt_details,
+                        prompt_response_value,
+                    )
+                    prompt_response_value = self.fetch_prompt_response(
+                        data[key]["category"]
+                    )
                     if "TIME-OPTIN" in prompt_name:
-                        self.preferred_time_slot = response_data
+                        self.preferred_time_slot = prompt_response_value
                     elif "DISTRICT" in prompt_name:
-                        user_district = response_data
+                        user_district = prompt_response_value
                         updated_registration_data["district"] = user_district
                         updated_user_data["district"] = user_district
                     elif "PARENT" in prompt_name:
-                        updated_registration_data["parent_type"] = response_data
+                        updated_registration_data["parent_type"] = prompt_response_value
 
                 response_exists = False
                 if ivr_prompt_response_details:
@@ -129,3 +137,36 @@ class PromptService(object):
             if len(split_prompt_by_underscore) > 1
             else None
         )
+
+    def handle_prompt_mapping(
+        self, data, user_details, ivr_prompt_details, prompt_response_value
+    ):
+        """This function will be populating different other table column based on the user prompt response.
+        Note: The table need to be associated with user.
+        Args:
+            data ([type]): [description]
+            user_details ([type]): [description]
+            ivr_prompt_details ([type]): [description]
+        """
+        try:
+            prompt_response = data["category"]
+            prompt_name = data["name"]
+            ivr_prompt_mapping_data = (
+                models.IvrPromptMapping.query.get_by_ivr_prompt_id(
+                    ivr_prompt_details.id
+                )
+            )
+            if ivr_prompt_mapping_data:
+                # This means mapping exists
+                for mapped_class in ivr_prompt_mapping_data:
+                    class_object = helpers.get_class_by_tablename(
+                        mapped_class.mapped_table_name
+                    )
+                    if class_object:
+                        column_name = ivr_prompt_mapping_data.mapped_table_column_name
+                        class_object_data = models.class_object.query.get_by_user_id()
+                        if class_object_data:
+                            class_object_data.column_name = prompt_response_value
+                            db.session.commit()
+        except IndexError:
+            print("Exception occured")
