@@ -8,6 +8,7 @@ class CallLogService(object):
         self.system_phone = None
         self.user_phone = None
         self.flow_run_uuid = None
+        self.flow_run_created_on = None
         self.call_log = None
         self.missedcall_flow_identifier = ["missedcall", "missed-call"]
         self.call_category = models.CallLog.CallCategories.SCHEDULED
@@ -17,7 +18,27 @@ class CallLogService(object):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
-        self.flow_run_uuid = helpers.fetch_by_key("run_uuid", jsonData)
+        self.flow_run_uuid = helpers.fetch_by_key(
+            "run_uuid", jsonData
+        )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
+        self.handle_flow_run_details(jsonData)
+
+    def handle_flow_run_details(self, jsonData):
+        """To handle flow run details
+        Args:
+            jsonData (json): json data that we are getting from webhook
+        """
+        try:
+            if "flow_run_details" in jsonData:
+                self.flow_run_uuid = helpers.fetch_by_key(
+                    "uuid", jsonData["flow_run_details"]
+                )
+                self.flow_run_created_on = helpers.fetch_by_key(
+                    "created_on", jsonData["flow_run_details"]
+                )
+
+        except IndexError:
+            print("Failed to fetch flow run details")
 
     def handle_call_log(self, jsonData):
         try:
@@ -33,6 +54,8 @@ class CallLogService(object):
                     self.update_call_logs(data)
                 else:
                     self.create_call_logs(jsonData)
+            else:
+                print("flow_run_uuid is now available.")
         except IndexError:
             print("Failed to log the call details")
 
@@ -43,6 +66,7 @@ class CallLogService(object):
             parent_flow_data = self.handle_parent_flow(jsonData)
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
+                flow_run_created_on=self.flow_run_created_on,
                 call_type=self.fetch_call_type(),
                 scheduled_by=self.fetch_call_scheduled_by(),
                 user_phone_number=self.user_phone,
