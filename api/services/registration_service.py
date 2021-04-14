@@ -20,7 +20,13 @@ class RegistrationService(object):
     def handle_registration(self, jsonData):
         try:
             self.set_init_data(jsonData)
-            flow_run_uuid = helpers.fetch_by_key("run_uuid", jsonData)
+            flow_run_uuid = helpers.fetch_by_key(
+                "run_uuid", jsonData
+            )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
+            if "flow_run_details" in jsonData:
+                flow_run_uuid = helpers.fetch_by_key(
+                    "uuid", jsonData["flow_run_details"]
+                )
             if flow_run_uuid:
                 call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
                 if call_log:
