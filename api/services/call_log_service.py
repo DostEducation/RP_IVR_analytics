@@ -113,17 +113,18 @@ class CallLogService(object):
         parent_flow_data = {}
         parent_flow_data["parent_flow_name"] = None
         parent_flow_data["parent_flow_run_uuid"] = None
-        if "parent" in jsonData and "flow" in jsonData["parent"]:
-            parent_flow = jsonData["parent"]["flow"]
-            parent_flow_data["parent_flow_name"] = parent_flow["name"]
-            missedcall_category_list = helpers.list_having_string(
-                parent_flow["name"], self.missedcall_flow_identifier
-            )
-            if missedcall_category_list:
-                """The call category is set to call back if missedcall flow has ran.
-                For that, the missed call flow name should contains string "missedcall"
-                """
-                self.call_category = models.CallLog.CallCategories.CALLBACK
+        if "parent" in jsonData and jsonData["parent"] is not None:
+            if "flow" in jsonData["parent"]:
+                parent_flow = jsonData["parent"]["flow"]
+                parent_flow_data["parent_flow_name"] = parent_flow["name"]
+                missedcall_category_list = helpers.list_having_string(
+                    parent_flow["name"], self.missedcall_flow_identifier
+                )
+                if missedcall_category_list:
+                    """The call category is set to call back if missedcall flow has ran.
+                    For that, the missed call flow name should contains string "missedcall"
+                    """
+                    self.call_category = models.CallLog.CallCategories.CALLBACK
             if "uuid" in jsonData["parent"]:
                 parent_flow_data["parent_flow_run_uuid"] = jsonData["parent"]["uuid"]
         return parent_flow_data
