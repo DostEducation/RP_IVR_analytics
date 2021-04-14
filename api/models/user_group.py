@@ -2,11 +2,14 @@ from api.mixins import TimestampMixin
 from api import db, helpers
 from flask_sqlalchemy import BaseQuery
 
-# class UserGroupQuery(BaseQuery):
+
+class UserGroupQuery(BaseQuery):
+    def get_by_uuid(self, uuid):
+        return self.filter(UserGroup.group_uuid == uuid).first()
 
 
 class UserGroup(TimestampMixin, db.Model):
-    # query_class = UserGroupQuery
+    query_class = UserGroupQuery
     __tablename__ = "user_group"
     id = db.Column(db.Integer, primary_key=True)
     user_phone = db.Column(db.String(50), nullable=False)
