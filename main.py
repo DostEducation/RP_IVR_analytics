@@ -30,6 +30,14 @@ def webhook(request):
                     calllog_service.update_user_module_content_id_in_call_log(
                         user_module_content_id
                     )
+
+                # Handle contact groups
+                if (
+                    "groups" in jsonData["contact"]
+                    and jsonData["contact"]["groups"] is not None
+                ):
+                    user_group_service = services.UserGroupService()
+                    user_group_service.handle(jsonData)
             else:
                 return jsonify(message="Contact"), 400
         except IndexError:
