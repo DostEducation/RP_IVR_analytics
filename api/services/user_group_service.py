@@ -15,7 +15,9 @@ class UserGroupService(object):
         self.registration_data = helpers.get_registrant_by_phone(self.user_phone)
 
         for group in contact_groups:
-            group_data = models.UserGroup.query.get_by_uuid(group["uuid"])
+            group_data = models.UserGroup.query.get_unique(
+                group["uuid"], self.user_phone
+            )
             if group_data:
                 self.udpate(group_data)
             else:

@@ -7,6 +7,18 @@ class UserGroupQuery(BaseQuery):
     def get_by_uuid(self, uuid):
         return self.filter(UserGroup.group_uuid == uuid).first()
 
+    def get_unique(self, uuid, phone):
+        return (
+            self.filter(
+                and_(
+                    UserGroup.group_uuid == uuid,
+                    UserGroup.user_phone == phone,
+                )
+            )
+            .order_by(desc(UserGroup.created_on))
+            .first()
+        )
+
 
 class UserGroup(TimestampMixin, db.Model):
     query_class = UserGroupQuery
