@@ -1,6 +1,7 @@
 from api.mixins import TimestampMixin
 from api import db, helpers
 from flask_sqlalchemy import BaseQuery
+from sqlalchemy import desc, and_
 
 
 class UserGroupQuery(BaseQuery):
