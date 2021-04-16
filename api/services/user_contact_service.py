@@ -1,7 +1,7 @@
 from api import models, db, helpers
 
 
-class UserGroupService(object):
+class UserContactService(object):
     def __init__(self):
         self.user_phone = None
         self.user_data = None
