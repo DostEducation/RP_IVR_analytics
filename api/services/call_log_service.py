@@ -122,7 +122,7 @@ class CallLogService(object):
                 )
                 if missedcall_category_list:
                     """The call category is set to call back if missedcall flow has ran.
-                    For that, the missed call flow name should contains string "missedcall"
+                    For that, the missed call flow name should contain string "missedcall"
                     """
                     self.call_category = models.CallLog.CallCategories.CALLBACK
             if "uuid" in jsonData["parent"]:
