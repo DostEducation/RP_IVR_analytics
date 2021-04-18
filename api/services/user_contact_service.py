@@ -62,6 +62,18 @@ class UserContactService(object):
         )
         self.process_custom_fields(jsonData, user_custom_field_data)
 
+    def check_if_exist(self, fields_key_values, field_name, field_value):
+        key_index = str(field_name) + "_" + str(field_value)
+        return (
+            True
+            if (
+                fields_key_values
+                and key_index in fields_key_values
+                and field_value == fields_key_values[key_index]
+            )
+            else False
+        )
+
     def get_user_custom_fields_object(self, field_name, field_value):
         return [
             models.UserCustomFields(
