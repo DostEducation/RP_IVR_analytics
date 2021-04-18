@@ -62,6 +62,20 @@ class UserContactService(object):
         )
         self.process_custom_fields(jsonData, user_custom_field_data)
 
+    def get_user_custom_fields_object(self, field_name, field_value):
+        return [
+            models.UserCustomFields(
+                user_id=self.user_data.id if self.user_data else None,
+                registration_id=self.registration_data.id
+                if self.registration_data
+                else None,
+                user_phone=self.user_phone,
+                field_name=field_name,
+                field_value=field_value,
+                flow_run_uuid=self.flow_run_uuid,
+            ),
+        ]
+
     def custom_fields_contidions(self, field_name, field_value):
         return (
             True
