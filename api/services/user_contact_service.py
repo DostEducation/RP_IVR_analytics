@@ -62,6 +62,14 @@ class UserContactService(object):
         )
         self.process_custom_fields(jsonData, user_custom_field_data)
 
+    def fetch_fields_key_value(self, user_custom_field_data):
+        data_list = {}
+        for data in user_custom_field_data:
+            data_list[
+                str(data.field_name) + "_" + str(data.field_value)
+            ] = data.field_value
+        return data_list
+
     def check_if_exist(self, fields_key_values, field_name, field_value):
         key_index = str(field_name) + "_" + str(field_value)
         return (
