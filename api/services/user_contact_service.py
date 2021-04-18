@@ -84,6 +84,13 @@ class UserContactService(object):
             helpers.save_batch(user_custom_contact_data)
 
     def fetch_fields_key_value(self, user_custom_field_data):
+        """Format the existing fields in key value pair
+        Args:
+            user_custom_field_data (model object): It is user custom field data model object we are getting on running query.
+        Returns:
+            dict: Dictionary
+        """
+
         data_list = {}
         for data in user_custom_field_data:
             data_list[
@@ -92,7 +99,18 @@ class UserContactService(object):
         return data_list
 
     def check_if_exist(self, fields_key_values, field_name, field_value):
-        # As there can be multiple entries for same field name, using field name and field value as index
+        """This function is use to check whether the field name and it's similar value already exists in database or not.
+        As there can be multiple entries for same field name, using field name and field value as index
+
+        Args:
+            fields_key_values (dict): Disctionary we are getting from fetch_fields_key_value
+            field_name (str): custom field name
+            field_value (str)): custom field value
+
+        Returns:
+            [bool]: Returns whether the field name and value exists.
+        """
+        #
         key_index = str(field_name) + "_" + str(field_value)
         return (
             True
