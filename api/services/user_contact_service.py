@@ -92,6 +92,7 @@ class UserContactService(object):
         return data_list
 
     def check_if_exist(self, fields_key_values, field_name, field_value):
+        # As there can be multiple entries for same field name, using field name and field value as index
         key_index = str(field_name) + "_" + str(field_value)
         return (
             True
