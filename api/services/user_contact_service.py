@@ -61,3 +61,11 @@ class UserContactService(object):
             self.user_phone
         )
         self.process_custom_fields(jsonData, user_custom_field_data)
+
+    def custom_fields_contidions(self, field_name, field_value):
+        return (
+            True
+            if field_value is not None
+            and field_name.startswith(self.custom_field_prefix)
+            else False
+        )
