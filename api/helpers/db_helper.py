@@ -41,6 +41,11 @@ def save(data):
     db.session.commit()
 
 
+def save_batch(dataObject):
+    db.session.add_all(dataObject)
+    db.session.commit()
+
+
 def get_user_by_phone(phone):
     return models.User.query.get_by_phone(phone)
 

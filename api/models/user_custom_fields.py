@@ -5,17 +5,8 @@ from sqlalchemy import desc, and_
 
 
 class UserCustomFieldsQuery(BaseQuery):
-    def get_unique(self, uuid, phone):
-        return (
-            self.filter(
-                and_(
-                    UserCustomFields.flow_run_uuid == uuid,
-                    UserCustomFields.user_phone == phone,
-                )
-            )
-            .order_by(desc(UserCustomFields.created_on))
-            .first()
-        )
+    def get_by_user_phone(self, phone):
+        return self.filter(UserCustomFields.user_phone == phone).all()
 
 
 class UserCustomFields(TimestampMixin, db.Model):
