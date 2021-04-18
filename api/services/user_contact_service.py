@@ -62,6 +62,27 @@ class UserContactService(object):
         )
         self.process_custom_fields(jsonData, user_custom_field_data)
 
+    def process_custom_fields(self, jsonData, user_custom_field_data=False):
+        custom_fields = jsonData["contact"]["fields"]
+        fields_key_values = {}
+        if user_custom_field_data:
+            fields_key_values = self.fetch_fields_key_value(user_custom_field_data)
+        user_custom_contact_data = []
+        for field_name, field_value in custom_fields.items():
+            custom_fields_conditions = self.custom_fields_contidions(
+                field_name, field_value
+            )
+            if (
+                custom_fields_conditions
+                and self.check_if_exist(fields_key_values, field_name, field_value)
+                == False
+            ):
+                userdata = self.get_user_custom_fields_object(field_name, field_value)
+                user_custom_contact_data.extend(userdata)
+
+        if user_custom_contact_data:
+            helpers.save_batch(user_custom_contact_data)
+
     def fetch_fields_key_value(self, user_custom_field_data):
         data_list = {}
         for data in user_custom_field_data:
