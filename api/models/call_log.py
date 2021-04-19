@@ -50,3 +50,4 @@ class CallLog(TimestampMixin, db.Model):
     parent_flow_name = db.Column(db.String(255))
     flow_run_created_on = db.Column(db.DateTime)
     content_id = db.Column(db.Integer)
+    flow_name = db.Column(db.String(255))

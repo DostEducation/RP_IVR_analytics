@@ -64,6 +64,10 @@ class CallLogService(object):
             registration_data = models.Registration.query.get_by_phone(self.user_phone)
             user_data = models.User.query.get_by_phone(self.user_phone)
             parent_flow_data = self.handle_parent_flow(jsonData)
+            flow_name = None
+            if "flow" in jsonData and jsonData["flow"] is not None:
+                flow_name = helpers.fetch_by_key("name", jsonData["flow"])
+
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
                 flow_run_created_on=self.flow_run_created_on,
@@ -77,6 +81,7 @@ class CallLogService(object):
                 parent_flow_name=parent_flow_data["parent_flow_name"],
                 parent_flow_run_uuid=parent_flow_data["parent_flow_run_uuid"],
                 content_id=jsonData["content_id"] if "content_id" in jsonData else None,
+                flow_name=flow_name,
                 flow_category=jsonData["flow_category"]
                 if "flow_category" in jsonData
                 else self.flow_category,
