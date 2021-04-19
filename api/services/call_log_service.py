@@ -76,6 +76,7 @@ class CallLogService(object):
                 call_category=self.call_category,
                 parent_flow_name=parent_flow_data["parent_flow_name"],
                 parent_flow_run_uuid=parent_flow_data["parent_flow_run_uuid"],
+                content_id=jsonData["content_id"] if "content_id" in jsonData else None,
                 flow_category=jsonData["flow_category"]
                 if "flow_category" in jsonData
                 else self.flow_category,
