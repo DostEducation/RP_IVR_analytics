@@ -103,7 +103,7 @@ class UserContactService(object):
         As there can be multiple entries for same field name, using field name and field value as index
 
         Args:
-            fields_key_values (dict): Disctionary we are getting from fetch_fields_key_value
+            fields_key_values (dict): Dictionary we are getting from fetch_fields_key_value
             field_name (str): custom field name
             field_value (str)): custom field value
 
