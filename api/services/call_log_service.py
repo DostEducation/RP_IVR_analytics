@@ -64,6 +64,21 @@ class CallLogService(object):
             registration_data = models.Registration.query.get_by_phone(self.user_phone)
             user_data = models.User.query.get_by_phone(self.user_phone)
             parent_flow_data = self.handle_parent_flow(jsonData)
+            flow_name = None
+            if "flow" in jsonData and jsonData["flow"] is not None:
+                flow_name = helpers.fetch_by_key("name", jsonData["flow"])
+
+            content_id = None
+            if "content_id" in jsonData:
+                content_id = (jsonData["content_id"],)
+                content_data = models.Content.query.get(content_id)
+                if not content_data:
+                    """If the content id is not available in the system, it will throw the error.
+                    Mark it as None
+                    """
+                    content_id = None
+                    print("The Content id is not valid")
+
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
                 flow_run_created_on=self.flow_run_created_on,
@@ -76,6 +91,8 @@ class CallLogService(object):
                 call_category=self.call_category,
                 parent_flow_name=parent_flow_data["parent_flow_name"],
                 parent_flow_run_uuid=parent_flow_data["parent_flow_run_uuid"],
+                content_id=content_id,
+                flow_name=flow_name,
                 flow_category=jsonData["flow_category"]
                 if "flow_category" in jsonData
                 else self.flow_category,
