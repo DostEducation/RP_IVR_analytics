@@ -36,8 +36,15 @@ def webhook(request):
                     "groups" in jsonData["contact"]
                     and jsonData["contact"]["groups"] is not None
                 ):
-                    user_group_service = services.UserGroupService()
-                    user_group_service.handle(jsonData)
+                    user_contact_service = services.UserContactService()
+                    user_contact_service.handle_contact_group(jsonData)
+
+                if (
+                    "fields" in jsonData["contact"]
+                    and jsonData["contact"]["fields"] is not None
+                ):
+                    user_contact_service = services.UserContactService()
+                    user_contact_service.handle_custom_fields(jsonData)
             else:
                 return jsonify(message="Contact"), 400
         except IndexError:
