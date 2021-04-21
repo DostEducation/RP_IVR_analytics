@@ -8,6 +8,11 @@ class UserGroupQuery(BaseQuery):
     def get_by_uuid(self, uuid):
         return self.filter(UserGroup.group_uuid == uuid).first()
 
+    def inactivate(self, phone):
+        return self.filter(UserGroup.user_phone == phone).update(
+            dict(status="inactive")
+        )
+
     def get_unique(self, uuid, phone):
         return (
             self.filter(

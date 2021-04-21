@@ -25,14 +25,16 @@ class UserContactService(object):
     def handle_contact_group(self, jsonData):
         self.init_data(jsonData)
         contact_groups = jsonData["contact"]["groups"]
-        for group in contact_groups:
-            group_data = models.UserGroup.query.get_unique(
-                group["uuid"], self.user_phone
-            )
-            if group_data:
-                self.udpate_group(group_data)
-            else:
-                self.add_group(group)
+        if contact_groups:
+            models.UserGroup.query.inactivate(self.user_phone)
+            for group in contact_groups:
+                group_data = models.UserGroup.query.get_unique(
+                    group["uuid"], self.user_phone
+                )
+                if group_data:
+                    self.udpate_group(group_data)
+                else:
+                    self.add_group(group)
 
     def add_group(self, group):
         user_group_data = models.UserGroup(
