@@ -54,3 +54,16 @@ def get_class_by_tablename(tablename):
         ):
             return classObject
     return None
+
+
+def save_batch(dataObject):
+    db.session.add_all(dataObject)
+    db.session.commit()
+
+
+def get_user_by_phone(phone):
+    return models.User.query.get_by_phone(phone)
+
+
+def get_registrant_by_phone(phone):
+    return models.Registration.query.get_latest_by_phone(phone)

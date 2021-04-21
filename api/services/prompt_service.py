@@ -10,7 +10,11 @@ class PromptService(object):
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
-        flow_run_uuid = helpers.fetch_by_key("run_uuid", jsonData)
+        flow_run_uuid = helpers.fetch_by_key(
+            "run_uuid", jsonData
+        )  # Need to remove once we are done with making changes in webhooks
+        if "flow_run_details" in jsonData:
+            flow_run_uuid = helpers.fetch_by_key("uuid", jsonData["flow_run_details"])
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
         self.call_log_id = call_log_details.id
 

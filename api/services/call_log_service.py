@@ -64,6 +64,21 @@ class CallLogService(object):
             registration_data = models.Registration.query.get_by_phone(self.user_phone)
             user_data = models.User.query.get_by_phone(self.user_phone)
             parent_flow_data = self.handle_parent_flow(jsonData)
+            flow_name = None
+            if "flow" in jsonData and jsonData["flow"] is not None:
+                flow_name = helpers.fetch_by_key("name", jsonData["flow"])
+
+            content_id = None
+            if "content_id" in jsonData:
+                content_id = (jsonData["content_id"],)
+                content_data = models.Content.query.get(content_id)
+                if not content_data:
+                    """If the content id is not available in the system, it will throw the error.
+                    Mark it as None
+                    """
+                    content_id = None
+                    print("The Content id is not valid")
+
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
                 flow_run_created_on=self.flow_run_created_on,
@@ -76,6 +91,8 @@ class CallLogService(object):
                 call_category=self.call_category,
                 parent_flow_name=parent_flow_data["parent_flow_name"],
                 parent_flow_run_uuid=parent_flow_data["parent_flow_run_uuid"],
+                content_id=content_id,
+                flow_name=flow_name,
                 flow_category=jsonData["flow_category"]
                 if "flow_category" in jsonData
                 else self.flow_category,
@@ -113,17 +130,18 @@ class CallLogService(object):
         parent_flow_data = {}
         parent_flow_data["parent_flow_name"] = None
         parent_flow_data["parent_flow_run_uuid"] = None
-        if "parent" in jsonData and "flow" in jsonData["parent"]:
-            parent_flow = jsonData["parent"]["flow"]
-            parent_flow_data["parent_flow_name"] = parent_flow["name"]
-            missedcall_category_list = helpers.list_having_string(
-                parent_flow["name"], self.missedcall_flow_identifier
-            )
-            if missedcall_category_list:
-                """The call category is set to call back if missedcall flow has ran.
-                For that, the missed call flow name should contains string "missedcall"
-                """
-                self.call_category = models.CallLog.CallCategories.CALLBACK
+        if "parent" in jsonData and jsonData["parent"] is not None:
+            if "flow" in jsonData["parent"]:
+                parent_flow = jsonData["parent"]["flow"]
+                parent_flow_data["parent_flow_name"] = parent_flow["name"]
+                missedcall_category_list = helpers.list_having_string(
+                    parent_flow["name"], self.missedcall_flow_identifier
+                )
+                if missedcall_category_list:
+                    """The call category is set to call back if missedcall flow has ran.
+                    For that, the missed call flow name should contain string "missedcall"
+                    """
+                    self.call_category = models.CallLog.CallCategories.CALLBACK
             if "uuid" in jsonData["parent"]:
                 parent_flow_data["parent_flow_run_uuid"] = jsonData["parent"]["uuid"]
         return parent_flow_data

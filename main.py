@@ -6,7 +6,7 @@ def webhook(request):
     if request.method == "POST":
         try:
             jsonData = request.get_json()
-            if "contact" in jsonData and "run_uuid" in jsonData:
+            if "contact" in jsonData:
                 # Conditions based on the flow categories
                 if "flow_category" in jsonData:
                     handle_flow_category_data(jsonData)
@@ -30,8 +30,23 @@ def webhook(request):
                     calllog_service.update_user_module_content_id_in_call_log(
                         user_module_content_id
                     )
+
+                # Handle contact groups
+                if (
+                    "groups" in jsonData["contact"]
+                    and jsonData["contact"]["groups"] is not None
+                ):
+                    user_contact_service = services.UserContactService()
+                    user_contact_service.handle_contact_group(jsonData)
+
+                if (
+                    "fields" in jsonData["contact"]
+                    and jsonData["contact"]["fields"] is not None
+                ):
+                    user_contact_service = services.UserContactService()
+                    user_contact_service.handle_custom_fields(jsonData)
             else:
-                return jsonify(message="Contact or Flow Run UUID is missing"), 400
+                return jsonify(message="Contact"), 400
         except IndexError:
             return jsonify(message="Something went wrong!"), 400
         return jsonify(message="Success"), 200
