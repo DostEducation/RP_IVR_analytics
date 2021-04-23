@@ -6,6 +6,7 @@ class PromptService(object):
         self.user_phone = None
         self.preferred_time_slot = None
         self.call_log_id = None
+        self.default_time_slot = "AFTERNOON"
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
@@ -36,7 +37,11 @@ class PromptService(object):
                 if ivr_prompt_details:
                     response_data = self.fetch_prompt_response(data[key]["category"])
                     if "TIME-OPTIN" in prompt_name:
-                        self.preferred_time_slot = response_data
+                        self.preferred_time_slot = (
+                            self.default_time_slot
+                            if response_data is None
+                            else response_data
+                        )
                     elif "DISTRICT" in prompt_name:
                         user_district = response_data
                         updated_registration_data["district"] = user_district
