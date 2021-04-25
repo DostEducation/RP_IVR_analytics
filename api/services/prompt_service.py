@@ -34,14 +34,14 @@ class PromptService(object):
                 prompt_name = data[key]["name"]
                 ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
                 if ivr_prompt_details:
+                    prompt_response_value = self.fetch_prompt_response(
+                        data[key]["category"]
+                    )
                     self.handle_prompt_mapping(
                         data[key],
                         user_details,
                         ivr_prompt_details,
                         prompt_response_value,
-                    )
-                    prompt_response_value = self.fetch_prompt_response(
-                        data[key]["category"]
                     )
                     if "TIME-OPTIN" in prompt_name:
                         self.preferred_time_slot = prompt_response_value
@@ -147,10 +147,6 @@ class PromptService(object):
     ):
         """This function will be populating different other table column based on the user prompt response.
         Note: The table need to be associated with user.
-        Args:
-            data ([type]): [description]
-            user_details ([type]): [description]
-            ivr_prompt_details ([type]): [description]
         """
         try:
             prompt_response = data["category"]
