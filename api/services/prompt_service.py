@@ -157,16 +157,27 @@ class PromptService(object):
                 )
             )
             if ivr_prompt_mapping_data:
-                # This means mapping exists
+                # It means mapping exists
                 for mapped_class in ivr_prompt_mapping_data:
                     class_object = helpers.get_class_by_tablename(
                         mapped_class.mapped_table_name
                     )
                     if class_object:
-                        column_name = ivr_prompt_mapping_data.mapped_table_column_name
-                        class_object_data = models.class_object.query.get_by_user_id()
-                        if class_object_data:
-                            class_object_data.column_name = prompt_response_value
-                            db.session.commit()
+                        self.process_mapped_fields(
+                            mapped_class,
+                            class_object,
+                            user_details,
+                            prompt_response_value,
+                        )
+
         except IndexError:
             print("Exception occured")
+
+    def process_mapped_fields(
+        self, mapped_class, class_object, user_details, prompt_response_value
+    ):
+        column_name = mapped_class.mapped_table_column_name
+        class_object_data = class_object.get_by_user_id(user_details.id)
+        if class_object_data:
+            setattr(class_object_data, column_name, prompt_response_value)
+            db.session.commit()
