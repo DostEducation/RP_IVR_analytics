@@ -4,7 +4,6 @@ from api import models, db, helpers
 class PromptService(object):
     def __init__(self):
         self.user_phone = None
-        self.preferred_time_slot = None
         self.call_log_id = None
 
     def set_init_data(self, jsonData):
@@ -43,9 +42,7 @@ class PromptService(object):
                         ivr_prompt_details,
                         prompt_response_value,
                     )
-                    if "TIME-OPTIN" in prompt_name:
-                        self.preferred_time_slot = prompt_response_value
-                    elif "DISTRICT" in prompt_name:
+                    if "DISTRICT" in prompt_name:
                         user_district = prompt_response_value
                         updated_registration_data["district"] = user_district
                         updated_user_data["district"] = user_district
@@ -69,8 +66,6 @@ class PromptService(object):
             self.update_user_details(user_details, updated_user_data)
         if user_details and prompt_program_id:
             user_program_data = {}
-            if self.preferred_time_slot:
-                user_program_data["preferred_time_slot"] = self.preferred_time_slot
             models.UserProgram.query.upsert_user_program(
                 user_details.id, prompt_program_id, user_program_data
             )
@@ -149,6 +144,10 @@ class PromptService(object):
         Note: The table need to be associated with user.
         """
         try:
+            if not user_details:
+                # user id is madatory
+                return False
+
             prompt_response = data["category"]
             prompt_name = data["name"]
             ivr_prompt_mapping_data = (
@@ -158,26 +157,38 @@ class PromptService(object):
             )
             if ivr_prompt_mapping_data:
                 # It means mapping exists
-                for mapped_class in ivr_prompt_mapping_data:
-                    class_object = helpers.get_class_by_tablename(
-                        mapped_class.mapped_table_name
-                    )
-                    if class_object:
-                        self.process_mapped_fields(
-                            mapped_class,
-                            class_object,
-                            user_details,
-                            prompt_response_value,
-                        )
-
+                self.process_mapped_fields(
+                    user_details, ivr_prompt_mapping_data, prompt_response_value
+                )
         except IndexError:
             print("Exception occured")
 
     def process_mapped_fields(
-        self, mapped_class, class_object, user_details, prompt_response_value
+        self, user_details, ivr_prompt_mapping_data, prompt_response_value
     ):
-        column_name = mapped_class.mapped_table_column_name
-        class_object_data = class_object.get_by_user_id(user_details.id)
-        if class_object_data:
-            setattr(class_object_data, column_name, prompt_response_value)
-            db.session.commit()
+        for mapped_class in ivr_prompt_mapping_data:
+            class_object = helpers.get_class_by_tablename(
+                mapped_class.mapped_table_name
+            )
+            if class_object:
+                column_name = mapped_class.mapped_table_column_name
+                if not prompt_response_value or prompt_response_value == "other":
+                    prompt_response_value = mapped_class.default_value
+
+                self.update_mapped_fields(
+                    class_object,
+                    user_details,
+                    column_name,
+                    prompt_response_value,
+                )
+
+    def update_mapped_fields(
+        self, class_object, user_details, column_name, prompt_response_value
+    ):
+        try:
+            class_object_data = class_object.get_by_user_id(user_details.id)
+            if class_object_data:
+                setattr(class_object_data, column_name, prompt_response_value)
+                db.session.commit()
+        except IndexError:
+            print("Exception occured")
