@@ -59,3 +59,7 @@ class UserProgram(TimestampMixin, db.Model):
     program_id = db.Column(db.Integer, db.ForeignKey("program.id"))
     preferred_time_slot = db.Column(db.String(50))
     status = db.Column(db.String(50))
+
+    @classmethod
+    def get_by_user_id(self, user_id):
+        return UserProgram.query.get_latest_active_user_program(user_id)
