@@ -39,3 +39,16 @@ def get_program_prompt_id(jsonData):
 def save(data):
     db.session.add(data)
     db.session.commit()
+
+
+def save_batch(dataObject):
+    db.session.add_all(dataObject)
+    db.session.commit()
+
+
+def get_user_by_phone(phone):
+    return models.User.query.get_by_phone(phone)
+
+
+def get_registrant_by_phone(phone):
+    return models.Registration.query.get_latest_by_phone(phone)

@@ -16,3 +16,5 @@ from .program_module import *
 from .user_module_content import *
 from .ivr_prompt import *
 from .ivr_prompt_response import *
+from .user_group import *
+from .user_custom_fields import *
