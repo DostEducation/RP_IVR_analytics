@@ -5,6 +5,7 @@ class PromptService(object):
     def __init__(self):
         self.user_phone = None
         self.call_log_id = None
+        self.default_time_slot = "AFTERNOON"
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
