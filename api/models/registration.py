@@ -12,6 +12,9 @@ class RegistrationQuery(BaseQuery):
     def get_by_phone(self, phone):
         return self.filter(Registration.user_phone == phone).first()
 
+    def get_by_user_id(self, user_id):
+        return self.filter(Registration.user_id == user_id).first()
+
     def get_latest_by_phone(self, phone):
         return (
             self.filter(Registration.user_phone == phone)
@@ -41,3 +44,7 @@ class Registration(TimestampMixin, db.Model):
     has_received_callback = db.Column(db.Boolean)
     status = db.Column(db.String(50))
     signup_date = db.Column(db.DateTime)
+
+    @classmethod
+    def get_by_user_id(self, user_id):
+        return Registration.query.get_by_user_id(user_id)

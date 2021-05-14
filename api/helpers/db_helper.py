@@ -41,6 +41,21 @@ def save(data):
     db.session.commit()
 
 
+def get_class_by_tablename(tablename):
+    """Return class reference mapped to table.
+
+    :param tablename: String with name of table.
+    :return: Class reference or None.
+    """
+    for classObject in db.Model._decl_class_registry.values():
+        if (
+            hasattr(classObject, "__tablename__")
+            and classObject.__tablename__ == tablename
+        ):
+            return classObject
+    return None
+
+
 def save_batch(dataObject):
     db.session.add_all(dataObject)
     db.session.commit()
