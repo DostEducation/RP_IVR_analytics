@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: "[BUG] "
-labels: bug :bug:
+labels: bug 🐛
 assignees: Satendra-SR, rudresh
 
 ---
