@@ -6,31 +6,23 @@ from flask_sqlalchemy import BaseQuery
 class UserProgramQuery(BaseQuery):
     def upsert_user_program(self, user_id, program_id, data):
         user_program_details = self.get_by_user_and_program_ids(user_id, program_id)
-        program_data = {}
-        if "preferred_time_slot" in data:
-            program_data["preferred_time_slot"] = data["preferred_time_slot"]
-        if "status" in data:
-            program_data["status"] = data["status"]
-
         if not user_program_details:
-            user_program = UserProgram(
-                user_id=user_id,
-                program_id=program_id,
-                preferred_time_slot=program_data["preferred_time_slot"]
-                if "preferred_time_slot" in program_data
-                else None,
-                status=data["status"] if "status" in data else "in-progress",
-            )
-            helpers.save(user_program)
-        elif user_program_details and program_data:
+            self.create(user_id, program_id, data)
+        else:
             self.update(user_program_details, data)
+
+    def create(self, user_id, program_id, data):
+        user_program = UserProgram(
+            user_id=user_id,
+            program_id=program_id,
+            status=data["status"] if "status" in data else "in-progress",
+        )
+        helpers.save(user_program)
 
     def update(self, user_program_details, data):
         try:
             for key, value in data.items():
-                if key == "preferred_time_slot":
-                    user_program_details.preferred_time_slot = value
-                elif key == "status":
+                if key == "status":
                     user_program_details.status = value
             db.session.commit()
         except IndexError:

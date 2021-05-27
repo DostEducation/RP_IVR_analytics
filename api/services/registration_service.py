@@ -73,15 +73,17 @@ class RegistrationService(object):
             registration (onject): Takes registration as object
             jsonData (json): Takes request json for updating registration fields
         """
+
         if registration:
             self.user_id = (
                 self.create_user(jsonData) if self.selected_program_id else None
             )
+
+        if self.user_id:
             registration.program_id = self.selected_program_id
-            if self.user_id:
-                registration.signup_date = datetime.now()
-                registration.user_id = self.user_id
-                registration.status = "complete"
+            registration.signup_date = datetime.now()
+            registration.user_id = self.user_id
+            registration.status = "complete"
             db.session.commit()
 
     def create_user(self, jsonData):
@@ -94,5 +96,4 @@ class RegistrationService(object):
                 partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
             )
             helpers.save(user)
-            return user.id
-        return None
+        return user.id

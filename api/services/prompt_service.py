@@ -26,8 +26,13 @@ class PromptService(object):
         )
         user_details = models.User.query.get_by_phone(self.user_phone)
         prompt_program_id = helpers.get_program_prompt_id(jsonData)
-        updated_registration_data = {}
-        updated_user_data = {}
+
+        if user_details and prompt_program_id:
+            user_program_data = {}  # Add data as needed
+            models.UserProgram.query.upsert_user_program(
+                user_details.id, prompt_program_id, user_program_data
+            )
+
         for key in data:
             if key != "result" and "category" in data[key] and "name" in data[key]:
                 prompt_response = data[key]["category"]
@@ -43,12 +48,6 @@ class PromptService(object):
                         ivr_prompt_details,
                         prompt_response_value,
                     )
-                    if "DISTRICT" in prompt_name:
-                        user_district = prompt_response_value
-                        updated_registration_data["district"] = user_district
-                        updated_user_data["district"] = user_district
-                    elif "PARENT" in prompt_name:
-                        updated_registration_data["parent_type"] = prompt_response_value
 
                 response_exists = False
                 if ivr_prompt_response_details:
@@ -62,16 +61,6 @@ class PromptService(object):
                     ivr_prompt_data["prompt_response"] = prompt_response
                     ivr_prompt_data["keypress"] = data[key]["value"]
                     self.add_prompt_response(ivr_prompt_details, ivr_prompt_data)
-
-        if updated_user_data:
-            self.update_user_details(user_details, updated_user_data)
-        if user_details and prompt_program_id:
-            user_program_data = {}
-            models.UserProgram.query.upsert_user_program(
-                user_details.id, prompt_program_id, user_program_data
-            )
-        if updated_registration_data:
-            self.update_registration_details(updated_registration_data)
 
     def check_if_already_exists(
         self, ivr_prompt_response_details, prompt_name, prompt_response
@@ -101,31 +90,6 @@ class PromptService(object):
             helpers.save(ivr_prompt_response)
         except IndexError:
             print("Exception occured")
-
-    def update_user_details(self, user_details, data):
-        if user_details:
-            try:
-                for key, value in data.items():
-                    if key == "district":
-                        user_details.district = value
-                db.session.commit()
-            except IndexError:
-                # Need to log this
-                print("Failed to update user details")
-
-    def update_registration_details(self, data):
-        registrant = models.Registration.query.get_by_phone(self.user_phone)
-        if registrant:
-            try:
-                for key, value in data.items():
-                    if key == "district":
-                        registrant.district = value
-                    if key == "parent_type":
-                        registrant.parent_type = value
-                db.session.commit()
-            except IndexError:
-                # Need to log this
-                print("Failed to udpate registration details")
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
