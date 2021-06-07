@@ -51,7 +51,7 @@ class PromptService(object):
 
                 response_exists = False
                 if ivr_prompt_response_details:
-                    response_exists = self.check_if_already_exists(
+                    response_exists = self.if_exists(
                         ivr_prompt_response_details, prompt_name, prompt_response
                     )
 
@@ -62,9 +62,7 @@ class PromptService(object):
                     ivr_prompt_data["keypress"] = data[key]["value"]
                     self.add_prompt_response(ivr_prompt_details, ivr_prompt_data)
 
-    def check_if_already_exists(
-        self, ivr_prompt_response_details, prompt_name, prompt_response
-    ):
+    def if_exists(self, ivr_prompt_response_details, prompt_name, prompt_response):
         if not ivr_prompt_response_details:
             return False
         for row in ivr_prompt_response_details:
