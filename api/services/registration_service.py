@@ -1,5 +1,5 @@
 # This file is treated as service layer
-from api import models, db, helpers
+from api import models, db, helpers, app
 from datetime import datetime
 
 
@@ -8,14 +8,18 @@ class RegistrationService(object):
         self.system_phone = None
         self.user_phone = None
         self.user_id = None
-        self.selected_program_id = None
+        self.selected_program_id = app.config["DEFAULT_PROGRAM_ID"]
+        self.has_default_program_selection = True
         self.selected_time_slot = None
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
-        self.selected_program_id = helpers.get_program_prompt_id(jsonData)
+        selected_program_id = helpers.get_program_prompt_id(jsonData)
+        if selected_program_id:
+            self.selected_program_id = selected_program_id
+            self.has_default_program_selection = False
 
     def handle_registration(self, jsonData):
         try:
@@ -83,6 +87,7 @@ class RegistrationService(object):
             registration.program_id = self.selected_program_id
             registration.signup_date = datetime.now()
             registration.user_id = self.user_id
+            registration.has_received_callback = True
             registration.status = "complete"
             db.session.commit()
 
