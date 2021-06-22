@@ -55,13 +55,17 @@ class RegistrationService(object):
         if self.selected_program_id:
             self.user_id = self.create_user(jsonData)
 
-        registration_status = "in-progress" if self.selected_program_id else "pending"
+        registration_status = (
+            models.RegistrationStatus.IvrStatus.INCOMPLETE
+            if self.has_default_program_selection
+            else models.RegistrationStatus.IvrStatus.COMPLETE
+        )
         if system_phone_details:
             registrant = models.Registration(
                 user_phone=self.user_phone,
                 system_phone=self.system_phone,
                 state=system_phone_details.state,
-                status="complete" if self.user_id else registration_status,
+                status=registration_status,
                 program_id=self.selected_program_id,
                 partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
                 user_id=self.user_id,
