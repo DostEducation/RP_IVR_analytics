@@ -56,9 +56,9 @@ class RegistrationService(object):
             self.user_id = self.create_user(jsonData)
 
         registration_status = (
-            models.RegistrationStatus.IvrStatus.INCOMPLETE
+            models.Registration.RegistrationStatus.INCOMPLETE
             if self.has_default_program_selection
-            else models.RegistrationStatus.IvrStatus.COMPLETE
+            else models.Registration.RegistrationStatus.COMPLETE
         )
         if system_phone_details:
             registrant = models.Registration(

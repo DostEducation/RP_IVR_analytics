@@ -1,3 +1,6 @@
+from api import helpers
+
+
 def split_prompt_by_hyphen(data):
     split_prompt = data.split("-")
     return split_prompt
