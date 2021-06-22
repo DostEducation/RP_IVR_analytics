@@ -24,7 +24,7 @@ POSTGRES = {
 }
 # For socket based connection
 SQLALCHEMY_DATABASE_URI = (
-    "postgresql://%(user)s:%(password)s/%(database)s?host=%(connection_name)s/"
+    "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
     % POSTGRES
 )
 if FLASK_ENV == "development":
