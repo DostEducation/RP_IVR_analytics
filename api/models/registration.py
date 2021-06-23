@@ -29,7 +29,7 @@ class Registration(TimestampMixin, db.Model):
 
     class RegistrationStatus(object):
         PENDING = "pending"
-        INCOMPLETE = "in-complete"
+        INCOMPLETE = "incomplete"
         COMPLETE = "complete"
 
     id = db.Column(db.Integer, primary_key=True)
