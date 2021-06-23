@@ -34,11 +34,6 @@ class UserProgramQuery(BaseQuery):
         except IndexError:
             return "Failed to udpate user program details"
 
-    def get_by_user_and_program_ids(self, user_id, program_id):
-        return self.filter(
-            UserProgram.user_id == user_id, UserProgram.program_id == program_id
-        ).first()
-
     def get_latest_active_user_program(self, user_id):
         return (
             self.filter(
