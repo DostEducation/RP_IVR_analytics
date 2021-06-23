@@ -26,6 +26,12 @@ class RegistrationQuery(BaseQuery):
 class Registration(TimestampMixin, db.Model):
     query_class = RegistrationQuery
     __tablename__ = "registration"
+
+    class RegistrationStatus(object):
+        PENDING = "pending"
+        INCOMPLETE = "incomplete"
+        COMPLETE = "complete"
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user_phone = db.Column(db.String(50), nullable=False)

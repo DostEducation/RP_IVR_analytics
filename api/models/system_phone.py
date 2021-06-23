@@ -5,7 +5,7 @@ from flask_sqlalchemy import BaseQuery
 
 class SystemPhoneQuery(BaseQuery):
     def get_by_phone(self, phone):
-        return self.filter(SystemPhone.phone == phone).first()
+        return self.filter(SystemPhone.phone.contains(phone[-10:])).first()
 
 
 class SystemPhone(TimestampMixin, db.Model):

@@ -5,7 +5,7 @@ from flask_sqlalchemy import BaseQuery
 
 class UserQuery(BaseQuery):
     def get_by_phone(self, phone):
-        return self.filter(User.phone == phone).first()
+        return self.filter(User.phone.contains(phone[-10:])).first()
 
     def get_by_id(self, id):
         return self.filter(User.id == id).first()

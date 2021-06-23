@@ -1,4 +1,4 @@
-from api import models, db, helpers
+from api import models, helpers
 
 
 class ContentService(object):
