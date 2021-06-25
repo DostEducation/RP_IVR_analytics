@@ -1,4 +1,4 @@
-from api import models, db, helpers
+from api import models, db, helpers, app
 
 
 class PromptService(object):
@@ -25,10 +25,10 @@ class PromptService(object):
             self.call_log_id
         )
         user_details = models.User.query.get_by_phone(self.user_phone)
-        prompt_program_id = helpers.get_program_prompt_id(jsonData)
-
-        if user_details and prompt_program_id:
-            user_program_data = {}  # Add data as needed
+        if user_details:
+            prompt_program_id = self.fetch_program_id(jsonData)
+            user_program_data = {}
+            user_program_data["preferred_time_slot"] = self.default_time_slot
             models.UserProgram.query.upsert_user_program(
                 user_details.id, prompt_program_id, user_program_data
             )
@@ -155,3 +155,9 @@ class PromptService(object):
                 db.session.commit()
         except IndexError:
             print("Exception occured")
+
+    def fetch_program_id(self, jsonData):
+        program_id = helpers.get_program_prompt_id(jsonData)
+        if not program_id:
+            program_id = app.config["DEFAULT_PROGRAM_ID"]
+        return program_id
