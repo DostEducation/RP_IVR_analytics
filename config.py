@@ -24,7 +24,7 @@ POSTGRES = {
 }
 # For socket based connection
 SQLALCHEMY_DATABASE_URI = (
-    "postgresql://%(user)s:%(password)s/%(database)s?host=%(connection_name)s/"
+    "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
     % POSTGRES
 )
 if FLASK_ENV == "development":
@@ -36,3 +36,5 @@ if FLASK_ENV == "development":
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
 SECRET_KEY = os.environ.get("SECRET_KEY")
+
+DEFAULT_PROGRAM_ID = 2

@@ -1,4 +1,4 @@
-from api import models, db, helpers
+from api import models, helpers
 
 
 class ContentService(object):
@@ -22,6 +22,10 @@ class ContentService(object):
             module_content_details = models.ModuleContent.query.get_by_content_id(
                 self.content_id
             )
+            if not module_content_details:
+                # it is optional to have Content and Module association
+                return None
+
             program_module_details = models.ProgramModule.query.get_by_module_id(
                 module_content_details.module_id
             )

@@ -1,5 +1,5 @@
 # This file is treated as service layer
-from api import models, db, helpers
+from api import models, db, helpers, app
 from datetime import datetime
 
 
@@ -8,14 +8,18 @@ class RegistrationService(object):
         self.system_phone = None
         self.user_phone = None
         self.user_id = None
-        self.selected_program_id = None
+        self.selected_program_id = app.config["DEFAULT_PROGRAM_ID"]
+        self.has_default_program_selection = True
         self.selected_time_slot = None
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
-        self.selected_program_id = helpers.get_program_prompt_id(jsonData)
+        selected_program_id = helpers.get_program_prompt_id(jsonData)
+        if selected_program_id:
+            self.selected_program_id = selected_program_id
+            self.has_default_program_selection = False
 
     def handle_registration(self, jsonData):
         try:
@@ -51,13 +55,17 @@ class RegistrationService(object):
         if self.selected_program_id:
             self.user_id = self.create_user(jsonData)
 
-        registration_status = "in-progress" if self.selected_program_id else "pending"
+        registration_status = (
+            models.Registration.RegistrationStatus.INCOMPLETE
+            if self.has_default_program_selection
+            else models.Registration.RegistrationStatus.COMPLETE
+        )
         if system_phone_details:
             registrant = models.Registration(
                 user_phone=self.user_phone,
                 system_phone=self.system_phone,
                 state=system_phone_details.state,
-                status="complete" if self.user_id else registration_status,
+                status=registration_status,
                 program_id=self.selected_program_id,
                 partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
                 user_id=self.user_id,
@@ -73,15 +81,18 @@ class RegistrationService(object):
             registration (onject): Takes registration as object
             jsonData (json): Takes request json for updating registration fields
         """
+
         if registration:
             self.user_id = (
                 self.create_user(jsonData) if self.selected_program_id else None
             )
+
+        if self.user_id:
             registration.program_id = self.selected_program_id
-            if self.user_id:
-                registration.signup_date = datetime.now()
-                registration.user_id = self.user_id
-                registration.status = "complete"
+            registration.signup_date = datetime.now()
+            registration.user_id = self.user_id
+            registration.has_received_callback = True
+            registration.status = "complete"
             db.session.commit()
 
     def create_user(self, jsonData):
@@ -94,5 +105,4 @@ class RegistrationService(object):
                 partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
             )
             helpers.save(user)
-            return user.id
-        return None
+        return user.id

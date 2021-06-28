@@ -10,14 +10,17 @@ class RegistrationQuery(BaseQuery):
         )
 
     def get_by_phone(self, phone):
-        return self.filter(Registration.user_phone == phone).first()
+        return self.filter(Registration.user_phone.contains(phone[-10:])).first()
+
+    def get_by_user_id(self, user_id):
+        return self.filter(Registration.user_id == user_id).first()
 
     def get_by_user_id(self, user_id):
         return self.filter(Registration.user_id == user_id).first()
 
     def get_latest_by_phone(self, phone):
         return (
-            self.filter(Registration.user_phone == phone)
+            self.filter(Registration.user_phone.contains(phone[-10:]))
             .order_by(Registration.id.desc())
             .first()
         )
@@ -26,6 +29,12 @@ class RegistrationQuery(BaseQuery):
 class Registration(TimestampMixin, db.Model):
     query_class = RegistrationQuery
     __tablename__ = "registration"
+
+    class RegistrationStatus(object):
+        PENDING = "pending"
+        INCOMPLETE = "incomplete"
+        COMPLETE = "complete"
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user_phone = db.Column(db.String(50), nullable=False)
