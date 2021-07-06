@@ -1,4 +1,4 @@
-from api import models, db, services
+from api import services
 from flask import jsonify
 
 ### Endpoint for Cloud function
