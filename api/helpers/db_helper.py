@@ -1,4 +1,5 @@
 from api import models, db
+import traceback
 
 # TODO: Need to refactor this and try using ORM
 def get_partner_id_by_system_phone(system_phone):
@@ -13,8 +14,13 @@ def get_partner_id_by_system_phone(system_phone):
 
 
 def save(data):
-    db.session.add(data)
-    db.session.commit()
+    try:
+        db.session.add(data)
+        db.session.commit()
+    except Exception as e:
+        print("Error: " + str(e))
+        print(traceback.format_exc())
+        db.session.rollback()
 
 
 def get_class_by_tablename(tablename):
