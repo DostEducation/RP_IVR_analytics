@@ -171,6 +171,6 @@ class PromptService(object):
             else:
                 return_keypress_value = -2
         except:
-            keypress = -2
+            return_keypress_value = -2
 
         return return_keypress_value
