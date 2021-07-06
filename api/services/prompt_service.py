@@ -72,6 +72,7 @@ class PromptService(object):
 
     def add_prompt_response(self, ivr_prompt_details, data):
         try:
+            keypress = self.sanitize_keypress(data)
             ivr_prompt_response = models.IvrPromptResponse(
                 prompt_name=data["prompt_name"],
                 prompt_question=ivr_prompt_details.prompt_question
@@ -83,7 +84,7 @@ class PromptService(object):
                 if ivr_prompt_details
                 else None,
                 call_log_id=self.call_log_id,
-                keypress=data["keypress"],
+                keypress=keypress,
             )
             helpers.save(ivr_prompt_response)
         except IndexError:
@@ -161,3 +162,15 @@ class PromptService(object):
         if not program_id:
             program_id = app.config["DEFAULT_PROGRAM_ID"]
         return program_id
+
+    def sanitize_keypress(self, data):
+        keypress = data["keypress"]
+        try:
+            if keypress:
+                return_keypress_value = int(keypress)
+            else:
+                return_keypress_value = -2
+        except:
+            keypress = -2
+
+        return return_keypress_value
