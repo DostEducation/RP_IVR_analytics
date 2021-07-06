@@ -15,6 +15,9 @@ class RegistrationQuery(BaseQuery):
     def get_by_user_id(self, user_id):
         return self.filter(Registration.user_id == user_id).first()
 
+    def get_by_user_id(self, user_id):
+        return self.filter(Registration.user_id == user_id).first()
+
     def get_latest_by_phone(self, phone):
         return (
             self.filter(Registration.user_phone.contains(phone[-10:]))
