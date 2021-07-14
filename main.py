@@ -7,7 +7,7 @@ def webhook(request):
         try:
             jsonData = request.get_json()
             transaction_log_service = services.TransactionLogService()
-            webhook = transaction_log_service.create_new_webhook_log(jsonData)
+            webhook_log = transaction_log_service.create_new_webhook_log(jsonData)
             if "contact" in jsonData:
                 # Conditions based on the flow categories
                 if "flow_category" in jsonData:
@@ -48,7 +48,7 @@ def webhook(request):
                     user_contact_service = services.UserContactService()
                     user_contact_service.handle_custom_fields(jsonData)
 
-                transaction_log_service.mark_webhook_log_as_processed(webhook)
+                transaction_log_service.mark_webhook_log_as_processed(webhook_log)
             else:
                 return jsonify(message="Contact"), 400
         except IndexError:
