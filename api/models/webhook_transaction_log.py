@@ -14,5 +14,5 @@ class WebhookTransactionLog(TimestampMixin, db.Model):
 
     __tablename__ = "webhook_transaction_log"
     id = db.Column(db.Integer, primary_key=True)
-    payload = db.Column(db.String(64000))
+    payload = db.Column(db.Text)
     processed = db.Column(db.Boolean, nullable=False)
