@@ -90,15 +90,12 @@ class RegistrationService(object):
             )
 
         if not self.has_default_program_selection:
-            registration_status = models.Registration.RegistrationStatus.COMPLETE
-        else:
-            registration_status = registration.status
+            registration.status = models.Registration.RegistrationStatus.COMPLETE
 
         if self.user_id:
             registration.signup_date = datetime.now()
             registration.user_id = self.user_id
             registration.has_received_callback = True
-            registration.status = registration_status
             db.session.commit()
 
     def create_user(self, jsonData):
