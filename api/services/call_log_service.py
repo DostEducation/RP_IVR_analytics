@@ -98,6 +98,7 @@ class CallLogService(object):
                 else self.flow_category,
             )
             helpers.save(new_call_log)
+            self.call_log = new_call_log
         except IndexError:
             # Need to log this
             return "Failed to create call log"
