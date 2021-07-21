@@ -98,7 +98,7 @@ class PromptService(object):
         return (
             split_prompt_by_underscore[1]
             if len(split_prompt_by_underscore) > 1
-            else None
+            else split_prompt_by_underscore[0]
         )
 
     def handle_prompt_mapping(
