@@ -44,14 +44,14 @@ class ContentService(object):
                 )
             )
             if not user_module_content_data:
-                user_module_content = models.UserModuleContent(
+                user_module_content_data = models.UserModuleContent(
                     module_content_id=module_content_details.id,
                     program_module_id=program_module_details.id,
                     user_program_id=user_program_details.id,
                     status="complete",
                 )
-                helpers.save(user_module_content)
-                return user_module_content.id
+                helpers.save(user_module_content_data)
+            return user_module_content_data.id
         except IndexError:
             # Need to log this
             print("Failed to add user module content")
