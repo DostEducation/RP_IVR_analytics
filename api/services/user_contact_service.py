@@ -25,6 +25,7 @@ class UserContactService(object):
     def handle_contact_group(self, jsonData):
         self.init_data(jsonData)
         contact_groups = jsonData["contact"]["groups"]
+        self.mark_user_groups_as_inactive()
         for group in contact_groups:
             group_data = models.UserGroup.query.get_unique(
                 group["uuid"], self.user_phone
@@ -143,3 +144,7 @@ class UserContactService(object):
             and field_name.startswith(self.custom_field_prefix)
             else False
         )
+
+    def mark_user_groups_as_inactive(self):
+        models.UserGroup.query.mark_user_groups_as_inactive(self.user_phone)
+        db.session.commit()
