@@ -20,10 +20,20 @@ class UserGroupQuery(BaseQuery):
             .first()
         )
 
+    def mark_user_groups_as_inactive(self, phone):
+        self.filter(and_(UserGroup.user_phone == phone)).update(
+            {UserGroup.status: UserGroup.UserGroupStatus.INACTIVE}
+        )
+
 
 class UserGroup(TimestampMixin, db.Model):
     query_class = UserGroupQuery
     __tablename__ = "user_group"
+
+    class UserGroupStatus(object):
+        ACTIVE = "active"
+        INACTIVE = "inactive"
+
     id = db.Column(db.Integer, primary_key=True)
     user_phone = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
