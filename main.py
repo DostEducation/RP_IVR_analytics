@@ -10,12 +10,15 @@ def webhook(request):
             webhook_log = transaction_log_service.create_new_webhook_log(jsonData)
             if "contact" in jsonData:
                 # Conditions based on the flow categories
-                if "flow_category" in jsonData:
+                if (
+                    "flow_category" in jsonData
+                    and jsonData["flow_category"] != "dry_flow"
+                ):
                     handle_flow_category_data(jsonData)
 
-                # Handle call logs
-                calllog_service = services.CallLogService()
-                calllog_service.handle_call_log(jsonData)
+                    # Handle call logs
+                    calllog_service = services.CallLogService()
+                    calllog_service.handle_call_log(jsonData)
 
                 # All the prompt responses are captured with results
                 if "results" in jsonData:
@@ -38,15 +41,14 @@ def webhook(request):
                     "groups" in jsonData["contact"]
                     and jsonData["contact"]["groups"] is not None
                 ):
-                    user_contact_service = services.UserContactService()
-                    user_contact_service.handle_contact_group(jsonData)
+                    handle_user_group_data(jsonData)
 
+                # Handle custom fields
                 if (
                     "fields" in jsonData["contact"]
                     and jsonData["contact"]["fields"] is not None
                 ):
-                    user_contact_service = services.UserContactService()
-                    user_contact_service.handle_custom_fields(jsonData)
+                    handle_user_custom_field_data(jsonData)
 
                 transaction_log_service.mark_webhook_log_as_processed(webhook_log)
             else:
@@ -62,6 +64,16 @@ def handle_flow_category_data(jsonData):
     registration_service = services.RegistrationService()
     if jsonData["flow_category"] == "registration":
         registration_service.handle_registration(jsonData)
+
+
+def handle_user_group_data(jsonData):
+    user_contact_service = services.UserContactService()
+    user_contact_service.handle_contact_group(jsonData)
+
+
+def handle_user_custom_field_data(jsonData):
+    user_contact_service = services.UserContactService()
+    user_contact_service.handle_custom_fields(jsonData)
 
 
 def handle_prompts(jsonData):
