@@ -88,8 +88,8 @@ class PromptService(object):
                 keypress=keypress,
             )
             helpers.save(ivr_prompt_response)
-        except IndexError:
-            print("Exception occured")
+        except:
+            print("Exception occurred")
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
@@ -110,7 +110,7 @@ class PromptService(object):
         """
         try:
             if not user_details:
-                # user id is madatory
+                # user id is mandatory
                 return False
 
             prompt_response = data["category"]
@@ -155,8 +155,8 @@ class PromptService(object):
             if class_object_data:
                 setattr(class_object_data, column_name, prompt_response_value)
                 db.session.commit()
-        except IndexError:
-            print("Exception occured")
+        except:
+            print("Exception occurred")
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]

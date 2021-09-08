@@ -36,9 +36,6 @@ class UserProgramQuery(BaseQuery):
             if data["program_id"]:
                 user_program_details.program_id = data["program_id"]
 
-            if data["preferred_time_slot"]:
-                user_program_details.preferred_time_slot = data["preferred_time_slot"]
-
             for key, value in data.items():
                 if key == "status":
                     user_program_details.status = value
