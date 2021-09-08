@@ -33,3 +33,26 @@ def get_program_prompt_id(jsonData):
                 else None
             )
     return None
+
+
+def get_time_selection(jsonData):
+    """
+    Expected time categories format (for ex): INTRO_1-SIGNUP_1-SELECTION_TIME-OPTIN_MORNING
+    """
+    if "results" in jsonData:
+        time_categories = helpers.fetch_by_key(
+            "intro_1_signup_1_selection_time_optin", jsonData["results"]
+        )
+        if time_categories:
+            split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(
+                time_categories["category"]
+            )
+            split_prompt_by_underscore = helpers.split_prompt_by_underscore(
+                split_prompt_by_hyphen[-1]
+            )
+            return (
+                split_prompt_by_underscore[1]
+                if len(split_prompt_by_underscore) > 1
+                else None
+            )
+    return None

@@ -13,9 +13,13 @@ class UserProgramQuery(BaseQuery):
 
     def create(self, user_id, data):
         program_id = app.config["DEFAULT_PROGRAM_ID"]
+        preferred_time_slot = "AFTERNOON"
 
         if data["program_id"]:
             program_id = data["program_id"]
+
+        if data["preferred_time_slot"]:
+            preferred_time_slot = data["preferred_time_slot"]
 
         user_program = UserProgram(
             user_id=user_id,
@@ -23,9 +27,7 @@ class UserProgramQuery(BaseQuery):
             status=data["status"]
             if "status" in data
             else models.UserProgram.UserProgramStatus.IN_PROGRESS,
-            preferred_time_slot=data["preferred_time_slot"]
-            if "preferred_time_slot" in data
-            else None,
+            preferred_time_slot=preferred_time_slot,
         )
         helpers.save(user_program)
 
@@ -33,6 +35,9 @@ class UserProgramQuery(BaseQuery):
         try:
             if data["program_id"]:
                 user_program_details.program_id = data["program_id"]
+
+            if data["preferred_time_slot"]:
+                user_program_details.preferred_time_slot = data["preferred_time_slot"]
 
             for key, value in data.items():
                 if key == "status":
