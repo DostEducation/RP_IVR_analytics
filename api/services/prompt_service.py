@@ -5,7 +5,6 @@ class PromptService(object):
     def __init__(self):
         self.user_phone = None
         self.call_log_id = None
-        self.default_time_slot = "AFTERNOON"
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
@@ -26,11 +25,11 @@ class PromptService(object):
         )
         user_details = models.User.query.get_by_phone(self.user_phone)
         if user_details:
-            prompt_program_id = self.fetch_program_id(jsonData)
             user_program_data = {}
-            user_program_data["preferred_time_slot"] = self.default_time_slot
+
+            user_program_data["program_id"] = helpers.get_program_prompt_id(jsonData)
             models.UserProgram.query.upsert_user_program(
-                user_details.id, prompt_program_id, user_program_data
+                user_details.id, user_program_data
             )
 
         for key in data:
@@ -87,8 +86,8 @@ class PromptService(object):
                 keypress=keypress,
             )
             helpers.save(ivr_prompt_response)
-        except IndexError:
-            print("Exception occured")
+        except:
+            print("Exception occurred")
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
@@ -109,7 +108,7 @@ class PromptService(object):
         """
         try:
             if not user_details:
-                # user id is madatory
+                # user id is mandatory
                 return False
 
             prompt_response = data["category"]
@@ -154,14 +153,8 @@ class PromptService(object):
             if class_object_data:
                 setattr(class_object_data, column_name, prompt_response_value)
                 db.session.commit()
-        except IndexError:
-            print("Exception occured")
-
-    def fetch_program_id(self, jsonData):
-        program_id = helpers.get_program_prompt_id(jsonData)
-        if not program_id:
-            program_id = app.config["DEFAULT_PROGRAM_ID"]
-        return program_id
+        except:
+            print("Exception occurred")
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
