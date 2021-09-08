@@ -26,9 +26,7 @@ class PromptService(object):
         user_details = models.User.query.get_by_phone(self.user_phone)
         if user_details:
             user_program_data = {}
-            user_program_data["preferred_time_slot"] = helpers.get_time_selection(
-                jsonData
-            )
+
             user_program_data["program_id"] = helpers.get_program_prompt_id(jsonData)
             models.UserProgram.query.upsert_user_program(
                 user_details.id, user_program_data

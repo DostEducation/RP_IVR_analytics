@@ -18,9 +18,6 @@ class UserProgramQuery(BaseQuery):
         if data["program_id"]:
             program_id = data["program_id"]
 
-        if data["preferred_time_slot"]:
-            preferred_time_slot = data["preferred_time_slot"]
-
         user_program = UserProgram(
             user_id=user_id,
             program_id=program_id,
