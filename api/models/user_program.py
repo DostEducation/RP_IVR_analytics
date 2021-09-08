@@ -1,17 +1,22 @@
 from api.mixins import TimestampMixin
-from api import db, helpers, models
+from api import db, helpers, models, app
 from flask_sqlalchemy import BaseQuery
 
 
 class UserProgramQuery(BaseQuery):
-    def upsert_user_program(self, user_id, program_id, data):
+    def upsert_user_program(self, user_id, data):
         user_program_details = self.get_latest_active_user_program(user_id)
         if not user_program_details:
-            self.create(user_id, program_id, data)
+            self.create(user_id, data)
         else:
-            self.update(user_program_details, program_id, data)
+            self.update(user_program_details, data)
 
-    def create(self, user_id, program_id, data):
+    def create(self, user_id, data):
+        program_id = app.config["DEFAULT_PROGRAM_ID"]
+
+        if data["program_id"]:
+            program_id = data["program_id"]
+
         user_program = UserProgram(
             user_id=user_id,
             program_id=program_id,
@@ -24,15 +29,18 @@ class UserProgramQuery(BaseQuery):
         )
         helpers.save(user_program)
 
-    def update(self, user_program_details, program_id, data):
+    def update(self, user_program_details, data):
         try:
+            if data["program_id"]:
+                user_program_details.program_id = data["program_id"]
+
             for key, value in data.items():
-                user_program_details.program_id = program_id
                 if key == "status":
                     user_program_details.status = value
+
             db.session.commit()
-        except IndexError:
-            return "Failed to udpate user program details"
+        except:
+            return "Failed to update user program details"
 
     def get_latest_active_user_program(self, user_id):
         return (
