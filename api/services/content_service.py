@@ -52,7 +52,7 @@ class ContentService(object):
                 )
                 helpers.save(user_module_content_data)
             return user_module_content_data.id
-        except IndexError:
+        except:
             # Need to log this
             print("Failed to add user module content")
             return None

@@ -123,7 +123,7 @@ class PromptService(object):
                 self.process_mapped_fields(
                     user_details, ivr_prompt_mapping_data, prompt_response_value
                 )
-        except IndexError:
+        except:
             print("Exception occured")
 
     def process_mapped_fields(
