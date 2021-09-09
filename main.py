@@ -53,7 +53,7 @@ def webhook(request):
                 transaction_log_service.mark_webhook_log_as_processed(webhook_log)
             else:
                 return jsonify(message="Contact"), 400
-        except IndexError:
+        except:
             return jsonify(message="Something went wrong!"), 400
         return jsonify(message="Success"), 200
     else:

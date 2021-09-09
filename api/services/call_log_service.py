@@ -37,7 +37,7 @@ class CallLogService(object):
                     "created_on", jsonData["flow_run_details"]
                 )
 
-        except IndexError:
+        except:
             print("Failed to fetch flow run details")
 
     def handle_call_log(self, jsonData):
@@ -56,7 +56,7 @@ class CallLogService(object):
                     self.create_call_logs(jsonData)
             else:
                 print("flow_run_uuid is now available.")
-        except IndexError:
+        except:
             print("Failed to log the call details")
 
     def create_call_logs(self, jsonData):
@@ -99,7 +99,7 @@ class CallLogService(object):
             )
             helpers.save(new_call_log)
             self.call_log = new_call_log
-        except IndexError:
+        except:
             # Need to log this
             return "Failed to create call log"
 
@@ -111,7 +111,7 @@ class CallLogService(object):
             if "user_module_content_id" in data:
                 self.call_log.user_module_content_id = data["user_module_content_id"]
             db.session.commit()
-        except IndexError:
+        except:
             # Need to log this
             return "Failed to udpate call log"
 

@@ -46,7 +46,7 @@ class RegistrationService(object):
                         self.update_registration(registration_data, jsonData)
                     else:
                         self.register(jsonData)
-        except IndexError:
+        except:
             print("Failed to handle registration")
 
     # Handle new user registration
@@ -71,6 +71,10 @@ class RegistrationService(object):
                 user_id=self.user_id,
                 has_dropped_missedcall=True,
                 has_received_callback=True,
+                signup_date=datetime.now()
+                if registration_status
+                == models.Registration.RegistrationStatus.COMPLETE
+                else None,
             )
             helpers.save(registrant)
 
@@ -83,17 +87,15 @@ class RegistrationService(object):
         """
         if not self.has_default_program_selection:
             registration.program_id = self.selected_program_id
+            registration.status = models.Registration.RegistrationStatus.COMPLETE
+            registration.signup_date = datetime.now()
 
         if registration:
             self.user_id = (
                 self.create_user(jsonData) if self.selected_program_id else None
             )
 
-        if not self.has_default_program_selection:
-            registration.status = models.Registration.RegistrationStatus.COMPLETE
-
         if self.user_id:
-            registration.signup_date = datetime.now()
             registration.user_id = self.user_id
             registration.has_received_callback = True
             db.session.commit()
