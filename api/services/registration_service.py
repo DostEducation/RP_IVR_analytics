@@ -85,15 +85,21 @@ class RegistrationService(object):
             registration (object): Takes registration as object
             jsonData (json): Takes request json for updating registration fields
         """
-        if not self.has_default_program_selection:
-            registration.program_id = self.selected_program_id
-            registration.status = models.Registration.RegistrationStatus.COMPLETE
-            registration.signup_date = datetime.now()
+        if not registration:
+            return
 
-        if registration:
-            self.user_id = (
-                self.create_user(jsonData) if self.selected_program_id else None
-            )
+        registration.program_id = self.selected_program_id
+
+        self.user_id = self.create_user(jsonData) if self.selected_program_id else None
+        registration.signup_date = (
+            None if self.has_default_program_selection else datetime.now()
+        )
+
+        registration.status = (
+            models.Registration.RegistrationStatus.INCOMPLETE
+            if self.has_default_program_selection
+            else models.Registration.RegistrationStatus.COMPLETE
+        )
 
         if self.user_id:
             registration.user_id = self.user_id
