@@ -88,18 +88,18 @@ class RegistrationService(object):
         if not registration:
             return
 
-        registration.program_id = self.selected_program_id
+        if not (registration.program_id and self.has_default_program_selection):
+            registration.program_id = self.selected_program_id
 
         self.user_id = self.create_user(jsonData) if self.selected_program_id else None
-        registration.signup_date = (
-            None if self.has_default_program_selection else datetime.now()
-        )
 
-        registration.status = (
-            models.Registration.RegistrationStatus.INCOMPLETE
-            if self.has_default_program_selection
-            else models.Registration.RegistrationStatus.COMPLETE
-        )
+        if not self.has_default_program_selection:
+            registration.signup_date = datetime.now()
+
+        if registration.status != models.Registration.RegistrationStatus.COMPLETE:
+            registration.status = models.Registration.RegistrationStatus.INCOMPLETE
+            if not self.has_default_program_selection:
+                registration.status = models.Registration.RegistrationStatus.COMPLETE
 
         if self.user_id:
             registration.user_id = self.user_id
