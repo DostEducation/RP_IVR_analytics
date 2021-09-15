@@ -96,13 +96,10 @@ class RegistrationService(object):
         if not self.has_default_program_selection:
             registration.signup_date = datetime.now()
 
-        if (
-            not self.has_default_program_selection
-            or registration.status == models.Registration.RegistrationStatus.COMPLETE
-        ):
-            registration.status = models.Registration.RegistrationStatus.COMPLETE
-        else:
+        if registration.status != models.Registration.RegistrationStatus.COMPLETE:
             registration.status = models.Registration.RegistrationStatus.INCOMPLETE
+            if not self.has_default_program_selection:
+                registration.status = models.Registration.RegistrationStatus.COMPLETE
 
         if self.user_id:
             registration.user_id = self.user_id
