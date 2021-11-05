@@ -8,10 +8,31 @@ class UserCustomFieldsQuery(BaseQuery):
     def get_by_user_phone(self, phone):
         return self.filter(UserCustomFields.user_phone == phone).all()
 
+    def mark_user_groups_as_inactive(self, phone):
+        self.filter(and_(UserCustomFields.user_phone == phone)).update(
+            {UserCustomFields.status: UserCustomFields.UserCustomFieldStatus.INACTIVE}
+        )
+
+    def set_custom_field_as_active(self, field_name, field_value, phone):
+        self.filter(
+            and_(
+                UserCustomFields.user_phone == phone,
+                UserCustomFields.field_name == field_name,
+                UserCustomFields.field_value == field_value,
+            )
+        ).update(
+            {UserCustomFields.status: UserCustomFields.UserCustomFieldStatus.ACTIVE}
+        )
+
 
 class UserCustomFields(TimestampMixin, db.Model):
     query_class = UserCustomFieldsQuery
     __tablename__ = "user_custom_fields"
+
+    class UserCustomFieldStatus(object):
+        ACTIVE = "active"
+        INACTIVE = "inactive"
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     registration_id = db.Column(db.Integer, db.ForeignKey("registration.id"))
@@ -19,3 +40,6 @@ class UserCustomFields(TimestampMixin, db.Model):
     flow_run_uuid = db.Column(db.String(255))
     field_name = db.Column(db.String(255), nullable=False)
     field_value = db.Column(db.String(500), nullable=False)
+    status = db.Column(
+        db.String(100), nullable=False, default=UserCustomFieldStatus.INACTIVE
+    )
