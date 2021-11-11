@@ -161,7 +161,7 @@ class UserContactService(object):
         db.session.commit()
 
     def mark_user_custom_fields_as_inactive(self):
-        models.UserCustomFields.query.set_user_custom_fields_as_inactive(
+        models.UserCustomFields.query.set_custom_fields_as_inactive_by_user_phone(
             self.user_phone
         )
         db.session.commit()
