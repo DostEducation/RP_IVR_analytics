@@ -25,10 +25,10 @@ class UserContactService(object):
     def handle_contact_group(self, jsonData):
         self.init_data(jsonData)
         contact_groups = jsonData["contact"]["groups"]
-        active_user_groups = models.UserGroup.query.get_by_user_phone(self.user_phone)
+        user_groups = models.UserGroup.query.get_by_user_phone(self.user_phone)
         active_user_group_uuid_list = {}
 
-        for user_group in active_user_groups:
+        for user_group in user_groups:
             active_user_group_uuid_list[
                 str(user_group.group_uuid)
             ] = models.UserGroup.UserGroupStatus.ACTIVE
@@ -129,7 +129,7 @@ class UserContactService(object):
         ) in active_custom_fields_key_values.items():
             custom_field_key = custom_field_name[: -(len(custom_field_value) + 1)]
             models.UserCustomFields.query.set_custom_field_as_inactive(
-                custom_field_key, custom_field_value, self.user_phone
+                self.user_phone, custom_field_key, custom_field_value
             )
 
         if user_custom_contact_data:
