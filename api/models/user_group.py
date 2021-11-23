@@ -8,6 +8,9 @@ class UserGroupQuery(BaseQuery):
     def get_by_uuid(self, uuid):
         return self.filter(UserGroup.group_uuid == uuid).first()
 
+    def get_by_user_phone(self, phone):
+        return self.filter(UserGroup.user_phone == phone).all()
+
     def get_unique(self, uuid, phone):
         return (
             self.filter(
@@ -20,10 +23,10 @@ class UserGroupQuery(BaseQuery):
             .first()
         )
 
-    def mark_user_groups_as_inactive(self, phone):
-        self.filter(and_(UserGroup.user_phone == phone)).update(
-            {UserGroup.status: UserGroup.UserGroupStatus.INACTIVE}
-        )
+    def mark_user_groups_as_inactive(self, phone, uuid):
+        self.filter(
+            and_(UserGroup.user_phone == phone, UserGroup.group_uuid == uuid)
+        ).update({UserGroup.status: UserGroup.UserGroupStatus.INACTIVE})
 
 
 class UserGroup(TimestampMixin, db.Model):
