@@ -1,4 +1,5 @@
 from api import models, db, helpers
+from api.models.user_custom_fields import UserCustomFields
 
 
 class UserContactService(object):
@@ -30,8 +31,8 @@ class UserContactService(object):
             group_data = models.UserGroup.query.get_unique(
                 group["uuid"], self.user_phone
             )
-            if group_data:
-                self.udpate_group(group_data)
+            if group_data and group_data.status == "inactive":
+                self.update_group(group_data)
             else:
                 self.add_group(group)
 
@@ -48,7 +49,7 @@ class UserContactService(object):
         )
         helpers.save(user_group_data)
 
-    def udpate_group(self, data):
+    def update_group(self, data):
         data.status = "active"
         db.session.commit()
 
@@ -67,10 +68,17 @@ class UserContactService(object):
     def process_custom_fields(self, jsonData, user_custom_field_data=False):
         custom_fields = jsonData["contact"]["fields"]
         fields_key_values = {}
+        active_custom_fields_data = self.get_active_custom_fields(
+            user_custom_field_data
+        )
+
+        if active_custom_fields_data:
+            active_custom_fields_key_values = self.fetch_fields_key_value(
+                active_custom_fields_data
+            )
 
         if user_custom_field_data:
             fields_key_values = self.fetch_fields_key_value(user_custom_field_data)
-            self.mark_user_custom_fields_as_inactive()
 
         user_custom_contact_data = []
 
@@ -86,10 +94,27 @@ class UserContactService(object):
             ):
                 userdata = self.get_user_custom_fields_object(field_name, field_value)
                 user_custom_contact_data.extend(userdata)
-            elif custom_fields_conditions:
+            elif custom_fields_conditions and not self.check_if_exist(
+                active_custom_fields_key_values, field_name, field_value
+            ):
                 models.UserCustomFields.query.set_custom_field_as_active(
                     field_name, field_value, self.user_phone
                 )
+            elif custom_fields_conditions and self.check_if_exist(
+                active_custom_fields_key_values, field_name, field_value
+            ):
+                active_custom_fields_key_values.pop(
+                    str(field_name) + "_" + str(field_value)
+                )
+
+        for (
+            custom_field_name,
+            custom_field_value,
+        ) in active_custom_fields_key_values.items():
+            custom_field_key = custom_field_name[: -(len(custom_field_value) + 1)]
+            models.UserCustomFields.query.set_custom_field_as_inactive(
+                custom_field_key, custom_field_value, self.user_phone
+            )
 
         if user_custom_contact_data:
             helpers.save_batch(user_custom_contact_data)
@@ -160,8 +185,12 @@ class UserContactService(object):
         models.UserGroup.query.mark_user_groups_as_inactive(self.user_phone)
         db.session.commit()
 
-    def mark_user_custom_fields_as_inactive(self):
-        models.UserCustomFields.query.set_custom_fields_as_inactive_by_user_phone(
-            self.user_phone
-        )
-        db.session.commit()
+    def get_active_custom_fields(self, user_custom_field_data):
+        if user_custom_field_data:
+            return [
+                data
+                for data in user_custom_field_data
+                if data.status == UserCustomFields.UserCustomFieldStatus.ACTIVE
+            ]
+
+        return []
