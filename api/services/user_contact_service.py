@@ -30,7 +30,10 @@ class UserContactService(object):
             group_data = models.UserGroup.query.get_unique(
                 group["uuid"], self.user_phone
             )
-            if group_data and group_data.status == "inactive":
+            if (
+                group_data
+                and group_data.status == models.UserGroup.UserGroupStatus.INACTIVE
+            ):
                 self.update_group(group_data)
             else:
                 self.add_group(group)
