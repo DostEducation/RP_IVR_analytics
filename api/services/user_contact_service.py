@@ -86,6 +86,7 @@ class UserContactService(object):
         active_custom_fields_data = self.get_active_custom_fields(
             user_custom_field_data
         )
+        active_custom_fields_key_values = {}
 
         if active_custom_fields_data:
             active_custom_fields_key_values = self.fetch_fields_key_value(
