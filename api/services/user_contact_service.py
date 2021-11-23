@@ -1,5 +1,4 @@
 from api import models, db, helpers
-from api.models.user_custom_fields import UserCustomFields
 
 
 class UserContactService(object):
@@ -190,7 +189,7 @@ class UserContactService(object):
             return [
                 data
                 for data in user_custom_field_data
-                if data.status == UserCustomFields.UserCustomFieldStatus.ACTIVE
+                if data.status == models.UserCustomFields.UserCustomFieldStatus.ACTIVE
             ]
 
         return []
