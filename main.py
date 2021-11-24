@@ -40,6 +40,7 @@ def webhook(request):
                 if (
                     "groups" in jsonData["contact"]
                     and jsonData["contact"]["groups"] is not None
+                    and jsonData.get("flow_category", None) == "dry_flow"
                 ):
                     handle_user_group_data(jsonData)
 
@@ -47,6 +48,7 @@ def webhook(request):
                 if (
                     "fields" in jsonData["contact"]
                     and jsonData["contact"]["fields"] is not None
+                    and jsonData.get("flow_category", None) == "dry_flow"
                 ):
                     handle_user_custom_field_data(jsonData)
 
