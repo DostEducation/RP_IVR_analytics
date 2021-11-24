@@ -8,7 +8,7 @@ class UserCustomFieldsQuery(BaseQuery):
     def get_by_user_phone(self, phone):
         return self.filter(UserCustomFields.user_phone == phone).all()
 
-    def set_custom_field_as_inactive(self, field_name, field_value, phone):
+    def set_custom_field_as_inactive(self, phone, field_name, field_value):
         self.filter(
             and_(
                 UserCustomFields.user_phone == phone,
