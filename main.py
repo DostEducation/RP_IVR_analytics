@@ -38,7 +38,7 @@ def retry_failed_webhook(transaction_log_service):
     failed_webhook_logs = transaction_log_service.get_failed_webhook_transaction_log()
 
     for log in failed_webhook_logs:
-        processed = handle_payload(json.loads(log.payload))
+        processed = handle_payload(json.loads(log.payload), True)
 
         if processed is not True:
             continue
@@ -47,7 +47,7 @@ def retry_failed_webhook(transaction_log_service):
         db_helper.save(log)
 
 
-def handle_payload(jsonData):
+def handle_payload(jsonData, is_retry_payload=False):
     try:
         if "contact" in jsonData:
             # Conditions based on the flow categories
@@ -79,6 +79,7 @@ def handle_payload(jsonData):
                 "groups" in jsonData["contact"]
                 and jsonData["contact"]["groups"] is not None
                 and jsonData.get("flow_category", None) == "dry_flow"
+                and not is_retry_payload
             ):
                 handle_user_group_data(jsonData)
 
@@ -87,6 +88,7 @@ def handle_payload(jsonData):
                 "fields" in jsonData["contact"]
                 and jsonData["contact"]["fields"] is not None
                 and jsonData.get("flow_category", None) == "dry_flow"
+                and not is_retry_payload
             ):
                 handle_user_custom_field_data(jsonData)
         else:

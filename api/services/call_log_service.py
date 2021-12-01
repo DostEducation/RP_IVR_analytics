@@ -55,7 +55,7 @@ class CallLogService(object):
                 else:
                     self.create_call_logs(jsonData)
             else:
-                print("flow_run_uuid is now available.")
+                print("flow_run_uuid is not available.")
         except:
             print("Failed to log the call details")
 
