@@ -14,3 +14,12 @@ class TransactionLogService(object):
     def mark_webhook_log_as_processed(self, webhook_log):
         webhook_log.processed = True
         helpers.save(webhook_log)
+
+    def get_failed_webhook_transaction_log(self):
+        failed_webhook_transaction_logs = (
+            models.WebhookTransactionLog.query.filter_by(processed=False)
+            .limit(1000)
+            .all()
+        )
+
+        return failed_webhook_transaction_logs
