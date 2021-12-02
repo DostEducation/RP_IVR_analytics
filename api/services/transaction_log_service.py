@@ -1,5 +1,5 @@
 # This file is treated as service layer
-from api import models, helpers
+from api import models, helpers, app
 import json
 
 
@@ -18,7 +18,7 @@ class TransactionLogService(object):
     def get_failed_webhook_transaction_log(self):
         failed_webhook_transaction_logs = (
             models.WebhookTransactionLog.query.filter_by(processed=False)
-            .limit(1000)
+            .limit(app.config["RETRY_LOGS_LIMIT"])
             .all()
         )
 
