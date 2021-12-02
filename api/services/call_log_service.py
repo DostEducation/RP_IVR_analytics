@@ -96,6 +96,9 @@ class CallLogService(object):
                 flow_category=jsonData["flow_category"]
                 if "flow_category" in jsonData
                 else self.flow_category,
+                created_on=jsonData["log_created_on"]
+                if jsonData.get("log_created_on", None)
+                else datetime.now(),
             )
             helpers.save(new_call_log)
             self.call_log = new_call_log
