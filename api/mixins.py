@@ -1,10 +1,9 @@
 from __future__ import absolute_import
 
 from api import db
+from datetime import datetime
 
 
 class TimestampMixin(object):
-    created_on = db.Column(db.DateTime, server_default=db.func.now())
-    updated_on = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
-    )
+    created_on = db.Column(db.DateTime, default=db.func.now)
+    updated_on = db.Column(db.DateTime, onupdate=datetime.now, default=datetime.now)
