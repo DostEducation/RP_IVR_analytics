@@ -22,7 +22,7 @@ class TransactionLogService(object):
             )
             .filter(
                 models.WebhookTransactionLog.attempts
-                <= app.config["MAX_RETRY_ATTEMPTS_FOR_LOGS"]
+                < app.config["MAX_RETRY_ATTEMPTS_FOR_LOGS"]
             )
             .order_by(models.WebhookTransactionLog.created_on)
             .limit(app.config["RETRY_LOGS_BATCH_LIMIT"])
