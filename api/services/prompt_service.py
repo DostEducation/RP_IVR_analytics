@@ -1,4 +1,5 @@
 from api import models, db, helpers, app
+from datetime import datetime
 
 
 class PromptService(object):
@@ -59,6 +60,8 @@ class PromptService(object):
                     ivr_prompt_data["prompt_name"] = prompt_name
                     ivr_prompt_data["prompt_response"] = prompt_response
                     ivr_prompt_data["keypress"] = data[key]["value"]
+                    if jsonData.get("log_created_on", None):
+                        ivr_prompt_data["log_created_on"] = jsonData["log_created_on"]
                     self.add_prompt_response(ivr_prompt_details, ivr_prompt_data)
 
     def if_exists(self, ivr_prompt_response_details, prompt_name, prompt_response):
@@ -84,6 +87,9 @@ class PromptService(object):
                 else None,
                 call_log_id=self.call_log_id,
                 keypress=keypress,
+                created_on=data["log_created_on"]
+                if data.get("log_created_on", None)
+                else datetime.now(),
             )
             helpers.save(ivr_prompt_response)
         except:
