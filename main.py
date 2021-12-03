@@ -38,6 +38,9 @@ def retry_failed_webhook(transaction_log_service):
     failed_webhook_logs = transaction_log_service.get_failed_webhook_transaction_log()
 
     for log in failed_webhook_logs:
+        log.attempts += 1
+        db_helper.save(log)
+
         json_data = json.loads(log.payload)
         json_data["log_created_on"] = log.created_on
         processed = handle_payload(json_data, True)
