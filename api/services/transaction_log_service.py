@@ -18,7 +18,7 @@ class TransactionLogService(object):
     def get_failed_webhook_transaction_log(self):
         failed_webhook_transaction_logs = (
             models.WebhookTransactionLog.query.filter_by(processed=False)
-            .limit(app.config["RETRY_LOGS_LIMIT"])
+            .limit(app.config["RETRY_LOGS_BATCH_LIMIT"])
             .all()
         )
 
