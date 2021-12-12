@@ -63,7 +63,7 @@ def handle_payload(jsonData, is_retry_payload=False):
                 calllog_service = services.CallLogService()
                 calllog_service.handle_call_log(jsonData)
 
-            if jsonData.get("is_last_content", None) == "true":
+            if jsonData.get("is_last_content", None) is True:
                 update_user_program(jsonData)
 
             # All the prompt responses are captured with results
