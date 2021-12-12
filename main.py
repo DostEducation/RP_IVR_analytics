@@ -63,6 +63,9 @@ def handle_payload(jsonData, is_retry_payload=False):
                 calllog_service = services.CallLogService()
                 calllog_service.handle_call_log(jsonData)
 
+            if jsonData.get("is_last_content", None) == "true":
+                update_user_program(jsonData)
+
             # All the prompt responses are captured with results
             if "results" in jsonData:
                 handle_prompts(jsonData)
@@ -122,3 +125,8 @@ def handle_user_custom_field_data(jsonData):
 def handle_prompts(jsonData):
     prompt_service = services.PromptService()
     prompt_service.handle_prompt_response(jsonData)
+
+
+def update_user_program(JsonData):
+    user_program_service = services.UserProgramService()
+    user_program_service.mark_user_program_as_competed(JsonData)
