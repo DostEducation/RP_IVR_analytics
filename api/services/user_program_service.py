@@ -16,5 +16,9 @@ class UserProgramService(object):
     def mark_user_program_as_completed(self, JsonData):
         self.set_init_data(JsonData)
         self.user_program_data = models.UserProgram.get_by_user_id(self.user_id)
-        self.user_program_data.status = models.UserProgram.UserProgramStatus.COMPLETE
-        db.session.commit()
+
+        if self.user_program_data:
+            self.user_program_data.status = (
+                models.UserProgram.UserProgramStatus.COMPLETE
+            )
+            db.session.commit()
