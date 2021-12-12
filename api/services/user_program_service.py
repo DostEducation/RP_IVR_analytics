@@ -13,7 +13,7 @@ class UserProgramService(object):
         user = models.User.query.get_by_phone(self.user_phone)
         self.user_id = user.id
 
-    def mark_user_program_as_competed(self, JsonData):
+    def mark_user_program_as_completed(self, JsonData):
         self.set_init_data(JsonData)
         self.user_program_data = models.UserProgram.get_by_user_id(self.user_id)
         self.user_program_data.status = models.UserProgram.UserProgramStatus.COMPLETE

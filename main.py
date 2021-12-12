@@ -129,4 +129,4 @@ def handle_prompts(jsonData):
 
 def update_user_program(JsonData):
     user_program_service = services.UserProgramService()
-    user_program_service.mark_user_program_as_competed(JsonData)
+    user_program_service.mark_user_program_as_completed(JsonData)
