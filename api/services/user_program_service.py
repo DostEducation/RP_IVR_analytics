@@ -16,5 +16,5 @@ class UserProgramService(object):
     def mark_user_program_as_competed(self, JsonData):
         self.set_init_data(JsonData)
         self.user_program_data = models.UserProgram.get_by_user_id(self.user_id)
-        self.user_program_data.status = models.UserProgram.UserProgramStatus.IN_PROGRESS
+        self.user_program_data.status = models.UserProgram.UserProgramStatus.COMPLETE
         db.session.commit()
