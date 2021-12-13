@@ -6,6 +6,10 @@ from flask_sqlalchemy import BaseQuery
 class UserProgramQuery(BaseQuery):
     def upsert_user_program(self, user_id, data):
         user_program_details = self.get_latest_active_user_program(user_id)
+
+        if not user_program_details:
+            user_program_details = self.get_latest_user_program(user_id)
+
         if not user_program_details:
             self.create(user_id, data)
         else:
@@ -46,6 +50,15 @@ class UserProgramQuery(BaseQuery):
             self.filter(
                 UserProgram.user_id == user_id,
                 UserProgram.status == models.UserProgram.UserProgramStatus.IN_PROGRESS,
+            )
+            .order_by(UserProgram.id.desc())
+            .first()
+        )
+
+    def get_latest_user_program(self, user_id):
+        return (
+            self.filter(
+                UserProgram.user_id == user_id,
             )
             .order_by(UserProgram.id.desc())
             .first()
