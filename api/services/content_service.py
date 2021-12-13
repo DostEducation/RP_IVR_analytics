@@ -1,3 +1,4 @@
+from datetime import datetime
 from api import models, helpers
 
 
@@ -49,6 +50,9 @@ class ContentService(object):
                     program_module_id=program_module_details.id,
                     user_program_id=user_program_details.id,
                     status="complete",
+                    created_on=jsonData["log_created_on"]
+                    if jsonData.get("log_created_on", None)
+                    else datetime.now(),
                 )
                 helpers.save(user_module_content_data)
             return user_module_content_data.id
