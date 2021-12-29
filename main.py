@@ -72,14 +72,22 @@ def handle_payload(jsonData, is_retry_payload=False):
 
             # Handle content details
             user_module_content_id = None
+            program_sequence_id = None
             if "content_id" in jsonData:
                 content_service = services.ContentService()
-                user_module_content_id = content_service.add_user_module_content(
-                    jsonData
-                )
+                (
+                    user_module_content_id,
+                    program_sequence_id,
+                ) = content_service.add_user_module_content(jsonData)
+
             if user_module_content_id:
                 calllog_service.update_user_module_content_id_in_call_log(
                     user_module_content_id
+                )
+
+            if program_sequence_id:
+                calllog_service.update_program_sequence_id_in_call_log(
+                    program_sequence_id
                 )
 
             # Handle contact groups

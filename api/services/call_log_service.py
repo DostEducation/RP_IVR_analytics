@@ -98,7 +98,7 @@ class CallLogService(object):
                 else self.flow_category,
                 created_on=jsonData["log_created_on"]
                 if jsonData.get("log_created_on", None)
-                else datetime.now(),
+                else datetime.utcnow(),
             )
             helpers.save(new_call_log)
             self.call_log = new_call_log
@@ -108,11 +108,13 @@ class CallLogService(object):
 
     def update_call_logs(self, data):
         try:
-            self.call_log.updated_on = datetime.now()
+            self.call_log.updated_on = datetime.utcnow()
             if "user_id" in data:
                 self.call_log.user_id = data["user_id"]
             if "user_module_content_id" in data:
                 self.call_log.user_module_content_id = data["user_module_content_id"]
+            if "program_sequence_id" in data:
+                self.call_log.program_sequence_id = data["program_sequence_id"]
             db.session.commit()
         except:
             # Need to log this
@@ -128,6 +130,12 @@ class CallLogService(object):
         if self.call_log and user_module_content_id:
             data = {}
             data["user_module_content_id"] = user_module_content_id
+            self.update_call_logs(data)
+
+    def update_program_sequence_id_in_call_log(self, program_sequence_id):
+        if self.call_log and program_sequence_id:
+            data = {}
+            data["program_sequence_id"] = program_sequence_id
             self.update_call_logs(data)
 
     def handle_parent_flow(self, jsonData):
