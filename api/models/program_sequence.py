@@ -24,5 +24,3 @@ class ProgramSequence(TimestampMixin, db.Model):
     content_id = db.Column(db.Integer, db.ForeignKey("content.id"))
     program_id = db.Column(db.Integer, db.ForeignKey("program.id"))
     module_id = db.Column(db.Integer, db.ForeignKey("module.id"))
-    sequence_index = db.Column(db.Integer)
-    content_status = db.Column(db.String(50))
