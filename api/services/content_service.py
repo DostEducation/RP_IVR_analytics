@@ -14,7 +14,6 @@ class ContentService(object):
 
     def add_user_module_content(self, jsonData):
         self.set_init_data(jsonData)
-        print("here")
         try:
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
