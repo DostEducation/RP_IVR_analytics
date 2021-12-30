@@ -14,6 +14,7 @@ class ContentService(object):
 
     def add_user_module_content(self, jsonData):
         self.set_init_data(jsonData)
+        print("here")
         try:
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
@@ -68,7 +69,7 @@ class ContentService(object):
 
             program_sequence = (
                 models.ProgramSequence.query.get_by_module_content_program_ids(
-                    user_program_details.program_id,
+                    program_module_details.program_id,
                     program_module_details.module_id,
                     self.content_id,
                 )
