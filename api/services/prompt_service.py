@@ -89,7 +89,7 @@ class PromptService(object):
                 keypress=keypress,
                 created_on=data["log_created_on"]
                 if data.get("log_created_on", None)
-                else datetime.now(),
+                else datetime.utcnow(),
             )
             helpers.save(ivr_prompt_response)
         except:
