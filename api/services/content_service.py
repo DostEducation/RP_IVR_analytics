@@ -68,7 +68,7 @@ class ContentService(object):
 
             program_sequence = (
                 models.ProgramSequence.query.get_by_module_content_program_ids(
-                    user_program_details.program_id,
+                    program_module_details.program_id,
                     program_module_details.module_id,
                     self.content_id,
                 )
