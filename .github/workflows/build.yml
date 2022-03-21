@@ -1,11 +1,11 @@
 name: rp-ivr-analytics-build-and-deployment
 
 # on commit push, run job
-on:
-  push
+on: [push]
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     steps:
     - uses: 'actions/checkout@v3'
 
