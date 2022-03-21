@@ -19,10 +19,9 @@ jobs:
       with:
         name: rp-ivr-analytics-staging
         description: 'Deploying stating function'
-        project_id: ${{ secrets.GCP_PROJECT_ID }} # project=cryptic-gate-211900
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
         region: asia-south1
         source_dir: api
-        # name of our function in our main.py file, defaults to the resource name suffix
         entry_point: webhook
         runtime: python38
         timeout: 30
