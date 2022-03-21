@@ -1,20 +1,23 @@
-name: dost-
+name: rp-ivr-analytics-build-and-deployment
 
 # on commit push, run job
 on: [push]
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
+  deploy:
     steps:
-    - uses: actions/checkout@v2
-    # the actual deployment to google
-    - name: Cloud Functions Deploy
-      uses: google-github-actions/deploy-cloud-functions@v0.9.0
+    - uses: 'actions/checkout@v3'
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
       with:
-        credentials: ${{ secrets.GCP_SA_KEY }}
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-cloud-functions@v0'
+      with:
         name: rp-ivr-analytics-staging
-        description:
+        description: 'Deploying stating function'
         project_id: ${{ secrets.GCP_PROJECT_ID }} # project=cryptic-gate-211900
         region: asia-south1
         source_dir: api
