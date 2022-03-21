@@ -1,0 +1,26 @@
+name: dost-
+
+# on commit push, run job
+on: [push]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    # the actual deployment to google
+    - name: Cloud Functions Deploy
+      uses: google-github-actions/deploy-cloud-functions@v0.9.0
+      with:
+        credentials: ${{ secrets.GCP_SA_KEY }}
+        name: rp-ivr-analytics-staging
+        description:
+        project_id: ${{ secrets.GCP_PROJECT_ID }} # project=cryptic-gate-211900
+        region: asia-south1
+        source_dir: api
+        # name of our function in our main.py file, defaults to the resource name suffix
+        entry_point: webhook
+        runtime: python38
+        timeout: 30
+        max_instances: 0 # Remove limitation
+        env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
