@@ -1,4 +1,4 @@
-name: rp-ivr-analytics-build-and-deployment
+name: build-and-deployment
 
 on:
   pull_request:

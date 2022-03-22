@@ -3,7 +3,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![](https://github.com/DostEducation/RP_IVR_analytics/actions/workflows/pre-commit.yml/badge.svg)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-![Build & Deployment](https://github.com/DostEducation/RP_IVR_analytics/actions/workflows/build/badge.svg)
+![Build & Deployment](https://github.com/DostEducation/RP_IVR_analytics/actions/workflows/build.yml/badge.svg)
 
 
 This is a cloud function based webhook that is being using to get webhook calls from RapidPro to capture different analytical data point.
