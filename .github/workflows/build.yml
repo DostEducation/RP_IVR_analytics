@@ -19,7 +19,7 @@ jobs:
     - id: 'deploy'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
       with:
-          name: kookoo-callback-staging
+          name: rp-ivr-analytics-staging
           region: asia-south1
           description: 'Deploying staging function'
           memory_mb: 256
