@@ -1,7 +1,6 @@
 name: build-and-deployment
 
 on:
-  pull_request:
   push:
     branches: [develop]
 
@@ -22,7 +21,7 @@ jobs:
       with:
           name: rp-ivr-analytics-staging
           region: asia-south1
-          description: 'Deploying stating function'
+          description: 'Deploying staging function'
           memory_mb: 256
           timeout: 30
           runtime: python38
