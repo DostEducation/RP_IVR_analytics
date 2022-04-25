@@ -1,7 +1,6 @@
 name: build-and-deployment
 
 on:
-  pull_request:
   push:
     branches: [develop]
 
@@ -20,9 +19,9 @@ jobs:
     - id: 'deploy'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
       with:
-          name: rp-ivr-analytics-staging
+          name: kookoo-callback-staging
           region: asia-south1
-          description: 'Deploying stating function'
+          description: 'Deploying staging function'
           memory_mb: 256
           timeout: 30
           runtime: python38
