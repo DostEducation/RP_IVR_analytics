@@ -38,5 +38,8 @@ Add the root cause of the bug.
 **Impact**
 Add the issue impact here.
 
+**Action items**
+Add the action items required here.
+
 **Criticality**
 Add the issue criticality here.
