@@ -43,3 +43,9 @@ Add the action items required here.
 
 **Criticality**
 Add the issue criticality here.
+
+**Acceptance Criteria**
+Add acceptance criteria here.
+
+**Documentation**
+Add whatever documentation will be required here.
