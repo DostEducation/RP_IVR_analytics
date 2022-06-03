@@ -29,14 +29,13 @@ POSTGRES = {
 # )
 
 SQLALCHEMY_DATABASE_URI = (
-    "postgresql://%(user)s:%(password)s@/%(database)s?host=%(host)s/"
-    % POSTGRES
+    "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
 )
-if FLASK_ENV == "development":
-    # For TCP based conneciton
-    SQLALCHEMY_DATABASE_URI = (
-        "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
-    )
+# if FLASK_ENV == "development":
+#     # For TCP based conneciton
+#     SQLALCHEMY_DATABASE_URI = (
+#         "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
+#     )
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
