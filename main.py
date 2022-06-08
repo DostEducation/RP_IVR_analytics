@@ -6,6 +6,7 @@ from api.helpers import db_helper
 
 ### Endpoint for Cloud function
 def webhook(request):
+    print('We are recieving the request")
     if request.method == "POST":
         try:
             jsonData = request.get_json()
