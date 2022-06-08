@@ -6,7 +6,7 @@ from api.helpers import db_helper
 
 ### Endpoint for Cloud function
 def webhook(request):
-    print('We are recieving the request")
+    print("We are recieving the request")
     if request.method == "POST":
         try:
             jsonData = request.get_json()
@@ -16,6 +16,7 @@ def webhook(request):
         transaction_log_service = services.TransactionLogService()
 
         if jsonData and jsonData.get("type", None) != ("retry_failed_log"):
+            print("We are getting the webhook data here")
             if "contact" in jsonData:
                 webhook_log = transaction_log_service.create_new_webhook_log(jsonData)
             processed = handle_payload(jsonData)
