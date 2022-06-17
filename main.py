@@ -6,32 +6,41 @@ from api.helpers import db_helper
 
 ### Endpoint for Cloud function
 def webhook(request):
-    if request.method == "POST":
-        try:
-            jsonData = request.get_json()
-        except:
-            return jsonify(message="Something went wrong!"), 400
-
-        transaction_log_service = services.TransactionLogService()
-
-        if jsonData and jsonData.get("type", None) != ("retry_failed_log"):
-            if "contact" in jsonData:
-                webhook_log = transaction_log_service.create_new_webhook_log(jsonData)
-            processed = handle_payload(jsonData)
-
-            if processed is False:
+    try:
+        if request.method == "POST":
+            try:
+                jsonData = request.get_json()
+            except:
                 return jsonify(message="Something went wrong!"), 400
-            elif processed == -1:
-                return jsonify(message="Contact"), 400
 
-            if "contact" in jsonData:
-                transaction_log_service.mark_webhook_log_as_processed(webhook_log)
-        elif jsonData and jsonData.get("type", None) == "retry_failed_log":
-            retry_failed_webhook(transaction_log_service)
+            transaction_log_service = services.TransactionLogService()
 
-        return jsonify(message="Success"), 200
-    else:
-        return jsonify(message="Currently, the system do not accept a GET request"), 405
+            if jsonData and jsonData.get("type", None) != ("retry_failed_log"):
+                if "contact" in jsonData:
+                    webhook_log = transaction_log_service.create_new_webhook_log(
+                        jsonData
+                    )
+                processed = handle_payload(jsonData)
+
+                if processed is False:
+                    return jsonify(message="Something went wrong!"), 400
+                elif processed == -1:
+                    return jsonify(message="Contact"), 400
+
+                if "contact" in jsonData:
+                    transaction_log_service.mark_webhook_log_as_processed(webhook_log)
+            elif jsonData and jsonData.get("type", None) == "retry_failed_log":
+                retry_failed_webhook(transaction_log_service)
+
+            return jsonify(message="Success"), 200
+        else:
+            return (
+                jsonify(message="Currently, the system do not accept a GET request"),
+                405,
+            )
+    except Exception as e:
+        print(e)
+        return jsonify(message="Internal server error"), 500
 
 
 def retry_failed_webhook(transaction_log_service):
