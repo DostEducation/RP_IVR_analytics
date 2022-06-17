@@ -20,7 +20,7 @@ POSTGRES = {
     "database": os.environ.get("DB_NAME"),
     "host": os.environ.get("DB_HOST"),
     "port": os.environ.get("DB_PORT"),
-    "connection_name": os.environ.get("CONNECTION_NAME", None),
+    "connection_name": os.environ.get("CONNECTION_NAME"),
 }
 # For socket based connection
 if FLASK_ENV == "staging":
