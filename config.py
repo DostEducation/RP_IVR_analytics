@@ -20,22 +20,18 @@ POSTGRES = {
     "database": os.environ.get("DB_NAME"),
     "host": os.environ.get("DB_HOST"),
     "port": os.environ.get("DB_PORT"),
-    "connection_name": os.environ.get("CONNECTION_NAME"),
+    "connection_name": os.environ.get("CONNECTION_NAME", None),
 }
 # For socket based connection
-# SQLALCHEMY_DATABASE_URI = (
-#     "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
-#     % POSTGRES
-# )
+if FLASK_ENV == "staging":
+    SQLALCHEMY_DATABASE_URI = (
+        "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
+        % POSTGRES
+    )
 
 SQLALCHEMY_DATABASE_URI = (
     "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
 )
-# if FLASK_ENV == "development":
-#     # For TCP based conneciton
-#     SQLALCHEMY_DATABASE_URI = (
-#         "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
-#     )
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
