@@ -29,3 +29,9 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Acceptance Criteria**
+Add acceptance criteria here.
+
+**Documentation**
+Add whatever documentation will be required here.
