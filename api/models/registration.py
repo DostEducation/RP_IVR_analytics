@@ -42,7 +42,7 @@ class Registration(TimestampMixin, db.Model):
     state = db.Column(db.String(100))
     education_level = db.Column(db.String(255), nullable=True)
     occupation = db.Column(db.String(255), nullable=True)
-    gender = db.Column(db.String(255), nullable=True)
+    gender_of_child = db.Column(db.String(255), nullable=True)
     area_type = db.Column(db.String(255), nullable=True)
     parent_type = db.Column(db.String(50))
     is_child_between_0_3 = db.Column(db.Boolean)
