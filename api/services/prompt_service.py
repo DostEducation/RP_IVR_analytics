@@ -1,6 +1,8 @@
 from api import models, db, helpers, app
 from datetime import datetime
 
+from api.helpers import prompt_helper
+
 
 class PromptService(object):
     def __init__(self):
@@ -142,10 +144,11 @@ class PromptService(object):
             if class_object:
                 column_name = mapped_class.mapped_table_column_name
 
-                if (
-                    mapped_class.mapped_table_name == "registration"
-                    and column_name == "has_smartphone"
-                ):
+                column_data_type = prompt_helper.get_column_data_type(
+                    table_name=mapped_class.mapped_table_name, column_name=column_name
+                )
+
+                if column_data_type == "boolean":
                     if prompt_response_value == "YES" or prompt_response_value == "yes":
                         prompt_response_value = True
                     elif prompt_response_value == "NO" or prompt_response_value == "no":

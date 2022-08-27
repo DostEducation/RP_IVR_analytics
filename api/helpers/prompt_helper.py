@@ -1,4 +1,4 @@
-from api import helpers
+from api import helpers, db
 
 
 def split_prompt_by_hyphen(data):
@@ -33,3 +33,14 @@ def get_program_prompt_id(jsonData):
                 else None
             )
     return None
+
+
+def get_column_data_type(table_name, column_name):
+    SQL = (
+        "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}' AND COLUMN_NAME  = '{column_name}'"
+    ).format(table_name=table_name, column_name=column_name)
+    column_type = db.session.execute(SQL)
+
+    data_type = column_type.fetchone()[0]
+
+    return data_type
