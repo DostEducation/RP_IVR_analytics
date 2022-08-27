@@ -141,6 +141,16 @@ class PromptService(object):
             )
             if class_object:
                 column_name = mapped_class.mapped_table_column_name
+
+                if (
+                    mapped_class.mapped_table_name == "registration"
+                    and column_name == "has_smartphone"
+                ):
+                    if prompt_response_value == "YES" or prompt_response_value == "yes":
+                        prompt_response_value = True
+                    elif prompt_response_value == "NO" or prompt_response_value == "no":
+                        prompt_response_value = False
+
                 if not prompt_response_value or prompt_response_value == "other":
                     prompt_response_value = mapped_class.default_value
 
