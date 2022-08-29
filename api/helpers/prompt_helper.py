@@ -36,11 +36,7 @@ def get_program_prompt_id(jsonData):
 
 
 def get_column_data_type(table_name, column_name):
-    SQL = (
-        "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}' AND COLUMN_NAME  = '{column_name}'"
-    ).format(table_name=table_name, column_name=column_name)
-    column_type = db.session.execute(SQL)
+    get_column_type_query = f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}' AND COLUMN_NAME  = '{column_name}'"
+    column_type = db.session.execute(get_column_type_query)
 
-    data_type = column_type.fetchone()[0]
-
-    return data_type
+    return column_type.fetchone()[0]
