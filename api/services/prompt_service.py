@@ -97,15 +97,9 @@ class PromptService(object):
             print("Exception occurred")
 
     def fetch_prompt_response(self, prompt):
-        split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
-        split_prompt_by_underscore = helpers.split_prompt_by_underscore(
-            split_prompt_by_hyphen[-1]
-        )
-        return (
-            split_prompt_by_underscore[1]
-            if len(split_prompt_by_underscore) > 1
-            else split_prompt_by_underscore[0]
-        )
+        split_prompt_by_underscore = helpers.split_prompt_by_underscore(prompt)
+
+        return split_prompt_by_underscore[-1]
 
     def handle_prompt_mapping(
         self, data, user_details, ivr_prompt_details, prompt_response_value
