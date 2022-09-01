@@ -1,5 +1,6 @@
 from api import models, db, helpers, app
 from datetime import datetime
+from api.helpers import prompt_helper
 
 
 class PromptService(object):
@@ -141,6 +142,17 @@ class PromptService(object):
             )
             if class_object:
                 column_name = mapped_class.mapped_table_column_name
+
+                column_data_type = prompt_helper.get_column_data_type(
+                    mapped_class.mapped_table_name, column_name
+                )
+
+                if column_data_type == "boolean":
+                    if prompt_response_value.upper() == "YES":
+                        prompt_response_value = True
+                    elif prompt_response_value.upper() == "NO":
+                        prompt_response_value = False
+
                 if not prompt_response_value or prompt_response_value == "other":
                     prompt_response_value = mapped_class.default_value
 
