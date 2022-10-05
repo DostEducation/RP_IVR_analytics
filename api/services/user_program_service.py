@@ -22,5 +22,5 @@ class UserProgramService(object):
             self.user_program_data.status = (
                 models.UserProgram.UserProgramStatus.COMPLETE
             )
-            self.user_program_data.end_date = current_ist_time.date()
+            self.user_program_data.end_date = current_ist_time().date()
             db.session.commit()

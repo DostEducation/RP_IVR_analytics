@@ -1,8 +1,7 @@
 from api import services
 from flask import jsonify
-import json
-
 from api.helpers import db_helper
+import json
 
 ### Endpoint for Cloud function
 def webhook(request):

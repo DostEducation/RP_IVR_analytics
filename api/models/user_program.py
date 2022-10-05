@@ -29,7 +29,7 @@ class UserProgramQuery(BaseQuery):
             status=data["status"]
             if "status" in data
             else models.UserProgram.UserProgramStatus.IN_PROGRESS,
-            start_date=current_ist_time.date(),
+            start_date=current_ist_time().date(),
             preferred_time_slot=preferred_time_slot,
         )
         helpers.save(user_program)

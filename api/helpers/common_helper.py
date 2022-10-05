@@ -41,4 +41,4 @@ def list_having_string(input_string, list_data):
 
 
 def current_ist_time():
-    return datetime.now() + timedelta(minutes=330)
+    return datetime.utcnow() + timedelta(minutes=330)
