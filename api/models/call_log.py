@@ -32,6 +32,7 @@ class CallLog(TimestampMixin, db.Model):
         db.Integer, db.ForeignKey("user_module_content.id")
     )
     program_sequence_id = db.Column(db.Integer, db.ForeignKey("program_sequence.id"))
+    content_version_id = db.Column(db.Integer, db.ForeignKey("content_version.id"))
     call_sid = db.Column(db.Integer)
     flow_run_uuid = db.Column(db.String(255))
     call_type = db.Column(db.String(50))
