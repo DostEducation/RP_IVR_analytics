@@ -18,6 +18,7 @@ class ContentVersionQuery(BaseQuery):
 class ContentVersion(TimestampMixin, db.Model):
     query_class = ContentVersionQuery
     __tablename__ = "content_version"
+
     id = db.Column(db.Integer, primary_key=True)
     content_id = db.Column(db.Integer, db.ForeignKey("content.id", ondelete="cascade"))
     language_id = db.Column(
