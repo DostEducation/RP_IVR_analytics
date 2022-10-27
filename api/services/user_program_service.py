@@ -1,4 +1,5 @@
 from api import models, helpers, db
+from api.models import user, user_program
 
 
 class UserProgramService(object):
@@ -19,6 +20,12 @@ class UserProgramService(object):
 
         if self.user_program_data:
             self.user_program_data.status = (
-                models.UserProgram.UserProgramStatus.COMPLETE
+                models.UserProgram.UserProgramStatus.IN_PROGRESS
             )
             db.session.commit()
+        else:
+            if self.user_program_data:
+                self.user_program_data.status = (
+                    models.UserProgram.UserProgramStatus.COMPLETE
+                )
+                user_program.program_id = self.user_program_data
