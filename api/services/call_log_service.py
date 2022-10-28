@@ -1,5 +1,5 @@
 # This file is treated as service layer
-from api import models, db, helpers
+from api import models, db, helpers, app
 from datetime import datetime
 
 
@@ -71,11 +71,11 @@ class CallLogService(object):
             content_version = None
             content_id = None
             if "content_id" in jsonData:
-                content_id = (jsonData["content_id"],)
+                content_id = jsonData["content_id"]
                 content_data = models.Content.query.get(content_id)
-                language_id = (jsonData["language_id"],)
-                if language_id == None:
-                    language_id = 1
+                language_id = jsonData.get(
+                    "language_id", app.config["DEFAULT_LANGUAGE_ID"]
+                )
                 content_version = (
                     models.ContentVersion.query.get_by_laguage_and_content_id(
                         language_id, content_id
