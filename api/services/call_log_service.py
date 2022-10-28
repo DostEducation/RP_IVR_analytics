@@ -1,5 +1,5 @@
 # This file is treated as service layer
-from api import models, db, helpers
+from api import models, db, helpers, app
 from datetime import datetime
 
 
@@ -68,15 +68,26 @@ class CallLogService(object):
             if "flow" in jsonData and jsonData["flow"] is not None:
                 flow_name = helpers.fetch_by_key("name", jsonData["flow"])
 
+            content_version = None
             content_id = None
             if "content_id" in jsonData:
-                content_id = (jsonData["content_id"],)
+                content_id = jsonData["content_id"]
                 content_data = models.Content.query.get(content_id)
+                language_id = jsonData.get(
+                    "language_id", app.config["DEFAULT_LANGUAGE_ID"]
+                )
+                content_version = (
+                    models.ContentVersion.query.get_by_laguage_and_content_id(
+                        language_id, content_id
+                    )
+                )
+                content_version_id = content_version.id
                 if not content_data:
                     """If the content id is not available in the system, it will throw the error.
                     Mark it as None
                     """
                     content_id = None
+                    content_version_id = None
                     print("The Content id is not valid")
 
             new_call_log = models.CallLog(
@@ -92,6 +103,7 @@ class CallLogService(object):
                 parent_flow_name=parent_flow_data["parent_flow_name"],
                 parent_flow_run_uuid=parent_flow_data["parent_flow_run_uuid"],
                 content_id=content_id,
+                content_version_id=content_version_id,
                 flow_name=flow_name,
                 flow_category=jsonData["flow_category"]
                 if "flow_category" in jsonData
