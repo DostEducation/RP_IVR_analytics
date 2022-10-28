@@ -7,6 +7,11 @@ class UserProgramQuery(BaseQuery):
     def upsert_user_program(self, user_id, data):
         user_program_details = self.get_latest_active_user_program(user_id)
 
+        if user_program_details:
+            self.update(user_id, data)
+        else:
+            self.create(user_id, data)
+
         if not user_program_details:
             user_program_details = self.get_latest_user_program(user_id)
 
@@ -72,6 +77,8 @@ class UserProgram(TimestampMixin, db.Model):
     class UserProgramStatus(object):
         IN_PROGRESS = "in-progress"
         COMPLETE = "complete"
+        TERMINATED = "terminated"
+        UNSUB = "unsub"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))

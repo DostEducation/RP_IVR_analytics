@@ -20,12 +20,6 @@ class UserProgramService(object):
 
         if self.user_program_data:
             self.user_program_data.status = (
-                models.UserProgram.UserProgramStatus.IN_PROGRESS
+                models.UserProgram.UserProgramStatus.COMPLETE
             )
             db.session.commit()
-        else:
-            if self.user_program_data:
-                self.user_program_data.status = (
-                    models.UserProgram.UserProgramStatus.COMPLETE
-                )
-                user_program.program_id = self.user_program_data

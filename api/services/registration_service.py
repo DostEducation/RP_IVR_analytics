@@ -89,7 +89,7 @@ class RegistrationService(object):
             return
 
         if registration.status != models.Registration.RegistrationStatus.COMPLETE:
-            registration.status = (models.Registration.RegistrationStatus.INCOMPLETE,)
+            registration.status = models.Registration.RegistrationStatus.INCOMPLETE
             registration.status = models.Registration.RegistrationStatus.PENDING
             if not (registration.program_id and self.has_default_program_selection):
                 registration.program_id = self.selected_program_id
