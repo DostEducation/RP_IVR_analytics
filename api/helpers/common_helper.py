@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+
 def remove_last_string_separated_by(dataString, separator="_"):
     return dataString.rpartition(separator)[0]
 
@@ -35,3 +38,7 @@ def list_having_string(input_string, list_data):
         [list]: It will returns the list of maching substrings
     """
     return list(filter(lambda x: x in input_string.lower(), list_data))
+
+
+def current_ist_time():
+    return datetime.utcnow() + timedelta(minutes=330)

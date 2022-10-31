@@ -21,3 +21,5 @@ from .user_custom_fields import *
 from .ivr_prompt_mapping import *
 from .webhook_transaction_log import *
 from .program_sequence import *
+from .language import *
+from .content_version import *
