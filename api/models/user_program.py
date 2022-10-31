@@ -1,6 +1,7 @@
 from api.mixins import TimestampMixin
 from api import db, helpers, models, app
 from flask_sqlalchemy import BaseQuery
+from api.helpers.common_helper import current_ist_time
 
 
 class UserProgramQuery(BaseQuery):
@@ -24,6 +25,7 @@ class UserProgramQuery(BaseQuery):
             status=data["status"]
             if "status" in data
             else models.UserProgram.UserProgramStatus.IN_PROGRESS,
+            start_date=current_ist_time().date(),
             preferred_time_slot=preferred_time_slot,
         )
         helpers.save(user_program)
@@ -76,6 +78,8 @@ class UserProgram(TimestampMixin, db.Model):
     program_id = db.Column(db.Integer, db.ForeignKey("program.id"))
     preferred_time_slot = db.Column(db.String(50))
     status = db.Column(db.String(50))
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
 
     @classmethod
     def get_by_user_id(self, user_id):

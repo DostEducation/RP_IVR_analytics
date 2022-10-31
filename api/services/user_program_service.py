@@ -1,5 +1,5 @@
 from api import models, helpers, db
-from api.models import user, user_program
+from api.helpers.common_helper import current_ist_time
 
 
 class UserProgramService(object):
@@ -22,4 +22,5 @@ class UserProgramService(object):
             self.user_program_data.status = (
                 models.UserProgram.UserProgramStatus.COMPLETE
             )
+            self.user_program_data.end_date = current_ist_time().date()
             db.session.commit()
