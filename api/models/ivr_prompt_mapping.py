@@ -15,4 +15,4 @@ class IvrPromptMapping(TimestampMixin, db.Model):
     ivr_prompt_id = db.Column(db.Integer, db.ForeignKey("ivr_prompt.id"))
     mapped_table_name = db.Column(db.String(255))
     mapped_table_column_name = db.Column(db.String(255))
-    default_value = db.Column(db.String(255))
+    default_value = None
