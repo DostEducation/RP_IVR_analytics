@@ -146,8 +146,13 @@ class PromptService(object):
                         prompt_response_value = True
                     elif prompt_response_value.upper() == "NO":
                         prompt_response_value = False
+                    else:
+                        prompt_response_value = None
 
-                if not prompt_response_value or prompt_response_value == "other":
+                elif (
+                    not prompt_response_value
+                    or prompt_response_value.lower() == "other"
+                ):
                     prompt_response_value = mapped_class.default_value
 
                 self.update_mapped_fields(
@@ -165,8 +170,8 @@ class PromptService(object):
             if class_object_data:
                 setattr(class_object_data, column_name, prompt_response_value)
                 db.session.commit()
-        except:
-            print("Exception occurred")
+        except Exception as e:
+            print(f"Exception occurred: {e}")
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
