@@ -171,8 +171,7 @@ class PromptService(object):
                 setattr(class_object_data, column_name, prompt_response_value)
                 db.session.commit()
         except Exception as e:
-            print(e)
-            print("Exception occurred")
+            print(f"Exception occurred: {e}")
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
