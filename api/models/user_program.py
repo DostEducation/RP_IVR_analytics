@@ -7,10 +7,6 @@ from api.helpers.common_helper import current_ist_time
 class UserProgramQuery(BaseQuery):
     def upsert_user_program(self, user_id, data):
         user_program_details = self.get_latest_active_user_program(user_id)
-
-        if not user_program_details:
-            user_program_details = self.get_latest_user_program(user_id)
-
         if not user_program_details:
             self.create(user_id, data)
         else:
@@ -74,6 +70,8 @@ class UserProgram(TimestampMixin, db.Model):
     class UserProgramStatus(object):
         IN_PROGRESS = "in-progress"
         COMPLETE = "complete"
+        TERMINATED = "terminated"
+        UNSUB = "unsub"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
