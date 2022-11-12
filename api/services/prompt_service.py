@@ -1,5 +1,6 @@
 from api import models, db, helpers, app
 from datetime import datetime
+from api.helpers import prompt_helper
 
 
 class PromptService(object):
@@ -96,15 +97,9 @@ class PromptService(object):
             print("Exception occurred")
 
     def fetch_prompt_response(self, prompt):
-        split_prompt_by_hyphen = helpers.split_prompt_by_hyphen(prompt)
-        split_prompt_by_underscore = helpers.split_prompt_by_underscore(
-            split_prompt_by_hyphen[-1]
-        )
-        return (
-            split_prompt_by_underscore[1]
-            if len(split_prompt_by_underscore) > 1
-            else split_prompt_by_underscore[0]
-        )
+        split_prompt_by_underscore = helpers.split_prompt_by_underscore(prompt)
+
+        return split_prompt_by_underscore[-1]
 
     def handle_prompt_mapping(
         self, data, user_details, ivr_prompt_details, prompt_response_value
@@ -141,7 +136,23 @@ class PromptService(object):
             )
             if class_object:
                 column_name = mapped_class.mapped_table_column_name
-                if not prompt_response_value or prompt_response_value == "other":
+
+                column_data_type = prompt_helper.get_column_data_type(
+                    mapped_class.mapped_table_name, column_name
+                )
+
+                if column_data_type == "boolean":
+                    if prompt_response_value.upper() == "YES":
+                        prompt_response_value = True
+                    elif prompt_response_value.upper() == "NO":
+                        prompt_response_value = False
+                    else:
+                        prompt_response_value = None
+
+                elif (
+                    not prompt_response_value
+                    or prompt_response_value.lower() == "other"
+                ):
                     prompt_response_value = mapped_class.default_value
 
                 self.update_mapped_fields(
@@ -159,13 +170,13 @@ class PromptService(object):
             if class_object_data:
                 setattr(class_object_data, column_name, prompt_response_value)
                 db.session.commit()
-        except:
-            print("Exception occurred")
+        except Exception as e:
+            print(f"Exception occurred: {e}")
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
         try:
-            if keypress:
+            if keypress and len(keypress) < 5:
                 return_keypress_value = int(keypress)
             else:
                 return_keypress_value = -2
