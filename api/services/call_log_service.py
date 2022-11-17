@@ -125,10 +125,12 @@ class CallLogService(object):
                 self.call_log.user_module_content_id = data["user_module_content_id"]
             if "program_sequence_id" in data:
                 self.call_log.program_sequence_id = data["program_sequence_id"]
-            # if "content_id" in data and "language_id" in data:
-            #     content_version_id = self.get_content_version_id(data["content_id"], data["language_id"])
-            #     if content_version_id:
-            #         self.call_log.content_version_id = content_version_id
+            if "content_id" in data and "language_id" in data:
+                content_version_id = self.get_content_version_id(
+                    data["content_id"], data["language_id"]
+                )
+                if content_version_id:
+                    self.call_log.content_version_id = content_version_id
 
             db.session.commit()
         except:
