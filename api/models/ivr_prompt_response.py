@@ -20,4 +20,5 @@ class IvrPromptResponse(TimestampMixin, db.Model):
     call_sid = db.Column(db.Integer)
     call_log_id = db.Column(db.Integer, db.ForeignKey("call_log.id"))
     content_id = db.Column(db.Integer, db.ForeignKey("content.id"))
+    content_version_id = db.Column(db.Integer, db.ForeignKey("content_version.id"))
     keypress = db.Column(db.Integer)

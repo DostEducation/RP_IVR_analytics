@@ -7,6 +7,7 @@ class PromptService(object):
     def __init__(self):
         self.user_phone = None
         self.call_log_id = None
+        self.content_version_id = None
 
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
@@ -18,6 +19,7 @@ class PromptService(object):
             flow_run_uuid = helpers.fetch_by_key("uuid", jsonData["flow_run_details"])
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
         self.call_log_id = call_log_details.id
+        self.content_version_id = call_log_details.content_version_id
 
     def handle_prompt_response(self, jsonData):
         self.set_init_data(jsonData)
@@ -83,7 +85,8 @@ class PromptService(object):
                 else None,
                 user_phone=self.user_phone,
                 response=data["prompt_response"],
-                content_id=ivr_prompt_details.content_id
+                content_id=ivr_prompt_details.content_id,
+                content_version_id=self.content_version_id
                 if ivr_prompt_details
                 else None,
                 call_log_id=self.call_log_id,
