@@ -85,10 +85,10 @@ class PromptService(object):
                 else None,
                 user_phone=self.user_phone,
                 response=data["prompt_response"],
-                content_id=ivr_prompt_details.content_id,
-                content_version_id=self.content_version_id
+                content_id=ivr_prompt_details.content_id
                 if ivr_prompt_details
                 else None,
+                content_version_id=self.content_version_id,
                 call_log_id=self.call_log_id,
                 keypress=keypress,
                 created_on=data["log_created_on"]
