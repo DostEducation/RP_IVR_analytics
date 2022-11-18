@@ -40,6 +40,13 @@ class CallLogService(object):
         except:
             print("Failed to fetch flow run details")
 
+    def get_custom_fields_from_webhook_payload(self, data):
+        custom_fields = None
+        if "contact" in data and "fields" in data.contact:
+            custom_fields = data.contact.get("fields")
+
+        return custom_fields
+
     def handle_call_log(self, jsonData):
         try:
             self.set_init_data(jsonData)
@@ -50,6 +57,12 @@ class CallLogService(object):
                 if self.call_log:
                     data = {}
                     user_data = models.User.query.get_by_phone(self.user_phone)
+                    custom_fields = self.get_custom_fields_from_webhook_payload(
+                        jsonData
+                    )
+                    if "language_id" in custom_fields:
+                        data["language_id"] = custom_fields.language_id
+
                     data["user_id"] = user_data.id if user_data else None
                     self.update_call_logs(data)
                 else:
@@ -70,10 +83,12 @@ class CallLogService(object):
 
             content_id = None
             content_version_id = None
+            custom_fields = self.get_custom_fields_from_webhook_payload(jsonData)
+
             if "content_id" in jsonData:
                 content_id = jsonData["content_id"]
                 content_data = models.Content.query.get(content_id)
-                language_id = jsonData.get(
+                language_id = custom_fields.get(
                     "language_id", app.config["DEFAULT_LANGUAGE_ID"]
                 )
                 content_version_id = self.get_content_version_id(
