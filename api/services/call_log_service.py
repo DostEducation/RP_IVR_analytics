@@ -41,7 +41,7 @@ class CallLogService(object):
             print("Failed to fetch flow run details")
 
     def get_custom_fields_from_webhook_payload(self, data):
-        custom_fields = None
+        custom_fields = {}
         if "contact" in data and "fields" in data.contact:
             custom_fields = data.contact.get("fields")
 
