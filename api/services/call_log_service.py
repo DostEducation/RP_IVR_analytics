@@ -60,8 +60,14 @@ class CallLogService(object):
                     custom_fields = self.get_custom_fields_from_webhook_payload(
                         jsonData
                     )
+                    if "content_id" in jsonData:
+                        data["content_id"] = jsonData.get("content_id")
                     if "language_id" in custom_fields:
-                        data["language_id"] = custom_fields.language_id
+                        data["language_id"] = (
+                            custom_fields.get("language_id")
+                            if custom_fields.get("language_id")
+                            else app.config["DEFAULT_LANGUAGE_ID"]
+                        )
 
                     data["user_id"] = user_data.id if user_data else None
                     self.update_call_logs(data)
@@ -83,13 +89,15 @@ class CallLogService(object):
 
             content_id = None
             content_version_id = None
-            custom_fields = self.get_custom_fields_from_webhook_payload(jsonData)
 
             if "content_id" in jsonData:
                 content_id = jsonData["content_id"]
                 content_data = models.Content.query.get(content_id)
-                language_id = custom_fields.get(
-                    "language_id", app.config["DEFAULT_LANGUAGE_ID"]
+                custom_fields = self.get_custom_fields_from_webhook_payload(jsonData)
+                language_id = (
+                    custom_fields.get("language_id")
+                    if custom_fields.get("language_id")
+                    else app.config["DEFAULT_LANGUAGE_ID"]
                 )
                 content_version_id = self.get_content_version_id(
                     content_id, language_id
