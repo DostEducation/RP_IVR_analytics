@@ -165,6 +165,13 @@ class CallLogService(object):
             language_id, content_id
         )
 
+        if not content_version:
+            content_version = (
+                models.ContentVersion.query.get_by_language_and_content_id(
+                    app.config["DEFAULT_LANGUAGE_ID"], content_id
+                )
+            )
+
         return content_version.id if content_version else None
 
     def fetch_call_type(self):
