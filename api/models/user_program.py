@@ -5,13 +5,6 @@ from api.helpers.common_helper import current_ist_time
 
 
 class UserProgramQuery(BaseQuery):
-    def upsert_user_program(self, user_id, data):
-        user_program_details = self.get_latest_active_user_program(user_id)
-        if not user_program_details:
-            self.create(user_id, data)
-        else:
-            self.update(user_program_details, data)
-
     def create(self, user_id, data):
         program_id = app.config["DEFAULT_PROGRAM_ID"]
         preferred_time_slot = "AFTERNOON"

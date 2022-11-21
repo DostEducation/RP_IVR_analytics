@@ -30,12 +30,13 @@ class PromptService(object):
             user_program_data = {}
 
             user_program_data["program_id"] = helpers.get_program_prompt_id(jsonData)
-            if jsonData.get("is_last_content", None) is True:
-                models.UserProgram.query.update(user_details.id, user_program_data)
+            user_program_details = (
+                models.UserProgram.query.get_latest_active_user_program(user_details.id)
+            )
+            if not user_program_details:
+                models.UserProgram.query.create(user_details.id, user_program_data)
             else:
-                models.UserProgram.query.upsert_user_program(
-                    user_details.id, user_program_data
-                )
+                models.UserProgram.query.update(user_program_details, user_program_data)
 
         for key in data:
             if key != "result" and "category" in data[key] and "name" in data[key]:
