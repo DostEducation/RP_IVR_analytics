@@ -168,7 +168,7 @@ class CallLogService(object):
         if not content_version:
             content_version = (
                 models.ContentVersion.query.get_by_language_and_content_id(
-                    language_id, content_id
+                    app.config["DEFAULT_LANGUAGE_ID"], content_id
                 )
             )
 
