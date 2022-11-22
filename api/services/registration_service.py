@@ -17,6 +17,8 @@ class RegistrationService(object):
         self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
         selected_program_id = helpers.get_program_prompt_id(jsonData)
+        user = models.User.query.get_by_phone(self.user_phone)
+        self.user_id = user.id
         if selected_program_id:
             self.selected_program_id = selected_program_id
             self.has_default_program_selection = False
@@ -35,38 +37,35 @@ class RegistrationService(object):
                 call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
                 user_program_data = {}
                 user_program_data["program_id"] = self.selected_program_id
+                user_program = models.UserProgram.query.get_latest_active_user_program(
+                    self.user_id
+                )
                 if call_log:
                     registration_data = models.Registration.query.get_by_id(
                         call_log.registration_id
                     )
                     self.update_registration(registration_data, jsonData)
-                    user_program = (
-                        models.UserProgram.query.get_latest_active_user_program(
-                            self.user_id
-                        )
-                    )
                     if user_program:
                         models.UserProgram.query.update(user_program, user_program_data)
+                    else:
+                        models.UserProgram.query.create(self.user_id, user_program_data)
                 else:
                     registration_data = models.Registration.query.get_by_phone(
                         self.user_phone
                     )
                     if registration_data:
                         self.update_registration(registration_data, jsonData)
-                        user_program = (
-                            models.UserProgram.query.get_latest_active_user_program(
-                                self.user_id
-                            )
-                        )
                         if user_program:
                             models.UserProgram.query.update(
                                 user_program, user_program_data
                             )
+                        else:
+                            models.UserProgram.query.create(
+                                self.user_id, user_program_data
+                            )
                     else:
                         self.register(jsonData)
-                        models.UserProgram.query.create(
-                            self.user_id, self.selected_program_id
-                        )
+                        models.UserProgram.query.create(self.user_id, user_program_data)
         except Exception as e:
             print(f"Failed to handle registration: {e}")
 
