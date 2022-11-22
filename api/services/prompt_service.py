@@ -26,17 +26,6 @@ class PromptService(object):
             self.call_log_id
         )
         user_details = models.User.query.get_by_phone(self.user_phone)
-        if user_details:
-            user_program_data = {}
-
-            user_program_data["program_id"] = helpers.get_program_prompt_id(jsonData)
-            user_program_details = (
-                models.UserProgram.query.get_latest_active_user_program(user_details.id)
-            )
-            if not user_program_details:
-                models.UserProgram.query.create(user_details.id, user_program_data)
-            else:
-                models.UserProgram.query.update(user_program_details, user_program_data)
 
         for key in data:
             if key != "result" and "category" in data[key] and "name" in data[key]:

@@ -42,7 +42,7 @@ class RegistrationService(object):
                     self.update_registration(registration_data, jsonData)
                     user_program = (
                         models.UserProgram.query.get_latest_active_user_program(
-                            self.user.id
+                            self.user_id
                         )
                     )
                     if user_program:
@@ -55,7 +55,7 @@ class RegistrationService(object):
                         self.update_registration(registration_data, jsonData)
                         user_program = (
                             models.UserProgram.query.get_latest_active_user_program(
-                                self.user.id
+                                self.user_id
                             )
                         )
                         if user_program:
@@ -65,10 +65,10 @@ class RegistrationService(object):
                     else:
                         self.register(jsonData)
                         models.UserProgram.query.create(
-                            self.user.id, self.selected_program_id
+                            self.user_id, self.selected_program_id
                         )
-        except:
-            print("Failed to handle registration")
+        except Exception as e:
+            print(f"Failed to handle registration: {e}")
 
     # Handle new user registration
     def register(self, jsonData):

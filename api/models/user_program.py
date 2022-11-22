@@ -33,8 +33,8 @@ class UserProgramQuery(BaseQuery):
                     user_program_details.status = value
 
             db.session.commit()
-        except:
-            return "Failed to update user program details"
+        except Exception as e:
+            print(f"Failed to update user program details: {e}")
 
     def get_latest_active_user_program(self, user_id):
         return (
