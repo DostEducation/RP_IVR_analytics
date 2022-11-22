@@ -7,7 +7,7 @@ from api.helpers.common_helper import current_ist_time
 class UserProgramQuery(BaseQuery):
     def create(self, user_id, data):
         program_id = app.config["DEFAULT_PROGRAM_ID"]
-        preferred_time_slot = "AFTERNOON"
+        preferred_time_slot = app.config["DEFAULT_PROGRAM_TIME_CATEGORY"]
 
         if data["program_id"]:
             program_id = data["program_id"]

@@ -33,19 +33,40 @@ class RegistrationService(object):
                 )
             if flow_run_uuid:
                 call_log = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
+                user_program_data = {}
+                user_program_data["program_id"] = self.selected_program_id
                 if call_log:
                     registration_data = models.Registration.query.get_by_id(
                         call_log.registration_id
                     )
                     self.update_registration(registration_data, jsonData)
+                    user_program = (
+                        models.UserProgram.query.get_latest_active_user_program(
+                            self.user.id
+                        )
+                    )
+                    if user_program:
+                        models.UserProgram.query.update(user_program, user_program_data)
                 else:
                     registration_data = models.Registration.query.get_by_phone(
                         self.user_phone
                     )
                     if registration_data:
                         self.update_registration(registration_data, jsonData)
+                        user_program = (
+                            models.UserProgram.query.get_latest_active_user_program(
+                                self.user.id
+                            )
+                        )
+                        if user_program:
+                            models.UserProgram.query.update(
+                                user_program, user_program_data
+                            )
                     else:
                         self.register(jsonData)
+                        models.UserProgram.query.create(
+                            self.user.id, self.selected_program_id
+                        )
         except:
             print("Failed to handle registration")
 
