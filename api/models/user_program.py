@@ -10,7 +10,7 @@ class UserProgramQuery(BaseQuery):
             program_id = app.config["DEFAULT_PROGRAM_ID"]
             preferred_time_slot = app.config["DEFAULT_PROGRAM_TIME_CATEGORY"]
 
-            if data["program_id"]:
+            if data.get("program_id"):
                 program_id = data["program_id"]
 
             user_program = UserProgram(
