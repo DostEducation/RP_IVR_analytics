@@ -40,6 +40,13 @@ class CallLogService(object):
         except:
             print("Failed to fetch flow run details")
 
+    def get_custom_fields_from_webhook_payload(self, data):
+        custom_fields = {}
+        if data.get("contact") and data["contact"].get("fields"):
+            custom_fields = data["contact"].get("fields")
+
+        return custom_fields
+
     def handle_call_log(self, jsonData):
         try:
             self.set_init_data(jsonData)
@@ -50,6 +57,18 @@ class CallLogService(object):
                 if self.call_log:
                     data = {}
                     user_data = models.User.query.get_by_phone(self.user_phone)
+                    custom_fields = self.get_custom_fields_from_webhook_payload(
+                        jsonData
+                    )
+                    if "content_id" in jsonData:
+                        data["content_id"] = jsonData.get("content_id")
+                    if "language_id" in custom_fields:
+                        data["language_id"] = (
+                            custom_fields.get("language_id")
+                            if custom_fields.get("language_id")
+                            else app.config["DEFAULT_LANGUAGE_ID"]
+                        )
+
                     data["user_id"] = user_data.id if user_data else None
                     self.update_call_logs(data)
                 else:
@@ -68,20 +87,22 @@ class CallLogService(object):
             if "flow" in jsonData and jsonData["flow"] is not None:
                 flow_name = helpers.fetch_by_key("name", jsonData["flow"])
 
-            content_version = None
             content_id = None
+            content_version_id = None
+
             if "content_id" in jsonData:
                 content_id = jsonData["content_id"]
                 content_data = models.Content.query.get(content_id)
-                language_id = jsonData.get(
-                    "language_id", app.config["DEFAULT_LANGUAGE_ID"]
+                custom_fields = self.get_custom_fields_from_webhook_payload(jsonData)
+                language_id = (
+                    custom_fields.get("language_id")
+                    if custom_fields.get("language_id")
+                    else app.config["DEFAULT_LANGUAGE_ID"]
                 )
-                content_version = (
-                    models.ContentVersion.query.get_by_laguage_and_content_id(
-                        language_id, content_id
-                    )
+                content_version_id = self.get_content_version_id(
+                    content_id, language_id
                 )
-                content_version_id = content_version.id
+
                 if not content_data:
                     """If the content id is not available in the system, it will throw the error.
                     Mark it as None
@@ -127,10 +148,31 @@ class CallLogService(object):
                 self.call_log.user_module_content_id = data["user_module_content_id"]
             if "program_sequence_id" in data:
                 self.call_log.program_sequence_id = data["program_sequence_id"]
+            if "content_id" in data and "language_id" in data:
+                content_version_id = self.get_content_version_id(
+                    data["content_id"], data["language_id"]
+                )
+                if content_version_id:
+                    self.call_log.content_version_id = content_version_id
+
             db.session.commit()
         except:
             # Need to log this
             return "Failed to udpate call log"
+
+    def get_content_version_id(self, content_id, language_id):
+        content_version = models.ContentVersion.query.get_by_language_and_content_id(
+            language_id, content_id
+        )
+
+        if not content_version:
+            content_version = (
+                models.ContentVersion.query.get_by_language_and_content_id(
+                    app.config["DEFAULT_LANGUAGE_ID"], content_id
+                )
+            )
+
+        return content_version.id if content_version else None
 
     def fetch_call_type(self):
         return "outbound-call"  # TODO: Need to pass dynamic value

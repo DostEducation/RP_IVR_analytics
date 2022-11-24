@@ -5,30 +5,26 @@ from api.helpers.common_helper import current_ist_time
 
 
 class UserProgramQuery(BaseQuery):
-    def upsert_user_program(self, user_id, data):
-        user_program_details = self.get_latest_active_user_program(user_id)
-        if not user_program_details:
-            self.create(user_id, data)
-        else:
-            self.update(user_program_details, data)
-
     def create(self, user_id, data):
-        program_id = app.config["DEFAULT_PROGRAM_ID"]
-        preferred_time_slot = "AFTERNOON"
+        try:
+            program_id = app.config["DEFAULT_PROGRAM_ID"]
+            preferred_time_slot = app.config["DEFAULT_PROGRAM_TIME_CATEGORY"]
 
-        if data["program_id"]:
-            program_id = data["program_id"]
+            if data.get("program_id"):
+                program_id = data["program_id"]
 
-        user_program = UserProgram(
-            user_id=user_id,
-            program_id=program_id,
-            status=data["status"]
-            if "status" in data
-            else models.UserProgram.UserProgramStatus.IN_PROGRESS,
-            start_date=current_ist_time().date(),
-            preferred_time_slot=preferred_time_slot,
-        )
-        helpers.save(user_program)
+            user_program = UserProgram(
+                user_id=user_id,
+                program_id=program_id,
+                status=data["status"]
+                if "status" in data
+                else models.UserProgram.UserProgramStatus.IN_PROGRESS,
+                start_date=current_ist_time().date(),
+                preferred_time_slot=preferred_time_slot,
+            )
+            helpers.save(user_program)
+        except Exception as e:
+            print(f"Failed to create user_program: {e}")
 
     def update(self, user_program_details, data):
         try:
@@ -40,8 +36,8 @@ class UserProgramQuery(BaseQuery):
                     user_program_details.status = value
 
             db.session.commit()
-        except:
-            return "Failed to update user program details"
+        except Exception as e:
+            print(f"Failed to update user program details: {e}")
 
     def get_latest_active_user_program(self, user_id):
         return (

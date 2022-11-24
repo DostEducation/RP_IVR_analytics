@@ -7,7 +7,7 @@ class ContentVersionQuery(BaseQuery):
     def get_by_id(self, id):
         return self.filter(ContentVersion.id == id).first()
 
-    def get_by_laguage_and_content_id(self, language_id, content_id):
+    def get_by_language_and_content_id(self, language_id, content_id):
         return self.filter(
             ContentVersion.content_id == content_id,
             ContentVersion.language_id == language_id,
