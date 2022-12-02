@@ -12,6 +12,8 @@ class UserContactService(object):
     def init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
+        user = models.User.query.get_by_phone(self.user_phone)
+        self.user_id = user.id
         self.user_data = helpers.get_user_by_phone(self.user_phone)
         self.registration_data = helpers.get_registrant_by_phone(self.user_phone)
         self.flow_run_uuid = helpers.fetch_by_key(
@@ -21,6 +23,9 @@ class UserContactService(object):
             self.flow_run_uuid = helpers.fetch_by_key(
                 "uuid", jsonData["flow_run_details"]
             )
+        self.user_program = models.UserProgram.query.get_latest_active_user_program(
+            self.user_id
+        )
 
     def handle_contact_group(self, jsonData):
         self.init_data(jsonData)
@@ -51,6 +56,9 @@ class UserContactService(object):
         for group_uuid in active_user_group_uuid_list:
             self.mark_user_groups_as_inactive(group_uuid)
 
+        if self.user_program:
+            self.complete_user_program_using_custom_fields(jsonData)
+
     def add_group(self, group):
         user_group_data = models.UserGroup(
             user_id=self.user_data.id if self.user_data else None,
@@ -79,6 +87,9 @@ class UserContactService(object):
         )
 
         self.process_custom_fields(jsonData, user_custom_field_data)
+
+        if self.user_program:
+            self.unsub_user_program_using_contact_group(jsonData)
 
     def process_custom_fields(self, jsonData, user_custom_field_data=False):
         custom_fields = jsonData["contact"]["fields"]
@@ -210,3 +221,18 @@ class UserContactService(object):
             ]
 
         return []
+
+    def complete_user_program_using_custom_fields(self, jsonData):
+        self.init_data(jsonData)
+        custom_fields = jsonData["contact"]["fields"]
+
+        if custom_fields["dost_program_completion"] == "Completed":
+            models.UserProgram.query.mark_user_program_as_completed(jsonData)
+
+    def unsub_user_program_using_contact_group(self, jsonData):
+        self.init_data(jsonData)
+        user_groups = jsonData["contact"]["groups"]
+
+        for user_group in user_groups:
+            if user_group["name"] == "Dost-Unsub-Users":
+                models.UserProgram.query.mark_user_program_unsubscribed(jsonData)
