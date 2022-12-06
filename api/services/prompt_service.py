@@ -103,12 +103,11 @@ class PromptService(object):
         """This function will be populating different other table column based on the user prompt response.
         Note: The table need to be associated with user.
         """
-        print(user_details.id)
-        print("This is for development testing")
         try:
-            if not user_details:
-                # user id is mandatory
-                return False
+            # if not user_details:
+            #     # user id is mandatory
+            #     return False
+            print(user_details.id)
 
             prompt_response = data["category"]
             prompt_name = data["name"]
