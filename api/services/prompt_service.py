@@ -104,10 +104,9 @@ class PromptService(object):
         Note: The table need to be associated with user.
         """
         try:
-            # if not user_details:
-            #     # user id is mandatory
-            #     return False
-            print(user_details.id)
+            if not user_details:
+                # user id is mandatory
+                return False
 
             prompt_response = data["category"]
             prompt_name = data["name"]
