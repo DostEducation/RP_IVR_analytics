@@ -103,26 +103,24 @@ class PromptService(object):
         """This function will be populating different other table column based on the user prompt response.
         Note: The table need to be associated with user.
         """
-        try:
-            # if not user_details:
-            #     # user id is mandatory
-            #     return False
-            print(user_details.id)
+        # try:
+        # if not user_details:
+        #     # user id is mandatory
+        #     return False
+        print(user_details.id)
 
-            prompt_response = data["category"]
-            prompt_name = data["name"]
-            ivr_prompt_mapping_data = (
-                models.IvrPromptMapping.query.get_by_ivr_prompt_id(
-                    ivr_prompt_details.id
-                )
+        prompt_response = data["category"]
+        prompt_name = data["name"]
+        ivr_prompt_mapping_data = models.IvrPromptMapping.query.get_by_ivr_prompt_id(
+            ivr_prompt_details.id
+        )
+        if ivr_prompt_mapping_data:
+            # It means mapping exists
+            self.process_mapped_fields(
+                user_details, ivr_prompt_mapping_data, prompt_response_value
             )
-            if ivr_prompt_mapping_data:
-                # It means mapping exists
-                self.process_mapped_fields(
-                    user_details, ivr_prompt_mapping_data, prompt_response_value
-                )
-        except:
-            print("Exception occured")
+        # except:
+        #     print("Exception occured")
 
     def process_mapped_fields(
         self, user_details, ivr_prompt_mapping_data, prompt_response_value
@@ -162,13 +160,13 @@ class PromptService(object):
     def update_mapped_fields(
         self, class_object, user_details, column_name, prompt_response_value
     ):
-        try:
-            class_object_data = class_object.get_by_user_id(user_details.id)
-            if class_object_data:
-                setattr(class_object_data, column_name, prompt_response_value)
-                db.session.commit()
-        except Exception as e:
-            print(f"Exception occurred: {e}")
+        # try:
+        class_object_data = class_object.get_by_user_id(user_details.id)
+        if class_object_data:
+            setattr(class_object_data, column_name, prompt_response_value)
+            db.session.commit()
+        # except Exception as e:
+        #     print(f"Exception occurred: {e}")
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
