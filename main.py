@@ -106,6 +106,7 @@ def handle_payload(jsonData, is_retry_payload=False):
                 and not is_retry_payload
             ):
                 handle_user_group_data(jsonData)
+                unsub_user_program(jsonData)
 
             # Handle custom fields
             if (
@@ -146,3 +147,8 @@ def handle_prompts(jsonData):
 def update_user_program(JsonData):
     user_program_service = services.UserProgramService()
     user_program_service.mark_user_program_as_completed(JsonData)
+
+
+def unsub_user_program(JsonData):
+    contact_field_mapping_service = services.ContactFieldsMappingServices()
+    contact_field_mapping_service.handle_contact_groups_data(JsonData)
