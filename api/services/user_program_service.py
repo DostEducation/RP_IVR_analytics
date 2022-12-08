@@ -24,11 +24,3 @@ class UserProgramService(object):
             )
             self.user_program_data.end_date = current_ist_time().date()
             db.session.commit()
-
-    def mark_user_program_unsubscribed(self, jsonData):
-        self.set_init_data(jsonData)
-        self.user_program_data = models.UserProgram.get_by_user_id(self.user_id)
-
-        if self.user_program_data:
-            self.user_program_data.status = models.UserProgram.UserProgramStatus.UNSUB
-            db.session.commit()
