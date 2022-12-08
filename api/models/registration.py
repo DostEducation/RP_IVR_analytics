@@ -56,7 +56,7 @@ class Registration(TimestampMixin, db.Model):
     status = db.Column(db.String(50))
     signup_date = db.Column(db.DateTime)
     sector = db.Column(db.String(50), nullable=True)
-    circle_code = db.Column(db.Integer, nullable=True)
+    circle_code = db.Column(db.String(50), nullable=True)
 
     @classmethod
     def get_by_user_id(self, user_id):
