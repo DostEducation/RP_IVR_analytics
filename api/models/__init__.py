@@ -23,3 +23,4 @@ from .webhook_transaction_log import *
 from .program_sequence import *
 from .language import *
 from .content_version import *
+from .contact_fields_mapping import *
