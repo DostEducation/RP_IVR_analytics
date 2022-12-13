@@ -5,7 +5,7 @@ from flask_sqlalchemy import BaseQuery
 
 
 class IvrPromptQuery(BaseQuery):
-    def get_by_name(self, name, response):
+    def get_by_name_and_response(self, name, response):
         return (
             self.filter(
                 and_(
