@@ -33,7 +33,9 @@ class PromptService(object):
             if key != "result" and "category" in data[key] and "name" in data[key]:
                 prompt_response = data[key]["category"]
                 prompt_name = data[key]["name"]
-                ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
+                ivr_prompt_details = models.IvrPrompt.query.get_by_name(
+                    prompt_name, prompt_response
+                )
                 if ivr_prompt_details:
                     prompt_response_value = self.fetch_prompt_response(
                         data[key]["category"]
@@ -104,10 +106,9 @@ class PromptService(object):
         Note: The table need to be associated with user.
         """
         try:
-            # if not user_details:
-            #     # user id is mandatory
-            #     return False
-            print(user_details.id)
+            if not user_details:
+                # user id is mandatory
+                return False
 
             prompt_response = data["category"]
             prompt_name = data["name"]

@@ -5,11 +5,12 @@ from flask_sqlalchemy import BaseQuery
 
 
 class IvrPromptQuery(BaseQuery):
-    def get_by_name(self, name):
+    def get_by_name(self, name, response):
         return (
             self.filter(
                 and_(
                     IvrPrompt.prompt_name == name,
+                    IvrPrompt.possible_response == response,
                     IvrPrompt.status == models.IvrPrompt.IvrStatus.ACTIVE,
                 )
             )
