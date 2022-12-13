@@ -5,13 +5,23 @@ from flask_sqlalchemy import BaseQuery
 
 
 class IvrPromptQuery(BaseQuery):
-    def get_by_name_and_response(self, name, response):
+    def get_by_name(self, name):
         return (
             self.filter(
                 and_(
                     IvrPrompt.prompt_name == name,
-                    IvrPrompt.possible_response == response,
                     IvrPrompt.status == models.IvrPrompt.IvrStatus.ACTIVE,
+                )
+            )
+            .order_by(desc(IvrPrompt.created_on))
+            .first()
+        )
+
+    def get_by_response(self, response):
+        return (
+            self.filter(
+                and_(
+                    IvrPrompt.possible_response == response,
                 )
             )
             .order_by(desc(IvrPrompt.created_on))
