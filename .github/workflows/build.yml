@@ -2,7 +2,7 @@ name: build-and-deployment
 
 on:
   push:
-    branches: [bugfix/test-for-prompt-mapping-issues]
+    branches: [develop]
 
 jobs:
   # build and test jobs will be added later one we have unit tests in place
