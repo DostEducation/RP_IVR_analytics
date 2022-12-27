@@ -9,66 +9,93 @@ class ContactFieldsMappingService(object):
     def set_init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
-        user = models.User.query.get_by_phone(self.user_phone)
-        self.user_id = user.id
 
-    def handle_custom_fields_data(self, jsonData):
+    def handle_contact_fields_data(self, jsonData):
         self.set_init_data(jsonData)
         user_groups = jsonData["contact"]["groups"]
-        custom_fields = jsonData["contact"]["fields"]
+        contact_fields = jsonData["contact"]["fields"]
+        user_details = models.User.query.get_by_phone(self.user_phone)
         user_program = models.UserProgram.query.get_latest_active_user_program(
-            self.user_id
+            user_details.id
         )
 
         if user_program:
-            for user_group in user_groups:
-                if user_group in user_groups[user_group]:
-                    self.handle_contact_group_mapping(user_group)
+            if user_groups:
+                for user_group in user_groups:
+                    user_group_name = user_group["name"]
+                    user_group_details = (
+                        models.ContactFieldsMapping.query.get_by_group_and_field_name(
+                            user_group_name
+                        )
+                    )
+                    print(user_group_details)
+                    if user_group_details:
+                        self.process_contact_groups_data(
+                            user_group_details, user_details
+                        )
 
-            if custom_fields:
-                self.handle_contact_filed_mapping(custom_fields)
+            if contact_fields:
+                user_contact_field_details = (
+                    models.ContactFieldsMapping.query.get_by_group_and_field_name(
+                        contact_fields
+                    )
+                )
+                if user_contact_field_details:
+                    self.process_contact_fields_data(
+                        user_contact_field_details, user_details
+                    )
 
-    def handle_contact_group_mapping(self, user_group):
-        if not user_group:
-            return False
+    # def handle_contact_group_mapping(self, user_group_details, user_group):
+    #     if not user_group:
+    #         return False
 
-        custom_group_data = models.ContactFieldsMapping.query.get_by_field_name(
-            user_group
-        )
-        for custom_group in custom_group_data:
-            self.process_contact_groups_and_fields_data(custom_group)
+    #     contact_group_data = models.ContactFieldsMapping.query.get_by_group_and_field_id(
+    #         user_group_details.id
+    #     )
+    #     if contact_group_data:
+    #         self.process_contact_groups_data(contact_group_data)
 
-    def handle_contact_filed_mapping(self, custom_fields):
-        if not custom_fields:
-            return False
+    # def handle_contact_filed_mapping(self, user_contact_field_details, contact_fields):
+    #     print("hello")
+    #     if not contact_fields:
+    #         return False
 
-        custom_fields_data = models.ContactFieldsMapping.query.get_by_field_name(
-            custom_fields
-        )
-        for custom_field in custom_fields_data:
-            if custom_field:
-                self.process_contact_groups_and_fields_data(custom_field)
+    #     contact_fields_data = models.ContactFieldsMapping.query.get_by_group_and_field_id(
+    #         user_contact_field_details.id
+    #     )
+    #     if contact_fields_data:
+    #         self.process_contact_fields_data(contact_fields_data)
 
-    def process_contact_groups_and_fields_data(self, custom_group, custom_field):
-        if custom_group:
-            class_object = helpers.get_class_by_tablename(
-                custom_group.mapped_table_name
-            )
-            if class_object:
-                column_name = custom_group.mapped_table_column_name
+    def process_contact_groups_data(self, user_group_details, user_details):
+        try:
+            if user_group_details:
+                for user_group_detail in user_group_details:
+                    class_object = helpers.get_class_by_tablename(
+                        user_group_detail.mapped_table_name
+                    )
+                    if class_object:
+                        column_name = user_group_detail.mapped_table_column_name
 
-            self.update_user_group(class_object, column_name)
-        elif custom_field:
-            class_object = helpers.get_class_by_tablename(
-                custom_field.mapped_table_name
-            )
-            if class_object:
-                column_name = custom_field.mapped_table_column_name
+                    self.update_mapped_fields(class_object, column_name, user_details)
+        except Exception as e:
+            print(e)
 
-            self.update_user_group(class_object, column_name)
+    def process_contact_fields_data(self, user_contact_field_details, user_details):
+        try:
+            if user_contact_field_details:
+                for user_contact_field_detail in user_contact_field_details:
+                    class_object = helpers.get_class_by_tablename(
+                        user_contact_field_detail.mapped_table_name
+                    )
+                    if class_object:
+                        column_name = user_contact_field_detail.mapped_table_column_name
 
-    def update_user_group(self, class_object, column_name):
-        class_object_data = class_object.get_by_user_id(self.user_id)
+                    self.update_mapped_fields(class_object, column_name, user_details)
+        except Exception as e:
+            print(e)
+
+    def update_mapped_fields(self, class_object, column_name, user_details):
+        class_object_data = class_object.get_by_user_id(user_details.id)
         if class_object_data:
             setattr(class_object, column_name)
             db.session.commit()

@@ -4,8 +4,10 @@ from flask_sqlalchemy import BaseQuery
 
 
 class ContactFieldsMappingQuery(BaseQuery):
-    def get_by_field_name(self, field_name):
-        return self.filter(ContactFieldsMapping.field_name == field_name).all()
+    def get_by_group_and_field_name(self, field_name):
+        return self.filter(
+            ContactFieldsMapping.field_name == field_name,
+        )
 
 
 class ContactFieldsMapping(TimestampMixin, db.Model):
@@ -14,6 +16,7 @@ class ContactFieldsMapping(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     field_type = db.Column(db.String(255))
     field_name = db.Column(db.String(255))
+    mapped_table_name = db.Column(db.String(255))
     mapped_table_column_name = db.Column(db.String(255))
     mapped_table_column_value = db.Column(db.String(255))
     expected_field_data_type = db.Column(db.String(255), nullable=True)
