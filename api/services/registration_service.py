@@ -61,6 +61,7 @@ class RegistrationService(object):
                 else:
                     self.register(jsonData)
                     models.UserProgram.query.create(self.user_id, user_program_data)
+
         except Exception as e:
             print(f"Failed to handle registration: {e}")
 
