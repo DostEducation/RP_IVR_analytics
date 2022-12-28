@@ -52,13 +52,9 @@ class RegistrationService(object):
                         )
                     )
                     if user_program:
-                        if (
-                            user_program_data["program_id"]
-                            != app.config["DEFAULT_PROGRAM_ID"]
-                        ):
-                            models.UserProgram.query.update(
-                                user_program, user_program_data
-                            )
+                        if self.has_default_program_selection:
+                            user_program_data["program_id"] = user_program.program_id
+                        models.UserProgram.query.update(user_program, user_program_data)
                     else:
                         models.UserProgram.query.create(self.user_id, user_program_data)
                 else:
