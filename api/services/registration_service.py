@@ -8,7 +8,7 @@ class RegistrationService(object):
         self.system_phone = None
         self.user_phone = None
         self.user_id = None
-        self.selected_program_id = None
+        self.selected_program_id = app.config["DEFAULT_PROGRAM_ID"]
         self.has_default_program_selection = True
         self.selected_time_slot = None
 
@@ -18,11 +18,8 @@ class RegistrationService(object):
         self.user_phone = helpers.sanitize_phone_string(user_phone)
         selected_program_id = helpers.get_program_prompt_id(jsonData)
         if selected_program_id:
-            self.selected_program_id = (
-                selected_program_id
-                if self.has_default_program_selection is False
-                else app.config["DEFAULT_PROGRAM_ID"]
-            )
+            self.selected_program_id = selected_program_id
+            self.has_default_program_selection = False
 
     def handle_registration(self, jsonData):
         try:
