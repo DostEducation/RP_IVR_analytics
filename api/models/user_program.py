@@ -29,9 +29,7 @@ class UserProgramQuery(BaseQuery):
     def update(self, user_program_details, data):
         try:
             if data["program_id"]:
-                if user_program_details.program_id is not None:
-                    if data["program_id"] != app.config["DEFAULT_PROGRAM_ID"]:
-                        user_program_details.program_id = data["program_id"]
+                user_program_details.program_id = data["program_id"]
 
             for key, value in data.items():
                 if key == "status":
