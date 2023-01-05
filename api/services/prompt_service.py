@@ -33,7 +33,9 @@ class PromptService(object):
             if key != "result" and "category" in data[key] and "name" in data[key]:
                 prompt_response = data[key]["category"]
                 prompt_name = data[key]["name"]
-                ivr_prompt_details = models.IvrPrompt.query.get_by_name(prompt_name)
+                ivr_prompt_details = models.IvrPrompt.query.get_by_name_and_response(
+                    prompt_name, prompt_response
+                )
                 if ivr_prompt_details:
                     prompt_response_value = self.fetch_prompt_response(
                         data[key]["category"]
