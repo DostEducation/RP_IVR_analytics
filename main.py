@@ -122,9 +122,10 @@ def handle_payload(jsonData, is_retry_payload=False):
                 and "groups" in jsonData["contact"]
                 and jsonData["contact"]["fields"]
                 and jsonData["contact"]["groups"] is not None
+                and jsonData.get("flow_category", None) == "dry_flow"
                 and not is_retry_payload
             ):
-                handle_contact_fields(jsonData)
+                handle_contact_fields_and_groups(jsonData)
         else:
             return -1
     except:
@@ -158,7 +159,7 @@ def update_user_program(JsonData):
     user_program_service.mark_user_program_as_completed(JsonData)
 
 
-def handle_contact_fields(JsonData):
+def handle_contact_fields_and_groups(JsonData):
     custom_fields_mapping_service = services.ContactFieldsMappingService()
-    if JsonData["flow_category"] == "registration":
-        custom_fields_mapping_service.handle_contact_fields_data(JsonData)
+    custom_fields_mapping_service.handle_contact_fields_data(JsonData)
+    custom_fields_mapping_service.handle_contact_groups_data(JsonData)
