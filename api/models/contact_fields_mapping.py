@@ -1,14 +1,16 @@
-from api.mixins import TimestampMixin
 from api import db
 from flask_sqlalchemy import BaseQuery
 
 
 class ContactFieldsMappingQuery(BaseQuery):
-    def get_by_field_name(self, custom_fields):
+    def get_by_field_name(self, field_name, field_value):
         try:
-            return self.filter(ContactFieldsMapping.field_name == custom_fields).all()
+            return self.filter(
+                ContactFieldsMapping.field_name == field_name,
+                ContactFieldsMapping.expected_field_value == field_value,
+            ).all()
         except Exception as e:
-            print(f"Exception occurred: {e}")
+            print(f"Exception occurred in get_by_field_name: {e}")
 
     def get_by_group_name(self, contact_groups):
         try:
