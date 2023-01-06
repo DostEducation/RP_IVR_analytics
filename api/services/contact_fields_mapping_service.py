@@ -33,7 +33,7 @@ class ContactFieldsMappingService(object):
                                 user_contact_field_details, user_details
                             )
         except Exception as e:
-            print(f"Exception occurred in handle_contact_fields_data: {e}")
+            print(f"Exception occurred: {e}")
 
     def handle_contact_groups_data(self, jsonData):
         try:
@@ -77,7 +77,7 @@ class ContactFieldsMappingService(object):
                         user_details,
                     )
         except Exception as e:
-            print(f"Exception occurred in process_contact_fields_data: {e}")
+            print(f"Exception occurred: {e}")
 
     def process_contact_groups_data(self, user_contact_group_details, user_details):
         try:
@@ -108,4 +108,4 @@ class ContactFieldsMappingService(object):
                 setattr(class_object, column_name, mapped_table_column_value)
                 db.session.commit()
         except Exception as e:
-            print(f"Exception occurred in update_mapped_fields: {e}")
+            print(f"Exception occurred: {e}")

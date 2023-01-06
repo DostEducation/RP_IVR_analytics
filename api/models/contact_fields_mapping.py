@@ -10,7 +10,7 @@ class ContactFieldsMappingQuery(BaseQuery):
                 ContactFieldsMapping.expected_field_value == field_value,
             ).all()
         except Exception as e:
-            print(f"Exception occurred in get_by_field_name: {e}")
+            print(f"Exception occurred: {e}")
 
     def get_by_group_name(self, contact_groups):
         try:
