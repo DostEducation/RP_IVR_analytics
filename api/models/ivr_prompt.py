@@ -17,6 +17,19 @@ class IvrPromptQuery(BaseQuery):
             .first()
         )
 
+    def get_by_name_and_response(self, name, response):
+        return (
+            self.filter(
+                and_(
+                    IvrPrompt.prompt_name == name,
+                    IvrPrompt.possible_response == response,
+                    IvrPrompt.status == models.IvrPrompt.IvrStatus.ACTIVE,
+                )
+            )
+            .order_by(desc(IvrPrompt.created_on))
+            .first()
+        )
+
 
 class IvrPrompt(TimestampMixin, db.Model):
     query_class = IvrPromptQuery
