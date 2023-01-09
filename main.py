@@ -119,9 +119,9 @@ def handle_payload(jsonData, is_retry_payload=False):
             # Handle groups and fields
             if (
                 "fields"
-                and "groups" in jsonData["contact"]
+                or "groups" in jsonData["contact"]
                 and jsonData["contact"]["fields"]
-                and jsonData["contact"]["groups"] is not None
+                or jsonData["contact"]["groups"] is not None
                 and jsonData.get("flow_category", None) == "dry_flow"
                 and not is_retry_payload
             ):
