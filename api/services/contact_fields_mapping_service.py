@@ -99,9 +99,9 @@ class ContactFieldsMappingService(object):
         self, table_object, column_name, mapped_table_column_value, user_details
     ):
         try:
-            class_object_data = table_object.get_by_user_id(user_details.id)
-            if class_object_data:
-                setattr(class_object_data, column_name, mapped_table_column_value)
+            table_data = table_object.get_by_user_id(user_details.id)
+            if table_data:
+                setattr(table_data, column_name, mapped_table_column_value)
                 db.session.commit()
         except Exception as e:
             print(f"Exception occurred: {e}")

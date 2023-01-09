@@ -117,10 +117,7 @@ def handle_payload(jsonData, is_retry_payload=False):
                 handle_user_custom_field_data(jsonData)
 
             # Handle groups and fields
-            if (
-                jsonData.get("flow_category", None) == "dry_flow"
-                and not is_retry_payload
-            ):
+            if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
                 handle_contact_fields_and_groups(jsonData)
         else:
             return -1
