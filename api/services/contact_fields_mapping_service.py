@@ -18,24 +18,19 @@ class ContactFieldsMappingService(object):
 
             custom_fields = jsonData["contact"]["fields"]
 
-            if custom_fields:
-                for key in custom_fields:
-                    field_value = custom_fields[key]
-                    if key in custom_fields and field_value:
-                        field_name = key
-                        user_contact_field_mapping = (
-                            models.ContactFieldsMapping.query.get_by_field_name(
-                                field_name, field_value
-                            )
+            for field_name, field_value in custom_fields.items():
+                if field_value:
+                    user_contact_field_mapping = (
+                        models.ContactFieldsMapping.query.get_by_field_name(
+                            field_name, field_value
                         )
-                        if user_contact_field_mapping:
-                            self.process_contact_fields_data(
-                                user_contact_field_mapping, user_details
-                            )
+                    )
+                    if user_contact_field_mapping:
+                        self.process_contact_fields_data(
+                            user_contact_field_mapping, user_details
+                        )
         except Exception as e:
-            print(
-                f"Error occurred while handling custom field mapping. Exception:  {e}"
-            )
+            print(f"Error occurred while handling custom field mapping. Exception: {e}")
 
     def handle_contact_groups_data(self, jsonData):
         try:
@@ -46,36 +41,33 @@ class ContactFieldsMappingService(object):
 
             contact_groups = jsonData["contact"]["groups"]
 
-            if contact_groups:
-                for contact_group in contact_groups:
-                    contact_group_name = contact_group["name"]
-                    user_contact_group_mapping = (
-                        models.ContactFieldsMapping.query.get_by_group_name(
-                            contact_group_name
-                        )
+            for contact_group in contact_groups:
+                contact_group_name = contact_group["name"]
+                user_contact_group_mapping = (
+                    models.ContactFieldsMapping.query.get_by_group_name(
+                        contact_group_name
                     )
-                    if user_contact_group_mapping:
-                        self.process_contact_groups_data(
-                            user_contact_group_mapping, user_details
-                        )
+                )
+                if user_contact_group_mapping:
+                    self.process_contact_groups_data(
+                        user_contact_group_mapping, user_details
+                    )
         except Exception as e:
-            print(
-                f"Error occurred while handling custom field mapping. Exception:  {e}"
-            )
+            print(f"Error occurred while handling custom field mapping. Exception: {e}")
 
     def process_contact_fields_data(self, user_contact_field_details, user_details):
         try:
             for user_contact_field_detail in user_contact_field_details:
-                class_object = helpers.get_class_by_tablename(
+                table_object = helpers.get_class_by_tablename(
                     user_contact_field_detail.mapped_table_name
                 )
-                if class_object:
+                if table_object:
                     column_name = user_contact_field_detail.mapped_table_column_name
                     mapped_table_column_value = (
                         user_contact_field_detail.mapped_table_column_value
                     )
                     self.update_mapped_fields(
-                        class_object,
+                        table_object,
                         column_name,
                         mapped_table_column_value,
                         user_details,
@@ -86,16 +78,16 @@ class ContactFieldsMappingService(object):
     def process_contact_groups_data(self, user_contact_group_details, user_details):
         try:
             for user_contact_group_detail in user_contact_group_details:
-                class_object = helpers.get_class_by_tablename(
+                table_object = helpers.get_class_by_tablename(
                     user_contact_group_detail.mapped_table_name
                 )
-                if class_object:
+                if table_object:
                     column_name = user_contact_group_detail.mapped_table_column_name
                     mapped_table_column_value = (
                         user_contact_group_detail.mapped_table_column_value
                     )
                     self.update_mapped_fields(
-                        class_object,
+                        table_object,
                         column_name,
                         mapped_table_column_value,
                         user_details,
@@ -104,16 +96,12 @@ class ContactFieldsMappingService(object):
             print(f"Exception occurred: {e}")
 
     def update_mapped_fields(
-        self, class_object, column_name, mapped_table_column_value, user_details
+        self, table_object, column_name, mapped_table_column_value, user_details
     ):
         try:
-            class_object_data = class_object.get_by_user_id(user_details.id)
-            user_program = models.UserProgram.query.get_latest_active_user_program(
-                user_details.id
-            )
+            class_object_data = table_object.get_by_user_id(user_details.id)
             if class_object_data:
-                if user_program:
-                    setattr(class_object_data, column_name, mapped_table_column_value)
-                    db.session.commit()
+                setattr(class_object_data, column_name, mapped_table_column_value)
+                db.session.commit()
         except Exception as e:
             print(f"Exception occurred: {e}")
