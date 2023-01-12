@@ -101,8 +101,14 @@ class ContactFieldsMappingService(object):
         try:
             table_data = table_object.get_by_user_id(user_details.id)
             if table_data:
-                if table_data.status != mapped_table_column_value:
-                    setattr(table_data, column_name, mapped_table_column_value)
-                    db.session.commit()
+                for table_data_column, table_data_column_value in vars(
+                    table_data
+                ).items():
+                    if (
+                        table_data_column == column_name
+                        and table_data_column_value != mapped_table_column_value
+                    ):
+                        setattr(table_data, column_name, mapped_table_column_value)
+                        db.session.commit()
         except Exception as e:
             print(f"Exception occurred: {e}")
