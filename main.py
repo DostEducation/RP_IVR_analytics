@@ -115,6 +115,10 @@ def handle_payload(jsonData, is_retry_payload=False):
                 and not is_retry_payload
             ):
                 handle_user_custom_field_data(jsonData)
+
+            # Handle groups and fields
+            if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
+                handle_contact_fields_and_groups(jsonData)
         else:
             return -1
     except:
@@ -146,3 +150,13 @@ def handle_prompts(jsonData):
 def update_user_program(JsonData):
     user_program_service = services.UserProgramService()
     user_program_service.mark_user_program_as_completed(JsonData)
+
+
+def handle_contact_fields_and_groups(JsonData):
+    custom_fields_mapping_service = services.ContactFieldsMappingService()
+    contact_data = JsonData["contact"]
+    if contact_data.get("fields"):
+        custom_fields_mapping_service.handle_contact_fields_data(JsonData)
+
+    if contact_data.get("groups"):
+        custom_fields_mapping_service.handle_contact_groups_data(JsonData)
