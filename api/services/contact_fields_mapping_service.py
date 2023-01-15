@@ -9,6 +9,9 @@ class ContactFieldsMappingService(object):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
 
+    def contact_field_mappings():
+        return db.session.query(models.ContactFieldsMapping).all()
+
     def handle_contact_fields_data(self, jsonData):
         try:
             self.set_init_data(jsonData)
@@ -16,14 +19,15 @@ class ContactFieldsMappingService(object):
             if not user_details:
                 return False
 
-            contact_field_mappings = db.session.query(models.ContactFieldsMapping).all()
-            for contact_field_mapping in contact_field_mappings:
+            for (
+                contact_field_mapping
+            ) in ContactFieldsMappingService.contact_field_mappings():
                 field_name = contact_field_mapping.field_name
                 if field_name in jsonData["contact"]["fields"]:
                     field_value = jsonData["contact"]["fields"].get(field_name)
                     if field_value:
                         self.process_contact_fields_data(
-                            contact_field_mapping, user_details
+                            contact_field_mapping, user_details, field_value
                         )
         except Exception as e:
             print(f"Error occurred while handling custom field mapping. Exception: {e}")
@@ -35,8 +39,9 @@ class ContactFieldsMappingService(object):
             if not user_details:
                 return False
 
-            custom_group_mappings = db.session.query(models.ContactFieldsMapping).all()
-            for custom_group_mapping in custom_group_mappings:
+            for (
+                custom_group_mapping
+            ) in ContactFieldsMappingService.contact_field_mappings():
                 for group in jsonData["contact"]["groups"]:
                     if custom_group_mapping.field_name in group["name"]:
                         self.process_contact_groups_data(
@@ -45,7 +50,9 @@ class ContactFieldsMappingService(object):
         except Exception as e:
             print(f"Error occurred while handling custom field mapping. Exception: {e}")
 
-    def process_contact_fields_data(self, user_contact_field_details, user_details):
+    def process_contact_fields_data(
+        self, user_contact_field_details, user_details, field_value
+    ):
         try:
             table_object = helpers.get_class_by_tablename(
                 user_contact_field_details.mapped_table_name
@@ -55,12 +62,21 @@ class ContactFieldsMappingService(object):
                 mapped_table_column_value = (
                     user_contact_field_details.mapped_table_column_value
                 )
-                self.update_mapped_fields(
-                    table_object,
-                    column_name,
-                    mapped_table_column_value,
-                    user_details,
-                )
+
+            if user_contact_field_details.expected_field_data_type == "boolean":
+                if field_value.upper() == "YES":
+                    mapped_table_column_value = True
+                elif field_value.upper() == "NO":
+                    mapped_table_column_value = False
+                else:
+                    mapped_table_column_value = None
+
+            self.update_mapped_fields(
+                table_object,
+                column_name,
+                mapped_table_column_value,
+                user_details,
+            )
         except Exception as e:
             print(f"Exception occurred: {e}")
 
