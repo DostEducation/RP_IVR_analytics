@@ -18,7 +18,7 @@ class ContactFieldsMappingQuery(BaseQuery):
         except Exception as e:
             print(f"Exception occurred: {e}")
 
-    def get_all_campaign_mapping(self):
+    def get_all_contact_fields_mapping(self):
         return db.session.query(ContactFieldsMapping).all()
 
 
