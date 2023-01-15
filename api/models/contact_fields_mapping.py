@@ -18,6 +18,9 @@ class ContactFieldsMappingQuery(BaseQuery):
         except Exception as e:
             print(f"Exception occurred: {e}")
 
+    def contact_field_mappings(self):
+        return db.session.query(ContactFieldsMapping).all()
+
 
 class ContactFieldsMapping(db.Model):
     query_class = ContactFieldsMappingQuery

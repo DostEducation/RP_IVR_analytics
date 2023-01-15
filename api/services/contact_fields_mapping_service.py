@@ -9,9 +9,6 @@ class ContactFieldsMappingService(object):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
 
-    def contact_field_mappings():
-        return db.session.query(models.ContactFieldsMapping).all()
-
     def handle_contact_fields_data(self, jsonData):
         try:
             self.set_init_data(jsonData)
@@ -21,7 +18,7 @@ class ContactFieldsMappingService(object):
 
             for (
                 contact_field_mapping
-            ) in ContactFieldsMappingService.contact_field_mappings():
+            ) in models.ContactFieldsMapping.query.contact_field_mappings():
                 field_name = contact_field_mapping.field_name
                 if field_name in jsonData["contact"]["fields"]:
                     field_value = jsonData["contact"]["fields"].get(field_name)
@@ -41,7 +38,7 @@ class ContactFieldsMappingService(object):
 
             for (
                 custom_group_mapping
-            ) in ContactFieldsMappingService.contact_field_mappings():
+            ) in models.ContactFieldsMapping.query.contact_field_mappings():
                 for group in jsonData["contact"]["groups"]:
                     if custom_group_mapping.field_name in group["name"]:
                         self.process_contact_groups_data(
@@ -63,10 +60,10 @@ class ContactFieldsMappingService(object):
                     user_contact_field_details.mapped_table_column_value
                 )
 
-            if user_contact_field_details.expected_field_data_type == "boolean":
-                if field_value.upper() == "YES":
+            if user_contact_field_details.expected_field_data_type.lower() == "boolean":
+                if field_value.upper() == "TRUE":
                     mapped_table_column_value = True
-                elif field_value.upper() == "NO":
+                elif field_value.upper() == "FALSE":
                     mapped_table_column_value = False
                 else:
                     mapped_table_column_value = None
