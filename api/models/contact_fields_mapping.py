@@ -14,12 +14,12 @@ class ContactFieldsMappingQuery(BaseQuery):
 
     def get_by_group_name(self, contact_groups):
         try:
-            return self.all()
+            return self.filter(ContactFieldsMapping.field_name == contact_groups).all()
         except Exception as e:
             print(f"Exception occurred: {e}")
 
     def get_all_contact_fields_mapping(self):
-        return db.session.query(ContactFieldsMapping).all()
+        return self.all()
 
 
 class ContactFieldsMapping(db.Model):
