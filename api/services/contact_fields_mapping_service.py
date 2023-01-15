@@ -18,7 +18,7 @@ class ContactFieldsMappingService(object):
 
             for (
                 contact_field_mapping
-            ) in models.ContactFieldsMapping.query.contact_field_mappings():
+            ) in models.ContactFieldsMapping.query.get_all_campaign_mapping():
                 field_name = contact_field_mapping.field_name
                 if field_name in jsonData["contact"]["fields"]:
                     field_value = jsonData["contact"]["fields"].get(field_name)
@@ -38,7 +38,7 @@ class ContactFieldsMappingService(object):
 
             for (
                 custom_group_mapping
-            ) in models.ContactFieldsMapping.query.contact_field_mappings():
+            ) in models.ContactFieldsMapping.query.get_all_campaign_mapping():
                 for group in jsonData["contact"]["groups"]:
                     if custom_group_mapping.field_name in group["name"]:
                         self.process_contact_groups_data(
