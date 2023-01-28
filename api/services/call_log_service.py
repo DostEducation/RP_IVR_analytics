@@ -144,8 +144,6 @@ class CallLogService(object):
             self.call_log.updated_on = datetime.utcnow()
             if "user_id" in data:
                 self.call_log.user_id = data["user_id"]
-            if "user_module_content_id" in data:
-                self.call_log.user_module_content_id = data["user_module_content_id"]
             if "program_sequence_id" in data:
                 self.call_log.program_sequence_id = data["program_sequence_id"]
             if "content_id" in data and "language_id" in data:
@@ -179,12 +177,6 @@ class CallLogService(object):
 
     def fetch_call_scheduled_by(self):
         return "rapidpro"  # TODO: Need to pass dynamic value
-
-    def update_user_module_content_id_in_call_log(self, user_module_content_id):
-        if self.call_log and user_module_content_id:
-            data = {}
-            data["user_module_content_id"] = user_module_content_id
-            self.update_call_logs(data)
 
     def update_program_sequence_id_in_call_log(self, program_sequence_id):
         if self.call_log and program_sequence_id:
