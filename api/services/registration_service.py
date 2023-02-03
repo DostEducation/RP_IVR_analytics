@@ -1,6 +1,11 @@
 # This file is treated as service layer
 from api import models, db, helpers, app
 from datetime import datetime
+import logging
+
+# set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class RegistrationService(object):
@@ -20,6 +25,12 @@ class RegistrationService(object):
         if selected_program_id:
             self.selected_program_id = selected_program_id
             self.has_default_program_selection = False
+            logger.info("User has selected program id: %s", self.selected_program_id)
+        else:
+            logger.warning(
+                "User has not selected program id, using default id: %s",
+                self.selected_program_id,
+            )
 
     def handle_registration(self, jsonData):
         try:
@@ -57,15 +68,24 @@ class RegistrationService(object):
                         models.UserProgram.query.update(user_program, user_program_data)
                     else:
                         models.UserProgram.query.create(self.user_id, user_program_data)
+                        logger.info(
+                            f"Successfully updated user program with ID: {user_program.id}"
+                        )
                 else:
                     self.register(jsonData)
                     models.UserProgram.query.create(self.user_id, user_program_data)
+                    logger.info(
+                        f"Successfully created new user program with user ID: {self.user_id}"
+                    )
+            else:
+                logger.warning(f"No flow run UUID found in jsonData: {jsonData}")
 
         except Exception as e:
-            print(f"Failed to handle registration: {e}")
+            logger.error(f"Failed to handle registration: {e}")
 
     # Handle new user registration
     def register(self, jsonData):
+        logger.info(f"Starting registration for user with phone {self.user_phone}")
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
         if self.selected_program_id:
             self.user_id = self.create_user(jsonData)
@@ -91,7 +111,17 @@ class RegistrationService(object):
                 == models.Registration.RegistrationStatus.COMPLETE
                 else None,
             )
-            helpers.save(registrant)
+            try:
+                helpers.save(registrant)
+                logger.info(
+                    f"Successfully registered user with phone {self.user_phone}"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Failed to save registration data for user with phone {self.user_phone}: {e}"
+                )
+        else:
+            logger.warning(f"System phone not found for {self.system_phone}")
 
     def update_registration(self, registration, jsonData):
         """Updates the registration data
@@ -101,6 +131,7 @@ class RegistrationService(object):
             jsonData (json): Takes request json for updating registration fields
         """
         if not registration:
+            logger.warning("No registration data found to update.")
             return
 
         self.user_id = self.create_user(jsonData) if self.selected_program_id else None
@@ -109,9 +140,11 @@ class RegistrationService(object):
             if not (registration.program_id and self.has_default_program_selection):
                 # Update the registration program id if the registration is not completed.
                 registration.program_id = self.selected_program_id
+                logger.info("Updating program_id in the registration.")
             if not self.has_default_program_selection:
                 # Update the registration signup date if the registration is not completed.
                 registration.signup_date = datetime.now()
+                logger.info("Updating signup_date in the registration.")
 
             registration.status = models.Registration.RegistrationStatus.INCOMPLETE
             if not self.has_default_program_selection:
@@ -120,16 +153,27 @@ class RegistrationService(object):
         if self.user_id:
             registration.user_id = self.user_id
             registration.has_received_callback = True
-            db.session.commit()
+            try:
+                db.session.commit()
+                logger.info("Registration updated successfully.")
+            except Exception as e:
+                logger.error(f"Failed to update registration: {e}")
 
     def create_user(self, jsonData):
         user = models.User.query.get_by_phone(self.user_phone)
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
         if not user:
+            logger.info("User not found in the database. Creating a new user.")
             user = models.User(
                 state=system_phone_details.state,
                 phone=self.user_phone,
                 partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
             )
             helpers.save(user)
+        else:
+            logger.warning(
+                "User with phone number {} already exists in the database.".format(
+                    self.user_phone
+                )
+            )
         return user.id

@@ -1,4 +1,10 @@
+# This file is treated as service layer
 from api import models, db, helpers
+import logging
+
+# set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class ContactFieldsMappingService(object):
@@ -14,6 +20,7 @@ class ContactFieldsMappingService(object):
             self.set_init_data(jsonData)
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
+                logger.warning("User details not found for the given phone number")
                 return False
 
             for (
@@ -27,13 +34,16 @@ class ContactFieldsMappingService(object):
                             contact_field_mapping, user_details, field_value
                         )
         except Exception as e:
-            print(f"Error occurred while handling custom field mapping. Exception: {e}")
+            logger.error(
+                f"Error occurred while handling custom field mapping. Exception: {e}"
+            )
 
     def handle_contact_groups_data(self, jsonData):
         try:
             self.set_init_data(jsonData)
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
+                logger.warning("User details not found for the given phone number")
                 return False
 
             for (
@@ -45,7 +55,9 @@ class ContactFieldsMappingService(object):
                             custom_group_mapping, user_details
                         )
         except Exception as e:
-            print(f"Error occurred while handling custom field mapping. Exception: {e}")
+            logger.error(
+                f"Error occurred while handling custom field mapping. Exception: {e}"
+            )
 
     def process_contact_fields_data(
         self, user_contact_field_details, user_details, field_value
@@ -67,6 +79,7 @@ class ContactFieldsMappingService(object):
                     mapped_table_column_value = False
                 else:
                     mapped_table_column_value = None
+                    logger.warning("field_value is not a valid boolean value.")
 
             self.update_mapped_fields(
                 table_object,
@@ -75,7 +88,7 @@ class ContactFieldsMappingService(object):
                 user_details,
             )
         except Exception as e:
-            print(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred: {e}")
 
     def process_contact_groups_data(self, user_contact_group_details, user_details):
         try:
@@ -94,7 +107,7 @@ class ContactFieldsMappingService(object):
                     user_details,
                 )
         except Exception as e:
-            print(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred: {e}")
 
     def update_mapped_fields(
         self, table_object, column_name, mapped_table_column_value, user_details
@@ -105,5 +118,8 @@ class ContactFieldsMappingService(object):
                 if getattr(table_data, column_name) != mapped_table_column_value:
                     setattr(table_data, column_name, mapped_table_column_value)
                     db.session.commit()
+                    logger.info(
+                        f"Successfully updated {column_name} with value {mapped_table_column_value} for user with id {user_details.id}"
+                    )
         except Exception as e:
-            print(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred: {e}")

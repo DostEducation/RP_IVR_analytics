@@ -1,4 +1,10 @@
+# This file is treated as service layer
 from api import models, db, helpers
+import logging
+
+# set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class UserContactService(object):
@@ -21,6 +27,19 @@ class UserContactService(object):
             self.flow_run_uuid = helpers.fetch_by_key(
                 "uuid", jsonData["flow_run_details"]
             )
+        if self.user_data is None:
+            logger.error(
+                "User data not found for phone number: {}".format(self.user_phone)
+            )
+        if self.registration_data is None:
+            logger.warning(
+                "Registration data not found for phone number: {}".format(
+                    self.user_phone
+                )
+            )
+        logger.info(
+            "User data initialized with phone number: {}".format(self.user_phone)
+        )
 
     def handle_contact_group(self, jsonData):
         self.init_data(jsonData)
@@ -42,14 +61,19 @@ class UserContactService(object):
                 and group_data.status == models.UserGroup.UserGroupStatus.INACTIVE
             ):
                 self.update_group(group_data)
+                logger.info(f'Group {group["uuid"]} updated for user {self.user_phone}')
             elif not group_data:
                 self.add_group(group)
+                logger.info(f'Group {group["uuid"]} added for user {self.user_phone}')
 
             if group["uuid"] in active_user_group_uuid_list:
                 active_user_group_uuid_list.pop(group["uuid"])
 
         for group_uuid in active_user_group_uuid_list:
             self.mark_user_groups_as_inactive(group_uuid)
+            logger.warning(
+                f"Group {group_uuid} marked as inactive for user {self.user_phone}"
+            )
 
     def add_group(self, group):
         user_group_data = models.UserGroup(
@@ -62,11 +86,19 @@ class UserContactService(object):
             group_uuid=group["uuid"],
             status=models.UserGroup.UserGroupStatus.ACTIVE,
         )
-        helpers.save(user_group_data)
+        try:
+            helpers.save(user_group_data)
+            logger.info(f"Successfully added group: {group['name']}")
+        except Exception as e:
+            logger.error(f"Failed to add group: {group['name']}. Error: {str(e)}")
 
     def update_group(self, data):
         data.status = models.UserGroup.UserGroupStatus.ACTIVE
-        db.session.commit()
+        try:
+            db.session.commit()
+            logger.info(f"Successfully updated group: {data.group_name}")
+        except Exception as e:
+            logger.error(f"Failed to update group: {data.group_name}. Error: {str(e)}")
 
     def handle_custom_fields(self, jsonData):
         """Handle contact custom fields data
@@ -77,6 +109,20 @@ class UserContactService(object):
         user_custom_field_data = models.UserCustomFields.query.get_by_user_phone(
             self.user_phone
         )
+
+        logger.info(
+            "Getting custom field data for user with phone number: %s", self.user_phone
+        )
+        if user_custom_field_data:
+            logger.info(
+                "Found custom field data for user with phone number: %s",
+                self.user_phone,
+            )
+        else:
+            logger.warning(
+                "No custom field data found for user with phone number: %s",
+                self.user_phone,
+            )
 
         self.process_custom_fields(jsonData, user_custom_field_data)
 
@@ -110,17 +156,24 @@ class UserContactService(object):
             ):
                 userdata = self.get_user_custom_fields_object(field_name, field_value)
                 user_custom_contact_data.extend(userdata)
+                logger.info(f"Custom field {field_name} with value {field_value} added")
             elif custom_fields_conditions and not self.check_if_exist(
                 active_custom_fields_key_values, field_name, field_value
             ):
                 models.UserCustomFields.query.set_custom_field_as_active(
                     field_name, field_value, self.user_phone
                 )
+                logger.info(
+                    f"Custom field {field_name} with value {field_value} set as active"
+                )
             elif custom_fields_conditions and self.check_if_exist(
                 active_custom_fields_key_values, field_name, field_value
             ):
                 active_custom_fields_key_values.pop(
                     str(field_name) + "_" + str(field_value)
+                )
+                logger.info(
+                    f"Custom field {field_name} with value {field_value} already exists"
                 )
 
         for (
@@ -131,9 +184,16 @@ class UserContactService(object):
             models.UserCustomFields.query.set_custom_field_as_inactive(
                 self.user_phone, custom_field_key, custom_field_value
             )
+            logger.warning(
+                f"Custom field {custom_field_key} with value {custom_field_value} set as inactive"
+            )
 
         if user_custom_contact_data:
-            helpers.save_batch(user_custom_contact_data)
+            try:
+                helpers.save_batch(user_custom_contact_data)
+                logger.info(f"{len(user_custom_contact_data)}")
+            except Exception as e:
+                logger.error(f"Error while processing custom fields: {e}")
 
     def fetch_fields_key_value(self, user_custom_field_data):
         """Format the existing fields in key value pair
@@ -145,9 +205,12 @@ class UserContactService(object):
 
         data_list = {}
         for data in user_custom_field_data:
-            data_list[
-                str(data.field_name) + "_" + str(data.field_value)
-            ] = data.field_value
+            try:
+                data_list[
+                    str(data.field_name) + "_" + str(data.field_value)
+                ] = data.field_value
+            except Exception as e:
+                logger.error(f"Error while fetching key values: {e}")
         return data_list
 
     def check_if_exist(self, fields_key_values, field_name, field_value):
@@ -163,6 +226,7 @@ class UserContactService(object):
             [bool]: Returns whether the field name and value exists.
         """
         #
+        logger.info("Checking if field name and value exist")
         key_index = str(field_name) + "_" + str(field_value)
         return (
             True
@@ -175,6 +239,7 @@ class UserContactService(object):
         )
 
     def get_user_custom_fields_object(self, field_name, field_value):
+        logger.info("Getting user custom fields object")
         return [
             models.UserCustomFields(
                 user_id=self.user_data.id if self.user_data else None,
@@ -190,6 +255,7 @@ class UserContactService(object):
         ]
 
     def custom_fields_conditions(self, field_name, field_value):
+        logger.info("Checking if custom fields conditions are met")
         return (
             True
             if field_value is not None
@@ -198,15 +264,24 @@ class UserContactService(object):
         )
 
     def mark_user_groups_as_inactive(self, group_uuid):
-        models.UserGroup.query.mark_user_groups_as_inactive(self.user_phone, group_uuid)
-        db.session.commit()
+        logger.info("Marking user groups as inactive, group UUID: %s", group_uuid)
+        try:
+            models.UserGroup.query.mark_user_groups_as_inactive(
+                self.user_phone, group_uuid
+            )
+            db.session.commit()
+            logger.info("User groups marked as inactive successfully")
+        except Exception as e:
+            logger.error("Error while marking user groups as inactive: %s", e)
 
     def get_active_custom_fields(self, user_custom_field_data):
         if user_custom_field_data:
+            logger.info("Found active custom fields")
             return [
                 data
                 for data in user_custom_field_data
                 if data.status == models.UserCustomFields.UserCustomFieldStatus.ACTIVE
             ]
-
-        return []
+        else:
+            logger.warning("No custom fields found")
+            return []

@@ -2,6 +2,7 @@ from api.mixins import TimestampMixin
 from api import db, helpers, models, app
 from flask_sqlalchemy import BaseQuery
 from api.helpers.common_helper import current_ist_time
+import logging
 
 
 class UserProgramQuery(BaseQuery):
@@ -24,7 +25,7 @@ class UserProgramQuery(BaseQuery):
             )
             helpers.save(user_program)
         except Exception as e:
-            print(f"Failed to create user_program: {e}")
+            logging.error(f"Failed to create user_program: {e}")
 
     def update(self, user_program_details, data):
         try:
@@ -37,7 +38,7 @@ class UserProgramQuery(BaseQuery):
 
             db.session.commit()
         except Exception as e:
-            print(f"Failed to update user program details: {e}")
+            logging.error(f"Failed to update user program details: {e}")
 
     def get_latest_active_user_program(self, user_id):
         return (

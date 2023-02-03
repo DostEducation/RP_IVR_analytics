@@ -1,6 +1,11 @@
 # This file is treated as service layer
 from api import models, db, helpers, app
 from datetime import datetime
+import logging
+
+# set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class CallLogService(object):
@@ -15,13 +20,20 @@ class CallLogService(object):
         self.flow_category = models.CallLog.FlowCategories.OTHER
 
     def set_init_data(self, jsonData):
-        user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
-        self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
-        self.user_phone = helpers.sanitize_phone_string(user_phone)
-        self.flow_run_uuid = helpers.fetch_by_key(
-            "run_uuid", jsonData
-        )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
-        self.handle_flow_run_details(jsonData)
+        try:
+            user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
+            self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
+            self.user_phone = helpers.sanitize_phone_string(user_phone)
+            self.flow_run_uuid = helpers.fetch_by_key(
+                "run_uuid", jsonData
+            )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
+            self.handle_flow_run_details(jsonData)
+        except KeyError as e:
+            logger.error("KeyError in set_init_data: {}".format(e))
+        except Exception as e:
+            logger.error("Error in set_init_data: {}".format(e))
+        else:
+            logger.info("Data initialized successfully in set_init_data")
 
     def handle_flow_run_details(self, jsonData):
         """To handle flow run details
@@ -37,14 +49,16 @@ class CallLogService(object):
                     "created_on", jsonData["flow_run_details"]
                 )
 
-        except:
-            print("Failed to fetch flow run details")
+        except Exception as e:
+            logger.error("Failed to fetch flow run details: %s", e)
 
     def get_custom_fields_from_webhook_payload(self, data):
         custom_fields = {}
         if data.get("contact") and data["contact"].get("fields"):
             custom_fields = data["contact"].get("fields")
 
+        else:
+            logger.warning("No custom fields found in the webhook payload")
         return custom_fields
 
     def handle_call_log(self, jsonData):
@@ -74,9 +88,9 @@ class CallLogService(object):
                 else:
                     self.create_call_logs(jsonData)
             else:
-                print("flow_run_uuid is not available.")
-        except:
-            print("Failed to log the call details")
+                logger.warning("flow_run_uuid is not available.")
+        except Exception as e:
+            logger.error("Failed to log the call details. Error: {}".format(str(e)))
 
     def create_call_logs(self, jsonData):
         try:
@@ -109,7 +123,7 @@ class CallLogService(object):
                     """
                     content_id = None
                     content_version_id = None
-                    print("The Content id is not valid")
+                    logger.warning("The Content id is not valid")
 
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
@@ -135,9 +149,10 @@ class CallLogService(object):
             )
             helpers.save(new_call_log)
             self.call_log = new_call_log
-        except:
+            logger.info("Successfully created call log")
+        except Exception as e:
             # Need to log this
-            return "Failed to create call log"
+            logger.error("Failed to create call log")
 
     def update_call_logs(self, data):
         try:
@@ -154,9 +169,10 @@ class CallLogService(object):
                     self.call_log.content_version_id = content_version_id
 
             db.session.commit()
-        except:
+            logger.info("Successfully updated call log")
+        except Exception as e:
             # Need to log this
-            return "Failed to udpate call log"
+            logger.error(f"Failed to update call log{e}", exc_info=True)
 
     def get_content_version_id(self, content_id, language_id):
         content_version = models.ContentVersion.query.get_by_language_and_content_id(
@@ -164,6 +180,9 @@ class CallLogService(object):
         )
 
         if not content_version:
+            logger.warning(
+                f"No content version found for content_id={content_id} and language_id={language_id}"
+            )
             content_version = (
                 models.ContentVersion.query.get_by_language_and_content_id(
                     app.config["DEFAULT_LANGUAGE_ID"], content_id
@@ -173,16 +192,22 @@ class CallLogService(object):
         return content_version.id if content_version else None
 
     def fetch_call_type(self):
+        logger.info("Fetching call type")
         return "outbound-call"  # TODO: Need to pass dynamic value
 
     def fetch_call_scheduled_by(self):
+        logger.info("Fetching call scheduled by")
         return "rapidpro"  # TODO: Need to pass dynamic value
 
     def update_program_sequence_id_in_call_log(self, program_sequence_id):
         if self.call_log and program_sequence_id:
             data = {}
             data["program_sequence_id"] = program_sequence_id
-            self.update_call_logs(data)
+            try:
+                self.update_call_logs(data)
+                logger.info("Successfully updated program sequence id in call log")
+            except:
+                logger.error("Failed to update program sequence id in call log")
 
     def handle_parent_flow(self, jsonData):
         parent_flow_data = {}
@@ -200,6 +225,9 @@ class CallLogService(object):
                     For that, the missed call flow name should contain string "missedcall"
                     """
                     self.call_category = models.CallLog.CallCategories.CALLBACK
+                    logger.info(
+                        f"Call category set to CALLBACK due to missed call flow: {parent_flow['name']}"
+                    )
             if "uuid" in jsonData["parent"]:
                 parent_flow_data["parent_flow_run_uuid"] = jsonData["parent"]["uuid"]
         return parent_flow_data

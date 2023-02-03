@@ -1,15 +1,21 @@
 from api import models, db
 import traceback
+import logging
 
 # TODO: Need to refactor this and try using ORM
 def get_partner_id_by_system_phone(system_phone):
-    system_phone_details = models.SystemPhone.query.get_by_phone(system_phone)
-    if system_phone_details:
-        partner_system_phone = models.PartnerSystemPhone.query.get_by_system_phone_id(
-            system_phone_details.id
-        )
-        if partner_system_phone:
-            return partner_system_phone.partner_id
+    try:
+        system_phone_details = models.SystemPhone.query.get_by_phone(system_phone)
+        if system_phone_details:
+            partner_system_phone = (
+                models.PartnerSystemPhone.query.get_by_system_phone_id(
+                    system_phone_details.id
+                )
+            )
+            if partner_system_phone:
+                return partner_system_phone.partner_id
+    except Exception as e:
+        logging.error("Error while fetching partner id by system phone: {}".format(e))
     return None
 
 
@@ -18,8 +24,8 @@ def save(data):
         db.session.add(data)
         db.session.commit()
     except Exception as e:
-        print("Error: " + str(e))
-        print(traceback.format_exc())
+        logging.error("Error: " + str(e))
+        logging.info(traceback.format_exc())
         db.session.rollback()
 
 
