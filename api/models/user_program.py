@@ -41,23 +41,36 @@ class UserProgramQuery(BaseQuery):
             logging.error(f"Failed to update user program details: {e}")
 
     def get_latest_active_user_program(self, user_id):
-        return (
-            self.filter(
-                UserProgram.user_id == user_id,
-                UserProgram.status == models.UserProgram.UserProgramStatus.IN_PROGRESS,
+        try:
+            return (
+                self.filter(
+                    UserProgram.user_id == user_id,
+                    UserProgram.status
+                    == models.UserProgram.UserProgramStatus.IN_PROGRESS,
+                )
+                .order_by(UserProgram.id.desc())
+                .first()
             )
-            .order_by(UserProgram.id.desc())
-            .first()
-        )
+        except Exception as e:
+            logging.error(
+                "An error occurred while fetching the latest active user program: {}".format(
+                    str(e)
+                )
+            )
 
     def get_latest_user_program(self, user_id):
-        return (
-            self.filter(
-                UserProgram.user_id == user_id,
+        try:
+            return (
+                self.filter(
+                    UserProgram.user_id == user_id,
+                )
+                .order_by(UserProgram.id.desc())
+                .first()
             )
-            .order_by(UserProgram.id.desc())
-            .first()
-        )
+        except Exception as e:
+            logging.error(
+                f"Error occurred while fetching latest user program for user_id: {user_id}. Error: {e}"
+            )
 
 
 class UserProgram(TimestampMixin, db.Model):

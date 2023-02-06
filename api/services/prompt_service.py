@@ -30,7 +30,7 @@ class PromptService(object):
             self.call_log_id = call_log_details.id
             self.content_version_id = call_log_details.content_version_id
             logger.info(
-                f"Initial data set successfully, user_phone: {self.user_phone}, call_log_id: {self.call_log_id}, content_version_id: {self.content_version_id}"
+                f" user_phone: {self.user_phone}, call_log_id: {self.call_log_id}, content_version_id: {self.content_version_id}"
             )
         except Exception as e:
             logger.error(f"Failed to set initial data, Error: {str(e)}")

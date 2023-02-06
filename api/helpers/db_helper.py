@@ -35,23 +35,44 @@ def get_class_by_tablename(tablename):
     :param tablename: String with name of table.
     :return: Class reference or None.
     """
+    logging.info("Searching for class mapped to table '%s'", tablename)
     for classObject in db.Model._decl_class_registry.values():
         if (
             hasattr(classObject, "__tablename__")
             and classObject.__tablename__ == tablename
         ):
+            logging.info(
+                "Found class '%s' mapped to table '%s'", classObject.__name__, tablename
+            )
             return classObject
+    logging.warning("No class found mapped to table '%s'", tablename)
     return None
 
 
 def save_batch(dataObject):
-    db.session.add_all(dataObject)
-    db.session.commit()
+    try:
+        db.session.add_all(dataObject)
+        db.session.commit()
+        logging.info(f"Data object batch saved successfully: {dataObject}")
+    except Exception as e:
+        logging.error(f"Error occurred while saving data object batch: {e}")
 
 
 def get_user_by_phone(phone):
-    return models.User.query.get_by_phone(phone)
+    try:
+        return models.User.query.get_by_phone(phone)
+    except Exception as e:
+        logging.error(
+            f"Error occurred while fetching user for phone number: {phone}. Error: {e}"
+        )
+        return None
 
 
 def get_registrant_by_phone(phone):
-    return models.Registration.query.get_latest_by_phone(phone)
+    try:
+        return models.Registration.query.get_latest_by_phone(phone)
+    except Exception as e:
+        logging.error(
+            f"Error occurred while fetching registrant for phone number: {phone}. Error: {e}"
+        )
+        return None
