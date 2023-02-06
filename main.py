@@ -9,10 +9,12 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-            except:
+                logging.info("Info message: Request JSON data received successfully")
+            except Exception as e:
                 logging.warning(
                     "Warning message: Insufficient data to complete the operation"
                 )
+                logging.error(f"Error message: Exception occurred: {e} ")
                 return jsonify(message="Something went wrong!"), 400
 
             transaction_log_service = services.TransactionLogService()
