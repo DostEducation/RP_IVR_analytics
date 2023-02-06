@@ -3,6 +3,9 @@ from flask import jsonify
 from api.helpers import db_helper
 import json, logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 ### Endpoint for Cloud function
 def webhook(request):
     try:
@@ -10,7 +13,7 @@ def webhook(request):
             try:
                 jsonData = request.get_json()
             except:
-                logging.warning("[WARN] Could not retrieve JSON data from the request")
+                logger.warning("[WARN] Could not retrieve JSON data from the request")
                 return jsonify(message="Something went wrong!"), 400
 
             transaction_log_service = services.TransactionLogService()
@@ -23,10 +26,10 @@ def webhook(request):
                 processed = handle_payload(jsonData)
 
                 if processed is False:
-                    logging.error("[ERROR] Error processing the payload")
+                    logger.error("[ERROR] Error processing the payload")
                     return jsonify(message="Something went wrong!"), 400
                 elif processed == -1:
-                    logging.warning("[ERROR] Contact not found in the payload")
+                    logger.warning("[ERROR] Contact not found in the payload")
                     return jsonify(message="Contact"), 400
 
                 if "contact" in jsonData:
@@ -36,13 +39,13 @@ def webhook(request):
 
             return jsonify(message="Success"), 200
         else:
-            logging.warning("[WARN] Received a GET request instead of POST")
+            logger.warning("[WARN] Received a GET request instead of POST")
             return (
                 jsonify(message="Currently, the system do not accept a GET request"),
                 405,
             )
     except Exception as e:
-        logging.error("[ERROR] An unexpected error occurred: %s" % e)
+        logger.error("[ERROR] An unexpected error occurred: %s" % e)
         return jsonify(message="Internal server error"), 500
 
 
@@ -62,7 +65,7 @@ def retry_failed_webhook(transaction_log_service):
 
         log.processed = True
         db_helper.save(log)
-        logging.info("[INFO] Successfully processed the failed log")
+        logger.info("[INFO] Successfully processed the failed log")
 
 
 def handle_payload(jsonData, is_retry_payload=False):
@@ -110,12 +113,12 @@ def handle_payload(jsonData, is_retry_payload=False):
             if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
                 handle_contact_fields_and_groups(jsonData)
         else:
-            logging.error("[ERROR] No 'contact' key found in the input JSON data.")
+            logger.error("[ERROR] No 'contact' key found in the input JSON data.")
             return -1
     except Exception as e:
-        logging.error("[ERROR] Exception Occured: ", e)
+        logger.error("[ERROR] Exception Occured: ", e)
         return False
-    logging.info("[INFO] Payload processing completed successfully.")
+    logger.info("[INFO] Payload processing completed successfully.")
     return True
 
 
@@ -125,7 +128,7 @@ def handle_flow_category_data(jsonData):
         if jsonData["flow_category"] == "registration":
             registration_service.handle_registration(jsonData)
     except Exception as e:
-        logging.error(f"Error occurred in handle_registration: {e}")
+        logger.error(f"Error occurred in handle_registration: {e}")
 
 
 def handle_user_group_data(jsonData):
@@ -133,7 +136,7 @@ def handle_user_group_data(jsonData):
     try:
         user_contact_service.handle_contact_group(jsonData)
     except Exception as e:
-        logging.error(f"Error occurred in handle_contact_group: {e}")
+        logger.error(f"Error occurred in handle_contact_group: {e}")
 
 
 def handle_user_custom_field_data(jsonData):
@@ -141,7 +144,7 @@ def handle_user_custom_field_data(jsonData):
     try:
         user_contact_service.handle_custom_fields(jsonData)
     except Exception as e:
-        logging.error(f"Error occurred in handle_custom_fields: {e}")
+        logger.error(f"Error occurred in handle_custom_fields: {e}")
 
 
 def handle_prompts(jsonData):
@@ -149,7 +152,7 @@ def handle_prompts(jsonData):
     try:
         prompt_service.handle_prompt_response(jsonData)
     except Exception as e:
-        logging.error(f"Error occurred in handle_prompt_response: {e}")
+        logger.error(f"Error occurred in handle_prompt_response: {e}")
 
 
 def handle_contact_fields_and_groups(JsonData):
@@ -159,10 +162,10 @@ def handle_contact_fields_and_groups(JsonData):
         if contact_data.get("fields"):
             custom_fields_mapping_service.handle_contact_fields_data(JsonData)
     except Exception as e:
-        logging.error(f"Error occurred in handle_contact_fields_data: {e}")
+        logger.error(f"Error occurred in handle_contact_fields_data: {e}")
 
     try:
         if contact_data.get("groups"):
             custom_fields_mapping_service.handle_contact_groups_data(JsonData)
     except Exception as e:
-        logging.error(f"Error occurred in handle_contact_groups_data: {e}")
+        logger.error(f"Error occurred in handle_contact_groups_data: {e}")
