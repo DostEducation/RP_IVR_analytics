@@ -9,7 +9,9 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-                logging.info("Info message: Request JSON data received successfully")
+                logging.info("Request JSON data received successfully")
+                logging.warning("Insufficient data to complete the operation")
+                logging.error(f"Exception occurred")
             except Exception as e:
                 logging.warning(
                     "Warning message: Insufficient data to complete the operation"
