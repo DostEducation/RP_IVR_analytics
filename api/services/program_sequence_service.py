@@ -18,7 +18,7 @@ class ProgramSequenceService(object):
             if not user_details:
                 # Need to log this
                 print("User not available")
-                return None, None
+                return None
 
             module_content_details = models.ModuleContent.query.get_by_content_id(
                 self.content_id
@@ -26,7 +26,7 @@ class ProgramSequenceService(object):
 
             if not module_content_details:
                 # it is optional to have Content and Module association
-                return None, None
+                return None
 
             program_module_details = models.ProgramModule.query.get_by_module_id(
                 module_content_details.module_id
@@ -43,7 +43,7 @@ class ProgramSequenceService(object):
 
             if not user_program_details:
                 # Need to log this
-                return None, None
+                return None
 
             program_sequence = (
                 models.ProgramSequence.query.get_by_module_content_program_ids(
