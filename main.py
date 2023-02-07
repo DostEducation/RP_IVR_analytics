@@ -3,6 +3,8 @@ from flask import jsonify
 from api.helpers import db_helper
 import json, logging
 
+logging.basicConfig(level=logging.DEBUG)
+
 ### Endpoint for Cloud function
 def webhook(request):
     try:
