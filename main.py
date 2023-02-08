@@ -83,10 +83,16 @@ def handle_payload(jsonData, is_retry_payload=False):
             # Handle content details
             program_sequence_id = None
 
-            if program_sequence_id:
-                calllog_service.update_program_sequence_id_in_call_log(
+            if "content_id" in jsonData:
+                program_sequence_service = services.ProgramSequenceService()
+                (
                     program_sequence_id
-                )
+                ) = program_sequence_service.get_program_sequence_id(jsonData)
+
+                if program_sequence_id:
+                    calllog_service.update_program_sequence_id_in_call_log(
+                        program_sequence_id
+                    )
 
             # Handle contact groups
             if (
