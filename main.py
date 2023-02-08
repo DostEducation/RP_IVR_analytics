@@ -1,7 +1,9 @@
 from api import services
 from flask import jsonify
 from api.helpers import db_helper
-import json
+import json, logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 ### Endpoint for Cloud function
 def webhook(request):
@@ -9,7 +11,14 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-            except:
+                logging.info("Request JSON data received successfully")
+                logging.warning("Insufficient data to complete the operation")
+                logging.error(f"Exception occurred")
+            except Exception as e:
+                logging.warning(
+                    "Warning message: Insufficient data to complete the operation"
+                )
+                logging.error(f"Error message: Exception occurred: {e} ")
                 return jsonify(message="Something went wrong!"), 400
 
             transaction_log_service = services.TransactionLogService()
@@ -22,8 +31,14 @@ def webhook(request):
                 processed = handle_payload(jsonData)
 
                 if processed is False:
+                    logging.error(
+                        "Error message: Exception occured while fetching user data"
+                    )
                     return jsonify(message="Something went wrong!"), 400
                 elif processed == -1:
+                    logging.warning(
+                        "Warning message: Insufficient data to complete the operation"
+                    )
                     return jsonify(message="Contact"), 400
 
                 if "contact" in jsonData:
@@ -33,12 +48,15 @@ def webhook(request):
 
             return jsonify(message="Success"), 200
         else:
+            logging.warning(
+                "Warning message: Insufficient data to complete the operation"
+            )
             return (
                 jsonify(message="Currently, the system do not accept a GET request"),
                 405,
             )
     except Exception as e:
-        print(e)
+        logging.error("Error message: Exception occured while fetching user data")
         return jsonify(message="Internal server error"), 500
 
 
@@ -58,6 +76,7 @@ def retry_failed_webhook(transaction_log_service):
 
         log.processed = True
         db_helper.save(log)
+        logging.info("Info message: Successfully fetched user data")
 
 
 def handle_payload(jsonData, is_retry_payload=False):
@@ -111,9 +130,12 @@ def handle_payload(jsonData, is_retry_payload=False):
             if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
                 handle_contact_fields_and_groups(jsonData)
         else:
+            logging.error("Error message: Exception occured while fetching user data")
             return -1
     except:
+        logging.error("Error message: Exception occured while fetching user data")
         return False
+    logging.info("Info message: Successfully fetched user data")
     return True
 
 
