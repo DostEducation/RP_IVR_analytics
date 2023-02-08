@@ -2,7 +2,7 @@ import logging
 from api import app
 from google.cloud import logging as gcloud_logging
 
-logger = app.logger
+logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG)
 
 if app.config["FLASK_ENV"] == "development":
