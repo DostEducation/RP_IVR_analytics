@@ -2,7 +2,7 @@ name: build-and-deployment
 
 on:
   push:
-    branches: [develop]
+    branches: [feature/337/generating-different-level-of-logs-in-cloud-function]
 
 jobs:
   # build and test jobs will be added later one we have unit tests in place
