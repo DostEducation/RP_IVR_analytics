@@ -16,7 +16,9 @@ class ContactFieldsMappingService(object):
             self.set_init_data(jsonData)
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
-                logger.warning("User details not found for the given phone number")
+                logger.warning(
+                    f"User details not found for the given phone number: {self.user_phone}"
+                )
                 return False
 
             for (
@@ -39,7 +41,9 @@ class ContactFieldsMappingService(object):
             self.set_init_data(jsonData)
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
-                logger.warning("User details not found for the given phone number")
+                logger.warning(
+                    f"User details not found for the given phone number: {self.user_phone}"
+                )
                 return False
 
             for (
@@ -84,7 +88,7 @@ class ContactFieldsMappingService(object):
                 user_details,
             )
         except Exception as e:
-            logger.error(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred while processing contact field data: {e}")
 
     def process_contact_groups_data(self, user_contact_group_details, user_details):
         try:
@@ -103,7 +107,9 @@ class ContactFieldsMappingService(object):
                     user_details,
                 )
         except Exception as e:
-            logger.error(f"Exception occurred: {e}")
+            logger.error(
+                f"Exception occurred while processsing contact group data: {e}"
+            )
 
     def update_mapped_fields(
         self, table_object, column_name, mapped_table_column_value, user_details
@@ -118,4 +124,4 @@ class ContactFieldsMappingService(object):
                         f"Successfully updated {column_name} with value {mapped_table_column_value} for user with id {user_details.id}"
                     )
         except Exception as e:
-            logger.error(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred while updating mapped fields: {e}")

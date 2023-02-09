@@ -268,7 +268,7 @@ class UserContactService(object):
             db.session.commit()
             logger.info("User groups marked as inactive successfully")
         except Exception as e:
-            logger.error("Error while marking user groups as inactive: %s", e)
+            logger.error(f"Error while marking user groups as inactive: {e}")
 
     def get_active_custom_fields(self, user_custom_field_data):
         if user_custom_field_data:

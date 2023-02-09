@@ -15,7 +15,7 @@ def get_partner_id_by_system_phone(system_phone):
             if partner_system_phone:
                 return partner_system_phone.partner_id
     except Exception as e:
-        logger.error("Error while fetching partner id by system phone: {}".format(e))
+        logger.error(f"Error while fetching partner id by system phone: {e}")
     return None
 
 
@@ -24,7 +24,9 @@ def save(data):
         db.session.add(data)
         db.session.commit()
     except Exception as e:
-        logger.error("Error: " + str(e))
+        logger.error(
+            f"Error occurred while processing the webhook. Error Message:  {e}"
+        )
         logger.debug(traceback.format_exc())
         db.session.rollback()
 

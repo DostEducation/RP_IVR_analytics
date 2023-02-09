@@ -120,7 +120,7 @@ def handle_payload(jsonData, is_retry_payload=False):
             logger.error("[ERROR] No 'contact' key found in the input JSON data.")
             return -1
     except Exception as e:
-        logger.error("[ERROR] Exception Occured: %s" % e)
+        logger.error(f"[ERROR] Exception Occured while handeling payload: {e}")
         return False
     logger.info("[INFO] Payload processing completed successfully.")
     return True

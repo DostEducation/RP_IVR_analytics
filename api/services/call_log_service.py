@@ -25,9 +25,9 @@ class CallLogService(object):
             )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
             self.handle_flow_run_details(jsonData)
         except KeyError as e:
-            logger.error("KeyError in set_init_data: {}".format(e))
+            logger.error(f"KeyError in set_init_data: {e}")
         except Exception as e:
-            logger.error("Error in set_init_data: {}".format(e))
+            logger.error(f"Error in set_init_data: {e}")
         else:
             logger.info("Data initialized successfully in set_init_data")
 
@@ -46,7 +46,7 @@ class CallLogService(object):
                 )
 
         except Exception as e:
-            logger.error("Failed to fetch flow run details: %s", e)
+            logger.error(f"Failed to fetch flow run details: {e}")
 
     def get_custom_fields_from_webhook_payload(self, data):
         custom_fields = {}
@@ -86,7 +86,7 @@ class CallLogService(object):
             else:
                 logger.warning("flow_run_uuid is not available.")
         except Exception as e:
-            logger.error("Failed to log the call details. Error: {}".format(str(e)))
+            logger.error(f"Failed to log the call details. Error: {e}")
 
     def create_call_logs(self, jsonData):
         try:
@@ -148,7 +148,7 @@ class CallLogService(object):
             logger.info("Successfully created call log")
         except Exception as e:
             # Need to log this
-            logger.error("Failed to create call log")
+            logger.error(f"Failed to create call log: {e}")
 
     def update_call_logs(self, data):
         try:
@@ -202,8 +202,8 @@ class CallLogService(object):
             try:
                 self.update_call_logs(data)
                 logger.info("Successfully updated program sequence id in call log")
-            except:
-                logger.error("Failed to update program sequence id in call log")
+            except Exception as e:
+                logger.error(f"Failed to update program sequence id in call log: {e}")
 
     def handle_parent_flow(self, jsonData):
         parent_flow_data = {}

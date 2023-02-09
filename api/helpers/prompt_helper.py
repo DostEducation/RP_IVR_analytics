@@ -7,7 +7,7 @@ def split_prompt_by_hyphen(data):
         split_prompt = data.split("-")
         return split_prompt
     except Exception as e:
-        logger.error("Error while splitting prompt by hyphen: {}".format(e))
+        logger.error(f"Error while splitting prompt by hyphen: {e}")
 
 
 def split_prompt_by_underscore(data):
@@ -15,7 +15,7 @@ def split_prompt_by_underscore(data):
         program_sub_prompt = data.split("_")
         return program_sub_prompt
     except Exception as e:
-        logger.error("Error while splitting prompt by underscore: {}".format(e))
+        logger.error(f"Error while splitting prompt by underscore: {e}")
 
 
 def get_program_prompt_id(jsonData):
@@ -41,7 +41,7 @@ def get_program_prompt_id(jsonData):
                     else None
                 )
     except Exception as e:
-        logger.error("Error while getting program prompt id: {}".format(e))
+        logger.error(f"Error while getting program prompt id: {e}")
     return None
 
 

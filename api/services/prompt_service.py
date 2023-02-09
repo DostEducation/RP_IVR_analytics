@@ -129,9 +129,7 @@ class PromptService(object):
             )
             helpers.save(ivr_prompt_response)
         except Exception as e:
-            logger.error(
-                "An error occurred while adding prompt response. Error: {}".format(e)
-            )
+            logger.error(f"An error occurred while adding prompt response. Error: {e}")
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_underscore = helpers.split_prompt_by_underscore(prompt)
@@ -166,7 +164,7 @@ class PromptService(object):
                     user_details, ivr_prompt_mapping_data, prompt_response_value
                 )
         except Exception as e:
-            logger.error("Exception occurred while handling prompt mapping: %s", str(e))
+            logger.error(f"Exception occurred while handling prompt mapping: {e}")
 
     def process_mapped_fields(
         self, user_details, ivr_prompt_mapping_data, prompt_response_value
@@ -228,8 +226,8 @@ class PromptService(object):
                     "Keypress value is not an integer or length is greater than or equal to 5"
                 )
                 return_keypress_value = -2
-        except:
-            logger.error("Keypress value is not an integer")
+        except Exception as e:
+            logger.error(f"Keypress value is not an integer: {e}")
             return_keypress_value = -2
 
         return return_keypress_value
