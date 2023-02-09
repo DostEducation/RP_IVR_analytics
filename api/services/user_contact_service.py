@@ -106,9 +106,6 @@ class UserContactService(object):
             self.user_phone
         )
 
-        logger.info(
-            "Getting custom field data for user with phone number: %s", self.user_phone
-        )
         if user_custom_field_data:
             logger.info(
                 "Found custom field data for user with phone number: %s",
@@ -222,7 +219,6 @@ class UserContactService(object):
             [bool]: Returns whether the field name and value exists.
         """
         #
-        logger.info("Checking if field name and value exist")
         key_index = str(field_name) + "_" + str(field_value)
         return (
             True
@@ -235,7 +231,6 @@ class UserContactService(object):
         )
 
     def get_user_custom_fields_object(self, field_name, field_value):
-        logger.info("Getting user custom fields object")
         return [
             models.UserCustomFields(
                 user_id=self.user_data.id if self.user_data else None,
@@ -251,7 +246,6 @@ class UserContactService(object):
         ]
 
     def custom_fields_conditions(self, field_name, field_value):
-        logger.info("Checking if custom fields conditions are met")
         return (
             True
             if field_value is not None
@@ -260,7 +254,6 @@ class UserContactService(object):
         )
 
     def mark_user_groups_as_inactive(self, group_uuid):
-        logger.info("Marking user groups as inactive, group UUID: %s", group_uuid)
         try:
             models.UserGroup.query.mark_user_groups_as_inactive(
                 self.user_phone, group_uuid

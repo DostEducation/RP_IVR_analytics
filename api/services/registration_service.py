@@ -81,7 +81,6 @@ class RegistrationService(object):
 
     # Handle new user registration
     def register(self, jsonData):
-        logger.info(f"Starting registration for user with phone {self.user_phone}")
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
         if self.selected_program_id:
             self.user_id = self.create_user(jsonData)

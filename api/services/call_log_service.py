@@ -188,11 +188,9 @@ class CallLogService(object):
         return content_version.id if content_version else None
 
     def fetch_call_type(self):
-        logger.info("Fetching call type")
         return "outbound-call"  # TODO: Need to pass dynamic value
 
     def fetch_call_scheduled_by(self):
-        logger.info("Fetching call scheduled by")
         return "rapidpro"  # TODO: Need to pass dynamic value
 
     def update_program_sequence_id_in_call_log(self, program_sequence_id):

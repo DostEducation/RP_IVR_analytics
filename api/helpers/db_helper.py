@@ -37,7 +37,6 @@ def get_class_by_tablename(tablename):
     :param tablename: String with name of table.
     :return: Class reference or None.
     """
-    logger.info("Searching for class mapped to table '%s'", tablename)
     for classObject in db.Model._decl_class_registry.values():
         if (
             hasattr(classObject, "__tablename__")
