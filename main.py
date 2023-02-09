@@ -1,7 +1,8 @@
 from api import services
 from flask import jsonify
 from api.helpers import db_helper
-import json, logging
+from utils.loggingutils import logger
+import json
 
 ### Endpoint for Cloud function
 def webhook(request):
@@ -9,8 +10,11 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-            except:
-                logging.warning("[WARN] Could not retrieve JSON data from the request")
+                logger.info("This is an info log")
+                logger.warning("This is a warning log")
+                logger.error("This is an error log")
+            except Exception as e:
+                logger.error(f"This is an error log: {e}")
                 return jsonify(message="Something went wrong!"), 400
 
             transaction_log_service = services.TransactionLogService()
@@ -83,10 +87,16 @@ def handle_payload(jsonData, is_retry_payload=False):
             # Handle content details
             program_sequence_id = None
 
-            if program_sequence_id:
-                calllog_service.update_program_sequence_id_in_call_log(
+            if "content_id" in jsonData:
+                program_sequence_service = services.ProgramSequenceService()
+                (
                     program_sequence_id
-                )
+                ) = program_sequence_service.get_program_sequence_id(jsonData)
+
+                if program_sequence_id:
+                    calllog_service.update_program_sequence_id_in_call_log(
+                        program_sequence_id
+                    )
 
             # Handle contact groups
             if (
