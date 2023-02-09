@@ -77,7 +77,7 @@ class RegistrationService(object):
                 logger.warning(f"No flow run UUID found in jsonData: {jsonData}")
 
         except Exception as e:
-            logger.error(f"Failed to handle registration: {e}")
+            logger.error(f"Failed to handle registration for {self.user_phone}: {e}")
 
     # Handle new user registration
     def register(self, jsonData):
@@ -152,7 +152,9 @@ class RegistrationService(object):
                 db.session.commit()
                 logger.info("Registration updated successfully.")
             except Exception as e:
-                logger.error(f"Failed to update registration: {e}")
+                logger.error(
+                    f"Failed to update registration for {self.user_phone}: {e}"
+                )
 
     def create_user(self, jsonData):
         user = models.User.query.get_by_phone(self.user_phone)

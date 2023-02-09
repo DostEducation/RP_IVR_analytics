@@ -86,7 +86,9 @@ class CallLogService(object):
             else:
                 logger.warning("flow_run_uuid is not available.")
         except Exception as e:
-            logger.error(f"Failed to log the call details. Error: {e}")
+            logger.error(
+                f"Failed to log the call details for {self.user_phone}. Error: {e}"
+            )
 
     def create_call_logs(self, jsonData):
         try:
@@ -148,7 +150,7 @@ class CallLogService(object):
             logger.info("Successfully created call log")
         except Exception as e:
             # Need to log this
-            logger.error(f"Failed to create call log: {e}")
+            logger.error(f"Failed to create call log for {self.user_phone}: {e}")
 
     def update_call_logs(self, data):
         try:
@@ -168,7 +170,9 @@ class CallLogService(object):
             logger.info("Successfully updated call log")
         except Exception as e:
             # Need to log this
-            logger.error(f"Failed to update call log: {e}", exc_info=True)
+            logger.error(
+                f"Failed to update call log for {self.user_phone}: {e}", exc_info=True
+            )
 
     def get_content_version_id(self, content_id, language_id):
         content_version = models.ContentVersion.query.get_by_language_and_content_id(
@@ -201,7 +205,9 @@ class CallLogService(object):
                 self.update_call_logs(data)
                 logger.info("Successfully updated program sequence id in call log")
             except Exception as e:
-                logger.error(f"Failed to update program sequence id in call log: {e}")
+                logger.error(
+                    f"Failed to update program sequence id in call log for {self.user_phone}: {e}"
+                )
 
     def handle_parent_flow(self, jsonData):
         parent_flow_data = {}

@@ -33,7 +33,7 @@ class ContactFieldsMappingService(object):
                         )
         except Exception as e:
             logger.error(
-                f"Error occurred while handling custom field mapping. Exception: {e}"
+                f"Error occurred while handling custom field mapping for {self.user_phone}. Exception: {e}"
             )
 
     def handle_contact_groups_data(self, jsonData):
@@ -56,7 +56,7 @@ class ContactFieldsMappingService(object):
                         )
         except Exception as e:
             logger.error(
-                f"Error occurred while handling custom field mapping. Exception: {e}"
+                f"Error occurred while handling custom field mapping for {self.user_phone}. Exception: {e}"
             )
 
     def process_contact_fields_data(
@@ -88,7 +88,9 @@ class ContactFieldsMappingService(object):
                 user_details,
             )
         except Exception as e:
-            logger.error(f"Exception occurred while processing contact field data: {e}")
+            logger.error(
+                f"Exception occurred while processing contact field data for {self.user_phone}: {e}"
+            )
 
     def process_contact_groups_data(self, user_contact_group_details, user_details):
         try:
@@ -108,7 +110,7 @@ class ContactFieldsMappingService(object):
                 )
         except Exception as e:
             logger.error(
-                f"Exception occurred while processsing contact group data: {e}"
+                f"Exception occurred while processsing contact group data for {self.user_phone}: {e}"
             )
 
     def update_mapped_fields(
@@ -124,4 +126,6 @@ class ContactFieldsMappingService(object):
                         f"Successfully updated {column_name} with value {mapped_table_column_value} for user with id {user_details.id}"
                     )
         except Exception as e:
-            logger.error(f"Exception occurred while updating mapped fields: {e}")
+            logger.error(
+                f"Exception occurred while updating mapped fields for {self.user_phone}: {e}"
+            )

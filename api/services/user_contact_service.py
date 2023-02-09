@@ -84,9 +84,13 @@ class UserContactService(object):
         )
         try:
             helpers.save(user_group_data)
-            logger.info(f"Successfully added group: {group['name']}")
+            logger.info(
+                f"Successfully added group for {self.user_phone}: {group['name']}"
+            )
         except Exception as e:
-            logger.error(f"Failed to add group: {group['name']}. Error: {str(e)}")
+            logger.error(
+                f"Failed to add group for {self.user_phone}: {group['name']}. Error: {str(e)}"
+            )
 
     def update_group(self, data):
         data.status = models.UserGroup.UserGroupStatus.ACTIVE
@@ -186,7 +190,9 @@ class UserContactService(object):
                 helpers.save_batch(user_custom_contact_data)
                 logger.info(f"{len(user_custom_contact_data)}")
             except Exception as e:
-                logger.error(f"Error while processing custom fields: {e}")
+                logger.error(
+                    f"Error while processing custom fields for {self.user_phone}: {e}"
+                )
 
     def fetch_fields_key_value(self, user_custom_field_data):
         """Format the existing fields in key value pair
@@ -261,7 +267,9 @@ class UserContactService(object):
             db.session.commit()
             logger.info("User groups marked as inactive successfully")
         except Exception as e:
-            logger.error(f"Error while marking user groups as inactive: {e}")
+            logger.error(
+                f"Error while marking user groups as inactive for {self.user_phone}: {e}"
+            )
 
     def get_active_custom_fields(self, user_custom_field_data):
         if user_custom_field_data:

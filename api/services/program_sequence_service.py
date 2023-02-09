@@ -62,5 +62,7 @@ class ProgramSequenceService(object):
 
             return program_sequence_id
         except Exception as e:
-            logger.error(f"Exception occured while getting program sequence id: {e}")
+            logger.error(
+                f"Exception occured while getting program sequence id for {self.user_phone}: {e}"
+            )
             return None

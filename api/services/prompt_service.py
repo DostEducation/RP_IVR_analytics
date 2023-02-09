@@ -29,7 +29,7 @@ class PromptService(object):
                 f" user_phone: {self.user_phone}, call_log_id: {self.call_log_id}, content_version_id: {self.content_version_id}"
             )
         except Exception as e:
-            logger.error(f"Failed to set initial data, Error: {str(e)}")
+            logger.error(f"Failed to set initial data, Error: {e}")
 
     def handle_prompt_response(self, jsonData):
         self.set_init_data(jsonData)
@@ -129,7 +129,9 @@ class PromptService(object):
             )
             helpers.save(ivr_prompt_response)
         except Exception as e:
-            logger.error(f"An error occurred while adding prompt response. Error: {e}")
+            logger.error(
+                f"An error occurred while adding prompt response for {self.user_phone}. Error: {e}"
+            )
 
     def fetch_prompt_response(self, prompt):
         split_prompt_by_underscore = helpers.split_prompt_by_underscore(prompt)
@@ -214,7 +216,9 @@ class PromptService(object):
                 setattr(class_object_data, column_name, prompt_response_value)
                 db.session.commit()
         except Exception as e:
-            logger.error(f"Exception occurred while updating mapped fields: {e}")
+            logger.error(
+                f"Exception occurred while updating mapped fields for {self.user_phone}: {e}"
+            )
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
