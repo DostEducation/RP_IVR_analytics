@@ -1,6 +1,6 @@
 from api import db
 from flask_sqlalchemy import BaseQuery
-import logging
+from utils.loggingutils import logger
 
 
 class ContactFieldsMappingQuery(BaseQuery):
@@ -11,19 +11,19 @@ class ContactFieldsMappingQuery(BaseQuery):
                 ContactFieldsMapping.expected_field_value == field_value,
             ).all()
         except Exception as e:
-            logging.error(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred: {e}")
 
     def get_by_group_name(self, contact_groups):
         try:
             return self.filter(ContactFieldsMapping.field_name == contact_groups).all()
         except Exception as e:
-            logging.error(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred: {e}")
 
     def get_all_contact_fields_mapping(self):
         try:
             return self.all()
         except Exception as e:
-            logging.error(f"Exception occurred: {e}")
+            logger.error(f"Exception occurred: {e}")
 
 
 class ContactFieldsMapping(db.Model):

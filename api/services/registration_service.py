@@ -1,11 +1,7 @@
 # This file is treated as service layer
 from api import models, db, helpers, app
 from datetime import datetime
-import logging
-
-# set up logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+from utils.loggingutils import logger
 
 
 class RegistrationService(object):

@@ -1,10 +1,7 @@
 # This file is treated as service layer
 from api import models, helpers, app
-import json, logging
-
-# set up logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+import json
+from utils.loggingutils import logger
 
 
 class TransactionLogService(object):
