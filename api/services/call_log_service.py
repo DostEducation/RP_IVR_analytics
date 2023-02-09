@@ -168,7 +168,7 @@ class CallLogService(object):
             logger.info("Successfully updated call log")
         except Exception as e:
             # Need to log this
-            logger.error(f"Failed to update call log{e}", exc_info=True)
+            logger.error(f"Failed to update call log: {e}", exc_info=True)
 
     def get_content_version_id(self, content_id, language_id):
         content_version = models.ContentVersion.query.get_by_language_and_content_id(
