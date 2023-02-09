@@ -159,17 +159,13 @@ class RegistrationService(object):
         user = models.User.query.get_by_phone(self.user_phone)
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
         if not user:
-            logger.info("User not found in the database. Creating a new user.")
+            logger.info(
+                f"User not found in the database. Creating a new user {self.user_phone}."
+            )
             user = models.User(
                 state=system_phone_details.state,
                 phone=self.user_phone,
                 partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
             )
             helpers.save(user)
-        else:
-            logger.warning(
-                "User with phone number {} already exists in the database.".format(
-                    self.user_phone
-                )
-            )
         return user.id
