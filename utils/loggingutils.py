@@ -1,14 +1,15 @@
-import logging, os
+import logging
 from api import app
-from google.cloud import logging as cloud_logging
+from google.cloud import logging as gcloud_logging
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG)
 
-if os.getenv("FLASK_ENV") == "production":
-    log_client = cloud_logging.Client()
-    log_handler = log_client.get_default_handler()
-    app.logger.addHandler(log_handler)
+if app.config["FLASK_ENV"] == "development":
+    log_handler = logger.handlers[0]
+    logger.addHandler(log_handler)
 else:
-    log_handler = logging.getLogger().handlers[0]
+    log_client = gcloud_logging.Client()
+    log_client.setup_logging()
+    log_handler = log_client.get_default_handler()
     app.logger.addHandler(log_handler)
