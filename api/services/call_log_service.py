@@ -16,20 +16,13 @@ class CallLogService(object):
         self.flow_category = models.CallLog.FlowCategories.OTHER
 
     def set_init_data(self, jsonData):
-        try:
-            user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
-            self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
-            self.user_phone = helpers.sanitize_phone_string(user_phone)
-            self.flow_run_uuid = helpers.fetch_by_key(
-                "run_uuid", jsonData
-            )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
-            self.handle_flow_run_details(jsonData)
-        except KeyError as e:
-            logger.error(f"KeyError in set_init_data: {e}")
-        except Exception as e:
-            logger.error(f"Error in set_init_data: {e}")
-        else:
-            logger.info("Data initialized successfully in set_init_data")
+        user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
+        self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
+        self.user_phone = helpers.sanitize_phone_string(user_phone)
+        self.flow_run_uuid = helpers.fetch_by_key(
+            "run_uuid", jsonData
+        )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
+        self.handle_flow_run_details(jsonData)
 
     def handle_flow_run_details(self, jsonData):
         """To handle flow run details
@@ -46,7 +39,9 @@ class CallLogService(object):
                 )
 
         except Exception as e:
-            logger.error(f"Failed to fetch flow run details: {e}")
+            logger.error(
+                f"Failed to fetch flow run details for user phone {self.user_phone}: {e}"
+            )
 
     def get_custom_fields_from_webhook_payload(self, data):
         custom_fields = {}
@@ -54,7 +49,9 @@ class CallLogService(object):
             custom_fields = data["contact"].get("fields")
 
         else:
-            logger.warning("No custom fields found in the webhook payload")
+            logger.warning(
+                f"No custom fields found in the webhook payload for user phone: {self.user_phone}"
+            )
         return custom_fields
 
     def handle_call_log(self, jsonData):
@@ -84,10 +81,12 @@ class CallLogService(object):
                 else:
                     self.create_call_logs(jsonData)
             else:
-                logger.warning("flow_run_uuid is not available.")
+                logger.warning(
+                    f"flow_run_uuid is not available for user phone {self.user_phone}."
+                )
         except Exception as e:
             logger.error(
-                f"Failed to log the call details for {self.user_phone}. Error: {e}"
+                f"Failed to handle call log details for {self.user_phone}. Error: {e}"
             )
 
     def create_call_logs(self, jsonData):
@@ -121,7 +120,6 @@ class CallLogService(object):
                     """
                     content_id = None
                     content_version_id = None
-                    logger.warning("The Content id is not valid")
 
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
@@ -147,7 +145,6 @@ class CallLogService(object):
             )
             helpers.save(new_call_log)
             self.call_log = new_call_log
-            logger.info("Successfully created call log")
         except Exception as e:
             # Need to log this
             logger.error(f"Failed to create call log for {self.user_phone}: {e}")
@@ -167,7 +164,6 @@ class CallLogService(object):
                     self.call_log.content_version_id = content_version_id
 
             db.session.commit()
-            logger.info("Successfully updated call log")
         except Exception as e:
             # Need to log this
             logger.error(
@@ -181,7 +177,7 @@ class CallLogService(object):
 
         if not content_version:
             logger.warning(
-                f"No content version found for content_id={content_id} and language_id={language_id}"
+                f"No content version found for content_id={content_id} and language_id={language_id} for user phone {self.user_phone}."
             )
             content_version = (
                 models.ContentVersion.query.get_by_language_and_content_id(
@@ -203,7 +199,6 @@ class CallLogService(object):
             data["program_sequence_id"] = program_sequence_id
             try:
                 self.update_call_logs(data)
-                logger.info("Successfully updated program sequence id in call log")
             except Exception as e:
                 logger.error(
                     f"Failed to update program sequence id in call log for {self.user_phone}: {e}"
@@ -225,9 +220,6 @@ class CallLogService(object):
                     For that, the missed call flow name should contain string "missedcall"
                     """
                     self.call_category = models.CallLog.CallCategories.CALLBACK
-                    logger.info(
-                        f"Call category set to CALLBACK due to missed call flow: {parent_flow['name']}"
-                    )
             if "uuid" in jsonData["parent"]:
                 parent_flow_data["parent_flow_run_uuid"] = jsonData["parent"]["uuid"]
         return parent_flow_data

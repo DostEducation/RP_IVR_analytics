@@ -11,7 +11,6 @@ class TransactionLogService(object):
                 payload=json.dumps(jsonData), processed=False
             )
             helpers.save(new_webhook_log)
-            logger.info("New webhook log created successfully.")
             return new_webhook_log
         except Exception as e:
             logger.error(f"Error while creating new webhook log: {e}")
@@ -20,7 +19,6 @@ class TransactionLogService(object):
         try:
             webhook_log.processed = True
             helpers.save(webhook_log)
-            logger.info("Webhook log marked as processed successfully.")
         except Exception as e:
             logger.error(f"Error while marking webhook log as processed: {e}")
 

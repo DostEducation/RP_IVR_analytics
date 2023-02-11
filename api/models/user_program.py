@@ -25,7 +25,7 @@ class UserProgramQuery(BaseQuery):
             )
             helpers.save(user_program)
         except Exception as e:
-            logger.error(f"Failed to create user_program: {e}")
+            logger.error(f"Failed to create user_program for user_id {user_id}: {e}")
 
     def update(self, user_program_details, data):
         try:
@@ -38,7 +38,9 @@ class UserProgramQuery(BaseQuery):
 
             db.session.commit()
         except Exception as e:
-            logger.error(f"Failed to update user program details: {e}")
+            logger.error(
+                f"Failed to update user program details for user_program_id {user_program_details.id}: {e}"
+            )
 
     def get_latest_active_user_program(self, user_id):
         try:
@@ -53,7 +55,7 @@ class UserProgramQuery(BaseQuery):
             )
         except Exception as e:
             logger.error(
-                f"An error occurred while fetching the latest active user program: {e}"
+                f"Failed to fetch the latest active user program for user_id {user_id}: {e}"
             )
 
     def get_latest_user_program(self, user_id):

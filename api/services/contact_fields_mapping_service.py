@@ -79,7 +79,6 @@ class ContactFieldsMappingService(object):
                     mapped_table_column_value = False
                 else:
                     mapped_table_column_value = None
-                    logger.warning("field_value is not a valid boolean value.")
 
             self.update_mapped_fields(
                 table_object,
@@ -89,7 +88,7 @@ class ContactFieldsMappingService(object):
             )
         except Exception as e:
             logger.error(
-                f"Exception occurred while processing contact field data for {self.user_phone}: {e}"
+                f"Exception occurred while processing contact field data for {self.user_phone}. Error: {e}"
             )
 
     def process_contact_groups_data(self, user_contact_group_details, user_details):
@@ -110,7 +109,7 @@ class ContactFieldsMappingService(object):
                 )
         except Exception as e:
             logger.error(
-                f"Exception occurred while processsing contact group data for {self.user_phone}: {e}"
+                f"Exception occurred while processsing contact group data for {self.user_phone}. Error: {e}"
             )
 
     def update_mapped_fields(
@@ -122,10 +121,7 @@ class ContactFieldsMappingService(object):
                 if getattr(table_data, column_name) != mapped_table_column_value:
                     setattr(table_data, column_name, mapped_table_column_value)
                     db.session.commit()
-                    logger.info(
-                        f"Successfully updated {column_name} with value {mapped_table_column_value} for user with id {user_details.id}"
-                    )
         except Exception as e:
             logger.error(
-                f"Exception occurred while updating mapped fields for {self.user_phone}: {e}"
+                f"Exception occurred while updating mapped fields for {self.user_phone}. Error: {e}"
             )

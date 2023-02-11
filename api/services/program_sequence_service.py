@@ -18,7 +18,9 @@ class ProgramSequenceService(object):
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
                 # Need to log this
-                logger.warning(f"User not available{self.user_phone}")
+                logger.warning(
+                    f"User details are not available for user phone {self.user_phone}."
+                )
                 return None
 
             module_content_details = models.ModuleContent.query.get_by_content_id(
@@ -26,8 +28,6 @@ class ProgramSequenceService(object):
             )
 
             if not module_content_details:
-                # it is optional to have Content and Module association
-                logger.info("No association between content and module")
                 return None
 
             program_module_details = models.ProgramModule.query.get_by_module_id(
@@ -45,7 +45,9 @@ class ProgramSequenceService(object):
 
             if not user_program_details:
                 # Need to log this
-                logger.error("No user program details found")
+                logger.error(
+                    f"No user program details found for user_id: {user_details.id}"
+                )
                 return None
 
             program_sequence = (
@@ -63,6 +65,6 @@ class ProgramSequenceService(object):
             return program_sequence_id
         except Exception as e:
             logger.error(
-                f"Exception occured while getting program sequence id for {self.user_phone}: {e}"
+                f"Exception occured while getting program sequence id for {self.user_phone}. Error: {e}"
             )
             return None

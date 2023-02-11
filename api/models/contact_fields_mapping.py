@@ -24,7 +24,7 @@ class ContactFieldsMappingQuery(BaseQuery):
             return self.all()
         except Exception as e:
             logger.error(
-                f"Exception occurred while getting all contact fiels mapping: {e}"
+                f"Exception occurred while getting all contact fiels mappings: {e}"
             )
 
 
