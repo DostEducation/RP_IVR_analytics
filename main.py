@@ -128,48 +128,30 @@ def handle_payload(jsonData, is_retry_payload=False):
 
 def handle_flow_category_data(jsonData):
     registration_service = services.RegistrationService()
-    try:
-        if jsonData["flow_category"] == "registration":
-            registration_service.handle_registration(jsonData)
-    except Exception as e:
-        logger.error(f"Error occurred in handle_registration: {e}")
+    if jsonData["flow_category"] == "registration":
+        registration_service.handle_registration(jsonData)
 
 
 def handle_user_group_data(jsonData):
     user_contact_service = services.UserContactService()
-    try:
-        user_contact_service.handle_contact_group(jsonData)
-    except Exception as e:
-        logger.error(f"Error occurred in handle_contact_group: {e}")
+    user_contact_service.handle_contact_group(jsonData)
 
 
 def handle_user_custom_field_data(jsonData):
     user_contact_service = services.UserContactService()
-    try:
-        user_contact_service.handle_custom_fields(jsonData)
-    except Exception as e:
-        logger.error(f"Error occurred in handle_custom_fields: {e}")
+    user_contact_service.handle_custom_fields(jsonData)
 
 
 def handle_prompts(jsonData):
     prompt_service = services.PromptService()
-    try:
-        prompt_service.handle_prompt_response(jsonData)
-    except Exception as e:
-        logger.error(f"Error occurred in handle_prompt_response: {e}")
+    prompt_service.handle_prompt_response(jsonData)
 
 
 def handle_contact_fields_and_groups(JsonData):
     custom_fields_mapping_service = services.ContactFieldsMappingService()
-    try:
-        contact_data = JsonData["contact"]
-        if contact_data.get("fields"):
-            custom_fields_mapping_service.handle_contact_fields_data(JsonData)
-    except Exception as e:
-        logger.error(f"Error occurred in handle_contact_fields_data: {e}")
+    contact_data = JsonData["contact"]
+    if contact_data.get("fields"):
+        custom_fields_mapping_service.handle_contact_fields_data(JsonData)
 
-    try:
-        if contact_data.get("groups"):
-            custom_fields_mapping_service.handle_contact_groups_data(JsonData)
-    except Exception as e:
-        logger.error(f"Error occurred in handle_contact_groups_data: {e}")
+    if contact_data.get("groups"):
+        custom_fields_mapping_service.handle_contact_groups_data(JsonData)

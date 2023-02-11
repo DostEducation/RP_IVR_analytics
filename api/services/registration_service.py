@@ -61,10 +61,6 @@ class RegistrationService(object):
                 else:
                     self.register(jsonData)
                     models.UserProgram.query.create(self.user_id, user_program_data)
-            else:
-                logger.warning(
-                    f"No flow run UUID found in webhook payload for user phone {self.user_phone}"
-                )
 
         except Exception as e:
             logger.error(

@@ -16,9 +16,6 @@ class ContactFieldsMappingService(object):
             self.set_init_data(jsonData)
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
-                logger.warning(
-                    f"User details not found for the given phone number: {self.user_phone}"
-                )
                 return False
 
             for (
@@ -41,9 +38,6 @@ class ContactFieldsMappingService(object):
             self.set_init_data(jsonData)
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
-                logger.warning(
-                    f"User details not found for the given phone number: {self.user_phone}"
-                )
                 return False
 
             for (

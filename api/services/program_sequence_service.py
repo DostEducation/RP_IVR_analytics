@@ -17,10 +17,6 @@ class ProgramSequenceService(object):
         try:
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
-                # Need to log this
-                logger.warning(
-                    f"User details are not available for user phone {self.user_phone}."
-                )
                 return None
 
             module_content_details = models.ModuleContent.query.get_by_content_id(

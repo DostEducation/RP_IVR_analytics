@@ -47,11 +47,6 @@ class CallLogService(object):
         custom_fields = {}
         if data.get("contact") and data["contact"].get("fields"):
             custom_fields = data["contact"].get("fields")
-
-        else:
-            logger.warning(
-                f"No custom fields found in the webhook payload for user phone: {self.user_phone}"
-            )
         return custom_fields
 
     def handle_call_log(self, jsonData):
@@ -80,10 +75,6 @@ class CallLogService(object):
                     self.update_call_logs(data)
                 else:
                     self.create_call_logs(jsonData)
-            else:
-                logger.warning(
-                    f"flow_run_uuid is not available for user phone {self.user_phone}."
-                )
         except Exception as e:
             logger.error(
                 f"Failed to handle call log details for {self.user_phone}. Error: {e}"
@@ -176,9 +167,6 @@ class CallLogService(object):
         )
 
         if not content_version:
-            logger.warning(
-                f"No content version found for content_id={content_id} and language_id={language_id} for user phone {self.user_phone}."
-            )
             content_version = (
                 models.ContentVersion.query.get_by_language_and_content_id(
                     app.config["DEFAULT_LANGUAGE_ID"], content_id

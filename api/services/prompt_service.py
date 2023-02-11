@@ -136,10 +136,6 @@ class PromptService(object):
         """
         try:
             if not user_details:
-                # user id is mandatory
-                logger.warning(
-                    f"User details are missing, cannot process prompt mapping for user phone {self.user_phone}."
-                )
                 return False
 
             prompt_response = data["category"]
