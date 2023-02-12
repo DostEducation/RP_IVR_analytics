@@ -1,14 +1,25 @@
 from api import helpers, db
+from utils.loggingutils import logger
 
 
 def split_prompt_by_hyphen(data):
-    split_prompt = data.split("-")
-    return split_prompt
+    try:
+        split_prompt = data.split("-")
+        return split_prompt
+    except Exception as e:
+        logger.error(
+            f"Error while splitting prompt '{data}' by hyphen. Error message: {e}"
+        )
 
 
 def split_prompt_by_underscore(data):
-    program_sub_prompt = data.split("_")
-    return program_sub_prompt
+    try:
+        program_sub_prompt = data.split("_")
+        return program_sub_prompt
+    except Exception as e:
+        logger.error(
+            f"Error while splitting prompt '{data}' by underscore. Error message: {e}"
+        )
 
 
 def get_program_prompt_id(jsonData):
@@ -36,7 +47,12 @@ def get_program_prompt_id(jsonData):
 
 
 def get_column_data_type(table_name, column_name):
-    get_column_type_query = f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}' AND COLUMN_NAME  = '{column_name}'"
-    column_type = db.session.execute(get_column_type_query)
+    try:
+        get_column_type_query = f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}' AND COLUMN_NAME  = '{column_name}'"
+        column_type = db.session.execute(get_column_type_query)
 
-    return column_type.fetchone()[0]
+        return column_type.fetchone()[0]
+    except Exception as e:
+        logger.error(
+            f"An error occurred while getting data type for column {column_name} in table {table_name}. Error message: {e}"
+        )

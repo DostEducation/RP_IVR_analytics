@@ -1,6 +1,7 @@
 from api import services
 from flask import jsonify
 from api.helpers import db_helper
+from utils.loggingutils import logger
 import json
 
 ### Endpoint for Cloud function
@@ -9,7 +10,8 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-            except:
+            except Exception as e:
+                logger.warning("[WARN] Could not retrieve JSON data from the request")
                 return jsonify(message="Something went wrong!"), 400
 
             transaction_log_service = services.TransactionLogService()
@@ -22,8 +24,10 @@ def webhook(request):
                 processed = handle_payload(jsonData)
 
                 if processed is False:
+                    logger.error(f"Error processing the payload: {jsonData}")
                     return jsonify(message="Something went wrong!"), 400
                 elif processed == -1:
+                    logger.warning("Contact not found in the payload")
                     return jsonify(message="Contact"), 400
 
                 if "contact" in jsonData:
@@ -33,12 +37,13 @@ def webhook(request):
 
             return jsonify(message="Success"), 200
         else:
+            logger.warning("[WARN] Received a GET request instead of POST")
             return (
                 jsonify(message="Currently, the system do not accept a GET request"),
                 405,
             )
     except Exception as e:
-        print(e)
+        logger.error(f"An unexpected error occurred. Error message: {e}")
         return jsonify(message="Internal server error"), 500
 
 
@@ -76,24 +81,18 @@ def handle_payload(jsonData, is_retry_payload=False):
                 handle_prompts(jsonData)
 
             # Handle content details
-            user_module_content_id = None
             program_sequence_id = None
+
             if "content_id" in jsonData:
-                content_service = services.ContentService()
+                program_sequence_service = services.ProgramSequenceService()
                 (
-                    user_module_content_id,
-                    program_sequence_id,
-                ) = content_service.add_user_module_content(jsonData)
-
-            if user_module_content_id:
-                calllog_service.update_user_module_content_id_in_call_log(
-                    user_module_content_id
-                )
-
-            if program_sequence_id:
-                calllog_service.update_program_sequence_id_in_call_log(
                     program_sequence_id
-                )
+                ) = program_sequence_service.get_program_sequence_id(jsonData)
+
+                if program_sequence_id:
+                    calllog_service.update_program_sequence_id_in_call_log(
+                        program_sequence_id
+                    )
 
             # Handle contact groups
             if (
@@ -117,8 +116,10 @@ def handle_payload(jsonData, is_retry_payload=False):
             if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
                 handle_contact_fields_and_groups(jsonData)
         else:
+            logger.error(f"No 'contact' key found in the input JSON data. {jsonData}")
             return -1
-    except:
+    except Exception as e:
+        logger.error(f"Exception occurred while handling payload: {e}")
         return False
     return True
 

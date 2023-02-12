@@ -28,9 +28,6 @@ class CallLog(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     registration_id = db.Column(db.Integer, db.ForeignKey("registration.id"))
-    user_module_content_id = db.Column(
-        db.Integer, db.ForeignKey("user_module_content.id")
-    )
     program_sequence_id = db.Column(db.Integer, db.ForeignKey("program_sequence.id"))
     content_version_id = db.Column(db.Integer, db.ForeignKey("content_version.id"))
     call_sid = db.Column(db.Integer)

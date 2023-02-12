@@ -2,6 +2,7 @@ from api.mixins import TimestampMixin
 from api import db, helpers, models, app
 from flask_sqlalchemy import BaseQuery
 from api.helpers.common_helper import current_ist_time
+from utils.loggingutils import logger
 
 
 class UserProgramQuery(BaseQuery):
@@ -24,7 +25,7 @@ class UserProgramQuery(BaseQuery):
             )
             helpers.save(user_program)
         except Exception as e:
-            print(f"Failed to create user_program: {e}")
+            logger.error(f"Failed to create user_program for user_id {user_id}: {e}")
 
     def update(self, user_program_details, data):
         try:
@@ -37,26 +38,39 @@ class UserProgramQuery(BaseQuery):
 
             db.session.commit()
         except Exception as e:
-            print(f"Failed to update user program details: {e}")
+            logger.error(
+                f"Failed to update user program details for user_program_id {user_program_details.id}. Error message: {e}"
+            )
 
     def get_latest_active_user_program(self, user_id):
-        return (
-            self.filter(
-                UserProgram.user_id == user_id,
-                UserProgram.status == models.UserProgram.UserProgramStatus.IN_PROGRESS,
+        try:
+            return (
+                self.filter(
+                    UserProgram.user_id == user_id,
+                    UserProgram.status
+                    == models.UserProgram.UserProgramStatus.IN_PROGRESS,
+                )
+                .order_by(UserProgram.id.desc())
+                .first()
             )
-            .order_by(UserProgram.id.desc())
-            .first()
-        )
+        except Exception as e:
+            logger.error(
+                f"Failed to fetch the latest active user program for user_id {user_id}. Error message: {e}"
+            )
 
     def get_latest_user_program(self, user_id):
-        return (
-            self.filter(
-                UserProgram.user_id == user_id,
+        try:
+            return (
+                self.filter(
+                    UserProgram.user_id == user_id,
+                )
+                .order_by(UserProgram.id.desc())
+                .first()
             )
-            .order_by(UserProgram.id.desc())
-            .first()
-        )
+        except Exception as e:
+            logger.error(
+                f"Error occurred while fetching latest user program for user_id: {user_id}. Error message: {e}"
+            )
 
 
 class UserProgram(TimestampMixin, db.Model):

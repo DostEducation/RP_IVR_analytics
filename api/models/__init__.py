@@ -13,7 +13,6 @@ from .callback_tracker import *
 from .system_phone import *
 from .partner_system_phone import *
 from .program_module import *
-from .user_module_content import *
 from .ivr_prompt import *
 from .ivr_prompt_response import *
 from .user_group import *
