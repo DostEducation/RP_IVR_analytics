@@ -39,7 +39,7 @@ class UserProgramQuery(BaseQuery):
             db.session.commit()
         except Exception as e:
             logger.error(
-                f"Failed to update user program details for user_program_id {user_program_details.id}: {e}"
+                f"Failed to update user program details for user_program_id {user_program_details.id}. Error message: {e}"
             )
 
     def get_latest_active_user_program(self, user_id):
