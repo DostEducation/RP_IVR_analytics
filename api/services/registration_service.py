@@ -1,6 +1,7 @@
 # This file is treated as service layer
 from api import models, db, helpers, app
 from datetime import datetime
+from utils.loggingutils import logger
 
 
 class RegistrationService(object):
@@ -62,7 +63,9 @@ class RegistrationService(object):
                     models.UserProgram.query.create(self.user_id, user_program_data)
 
         except Exception as e:
-            print(f"Failed to handle registration: {e}")
+            logger.error(
+                f"Failed to handle registration for {self.user_phone}. Error messager: {e}"
+            )
 
     # Handle new user registration
     def register(self, jsonData):
@@ -91,7 +94,12 @@ class RegistrationService(object):
                 == models.Registration.RegistrationStatus.COMPLETE
                 else None,
             )
-            helpers.save(registrant)
+            try:
+                helpers.save(registrant)
+            except Exception as e:
+                logger.error(
+                    f"Failed to save registration data for user with phone {self.user_phone}. Error message: {e}"
+                )
 
     def update_registration(self, registration, jsonData):
         """Updates the registration data
@@ -120,7 +128,12 @@ class RegistrationService(object):
         if self.user_id:
             registration.user_id = self.user_id
             registration.has_received_callback = True
-            db.session.commit()
+            try:
+                db.session.commit()
+            except Exception as e:
+                logger.error(
+                    f"Failed to update registration for {self.user_phone}. Error message: {e}"
+                )
 
     def create_user(self, jsonData):
         user = models.User.query.get_by_phone(self.user_phone)

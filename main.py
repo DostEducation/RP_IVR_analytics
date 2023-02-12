@@ -10,11 +10,8 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-                logger.info("This is an info log")
-                logger.warning("This is a warning log")
-                logger.error("This is an error log")
             except Exception as e:
-                logger.error(f"This is an error log: {e}")
+                logger.warning("[WARN] Could not retrieve JSON data from the request")
                 return jsonify(message="Something went wrong!"), 400
 
             transaction_log_service = services.TransactionLogService()
@@ -27,8 +24,10 @@ def webhook(request):
                 processed = handle_payload(jsonData)
 
                 if processed is False:
+                    logger.error(f"Error processing the payload: {jsonData}")
                     return jsonify(message="Something went wrong!"), 400
                 elif processed == -1:
+                    logger.warning("Contact not found in the payload")
                     return jsonify(message="Contact"), 400
 
                 if "contact" in jsonData:
@@ -38,12 +37,13 @@ def webhook(request):
 
             return jsonify(message="Success"), 200
         else:
+            logger.warning("[WARN] Received a GET request instead of POST")
             return (
                 jsonify(message="Currently, the system do not accept a GET request"),
                 405,
             )
     except Exception as e:
-        print(e)
+        logger.error(f"An unexpected error occurred. Error message: {e}")
         return jsonify(message="Internal server error"), 500
 
 
@@ -116,8 +116,10 @@ def handle_payload(jsonData, is_retry_payload=False):
             if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
                 handle_contact_fields_and_groups(jsonData)
         else:
+            logger.error(f"No 'contact' key found in the input JSON data. {jsonData}")
             return -1
-    except:
+    except Exception as e:
+        logger.error(f"Exception occurred while handling payload: {e}")
         return False
     return True
 

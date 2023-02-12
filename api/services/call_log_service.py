@@ -1,6 +1,7 @@
 # This file is treated as service layer
 from api import models, db, helpers, app
 from datetime import datetime
+from utils.loggingutils import logger
 
 
 class CallLogService(object):
@@ -37,14 +38,15 @@ class CallLogService(object):
                     "created_on", jsonData["flow_run_details"]
                 )
 
-        except:
-            print("Failed to fetch flow run details")
+        except Exception as e:
+            logger.error(
+                f"Failed to fetch flow run details for user phone {self.user_phone}. Error message: {e}"
+            )
 
     def get_custom_fields_from_webhook_payload(self, data):
         custom_fields = {}
         if data.get("contact") and data["contact"].get("fields"):
             custom_fields = data["contact"].get("fields")
-
         return custom_fields
 
     def handle_call_log(self, jsonData):
@@ -73,10 +75,10 @@ class CallLogService(object):
                     self.update_call_logs(data)
                 else:
                     self.create_call_logs(jsonData)
-            else:
-                print("flow_run_uuid is not available.")
-        except:
-            print("Failed to log the call details")
+        except Exception as e:
+            logger.error(
+                f"Failed to handle call log details for {self.user_phone}. Error: {e}"
+            )
 
     def create_call_logs(self, jsonData):
         try:
@@ -109,7 +111,6 @@ class CallLogService(object):
                     """
                     content_id = None
                     content_version_id = None
-                    print("The Content id is not valid")
 
             new_call_log = models.CallLog(
                 flow_run_uuid=self.flow_run_uuid,
@@ -135,9 +136,11 @@ class CallLogService(object):
             )
             helpers.save(new_call_log)
             self.call_log = new_call_log
-        except:
+        except Exception as e:
             # Need to log this
-            return "Failed to create call log"
+            logger.error(
+                f"Failed to create call log for {self.user_phone}. Error message: {e}"
+            )
 
     def update_call_logs(self, data):
         try:
@@ -154,9 +157,11 @@ class CallLogService(object):
                     self.call_log.content_version_id = content_version_id
 
             db.session.commit()
-        except:
+        except Exception as e:
             # Need to log this
-            return "Failed to udpate call log"
+            logger.error(
+                f"Failed to update call log for {self.user_phone}. Error message: {e}"
+            )
 
     def get_content_version_id(self, content_id, language_id):
         content_version = models.ContentVersion.query.get_by_language_and_content_id(
@@ -182,7 +187,12 @@ class CallLogService(object):
         if self.call_log and program_sequence_id:
             data = {}
             data["program_sequence_id"] = program_sequence_id
-            self.update_call_logs(data)
+            try:
+                self.update_call_logs(data)
+            except Exception as e:
+                logger.error(
+                    f"Failed to update program sequence id in call log for {self.user_phone}. Error message: {e}"
+                )
 
     def handle_parent_flow(self, jsonData):
         parent_flow_data = {}

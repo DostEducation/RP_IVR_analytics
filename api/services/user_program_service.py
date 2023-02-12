@@ -1,5 +1,7 @@
+# This file is treated as service layer
 from api import models, helpers, db
 from api.helpers.common_helper import current_ist_time
+from utils.loggingutils import logger
 
 
 class UserProgramService(object):
