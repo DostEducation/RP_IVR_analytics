@@ -152,7 +152,7 @@ class PromptService(object):
                 )
         except Exception as e:
             logger.error(
-                f"Exception occurred while handling prompt mapping for user phone {self.user_phone}: {e}"
+                f"Exception occurred while handling prompt mapping for user phone {self.user_phone}. Error message: {e}"
             )
 
     def process_mapped_fields(
@@ -192,7 +192,7 @@ class PromptService(object):
                     )
         except Exception as e:
             logger.error(
-                f"Failed to process mapped fields for user phone {self.user_phone}. Error:{e}"
+                f"Failed to process mapped fields for prompt value '{prompt_response_value}' and for user phone {self.user_phone}. Error message:{e}"
             )
 
     def update_mapped_fields(
@@ -205,7 +205,7 @@ class PromptService(object):
                 db.session.commit()
         except Exception as e:
             logger.error(
-                f"Exception occurred while updating mapped fields for {self.user_phone}: {e}"
+                f"Exception occurred while updating mapped fields for prompt value = {prompt_response_value} and for {self.user_phone}. Error message {e}"
             )
 
     def sanitize_keypress(self, data):
@@ -217,7 +217,7 @@ class PromptService(object):
                 return_keypress_value = -2
         except Exception as e:
             logger.error(
-                f"Keypress value by {self.user_phone} is not an integer. Error: {e}"
+                f"Keypress value by {self.user_phone} is not an integer. Error message: {e}"
             )
             return_keypress_value = -2
 

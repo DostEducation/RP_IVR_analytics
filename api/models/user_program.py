@@ -55,7 +55,7 @@ class UserProgramQuery(BaseQuery):
             )
         except Exception as e:
             logger.error(
-                f"Failed to fetch the latest active user program for user_id {user_id}: {e}"
+                f"Failed to fetch the latest active user program for user_id {user_id}. Error message: {e}"
             )
 
     def get_latest_user_program(self, user_id):
@@ -69,7 +69,7 @@ class UserProgramQuery(BaseQuery):
             )
         except Exception as e:
             logger.error(
-                f"Error occurred while fetching latest user program for user_id: {user_id}. Error: {e}"
+                f"Error occurred while fetching latest user program for user_id: {user_id}. Error message: {e}"
             )
 
 

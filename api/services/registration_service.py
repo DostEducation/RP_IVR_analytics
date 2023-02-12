@@ -64,7 +64,7 @@ class RegistrationService(object):
 
         except Exception as e:
             logger.error(
-                f"Failed to handle registration for {self.user_phone}. Error: {e}"
+                f"Failed to handle registration for {self.user_phone}. Error messager: {e}"
             )
 
     # Handle new user registration
@@ -98,7 +98,7 @@ class RegistrationService(object):
                 helpers.save(registrant)
             except Exception as e:
                 logger.error(
-                    f"Failed to save registration data for user with phone {self.user_phone}. Error: {e}"
+                    f"Failed to save registration data for user with phone {self.user_phone}. Error message: {e}"
                 )
 
     def update_registration(self, registration, jsonData):
@@ -132,7 +132,7 @@ class RegistrationService(object):
                 db.session.commit()
             except Exception as e:
                 logger.error(
-                    f"Failed to update registration for {self.user_phone}: {e}"
+                    f"Failed to update registration for {self.user_phone}. Error message: {e}"
                 )
 
     def create_user(self, jsonData):

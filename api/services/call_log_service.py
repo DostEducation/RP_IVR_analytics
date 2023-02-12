@@ -40,7 +40,7 @@ class CallLogService(object):
 
         except Exception as e:
             logger.error(
-                f"Failed to fetch flow run details for user phone {self.user_phone}: {e}"
+                f"Failed to fetch flow run details for user phone {self.user_phone}. Error message: {e}"
             )
 
     def get_custom_fields_from_webhook_payload(self, data):
@@ -138,7 +138,9 @@ class CallLogService(object):
             self.call_log = new_call_log
         except Exception as e:
             # Need to log this
-            logger.error(f"Failed to create call log for {self.user_phone}: {e}")
+            logger.error(
+                f"Failed to create call log for {self.user_phone}. Error message: {e}"
+            )
 
     def update_call_logs(self, data):
         try:
@@ -158,7 +160,7 @@ class CallLogService(object):
         except Exception as e:
             # Need to log this
             logger.error(
-                f"Failed to update call log for {self.user_phone}: {e}", exc_info=True
+                f"Failed to update call log for {self.user_phone}. Error message: {e}"
             )
 
     def get_content_version_id(self, content_id, language_id):
@@ -189,7 +191,7 @@ class CallLogService(object):
                 self.update_call_logs(data)
             except Exception as e:
                 logger.error(
-                    f"Failed to update program sequence id in call log for {self.user_phone}: {e}"
+                    f"Failed to update program sequence id in call log for {self.user_phone}. Error message: {e}"
                 )
 
     def handle_parent_flow(self, jsonData):

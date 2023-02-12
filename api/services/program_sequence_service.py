@@ -40,7 +40,6 @@ class ProgramSequenceService(object):
                 )
 
             if not user_program_details:
-                # Need to log this
                 logger.error(
                     f"No user program details found for user_id: {user_details.id}"
                 )
@@ -61,6 +60,6 @@ class ProgramSequenceService(object):
             return program_sequence_id
         except Exception as e:
             logger.error(
-                f"Exception occured while getting program sequence id for {self.user_phone}. Error: {e}"
+                f"Exception occured while getting program sequence id for {self.user_phone}. Error message: {e}"
             )
             return None

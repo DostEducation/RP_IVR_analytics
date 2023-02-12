@@ -13,14 +13,18 @@ class TransactionLogService(object):
             helpers.save(new_webhook_log)
             return new_webhook_log
         except Exception as e:
-            logger.error(f"Error while creating new webhook log: {e}")
+            logger.error(
+                f"Error while creating new webhook log. Webhook: {jsonData}. Error message: {e}"
+            )
 
     def mark_webhook_log_as_processed(self, webhook_log):
         try:
             webhook_log.processed = True
             helpers.save(webhook_log)
         except Exception as e:
-            logger.error(f"Error while marking webhook log as processed: {e}")
+            logger.error(
+                f"Error while marking webhook log as processed. Error message: {e}"
+            )
 
     def get_failed_webhook_transaction_log(self):
         try:
@@ -39,4 +43,6 @@ class TransactionLogService(object):
 
             return failed_webhook_transaction_logs
         except Exception as e:
-            logger.error(f"Error while retrieving failed webhook transaction logs: {e}")
+            logger.error(
+                f"Error while retrieving failed webhook transaction logs. Error message: {e}"
+            )

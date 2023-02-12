@@ -24,10 +24,10 @@ def webhook(request):
                 processed = handle_payload(jsonData)
 
                 if processed is False:
-                    logger.error("[ERROR] Error processing the payload")
+                    logger.error(f"Error processing the payload: {jsonData}")
                     return jsonify(message="Something went wrong!"), 400
                 elif processed == -1:
-                    logger.warning("[ERROR] Contact not found in the payload")
+                    logger.warning("Contact not found in the payload")
                     return jsonify(message="Contact"), 400
 
                 if "contact" in jsonData:
@@ -43,7 +43,7 @@ def webhook(request):
                 405,
             )
     except Exception as e:
-        logger.error("[ERROR] An unexpected error occurred: %s" % e)
+        logger.error(f"An unexpected error occurred. Error message: {e}")
         return jsonify(message="Internal server error"), 500
 
 
@@ -63,7 +63,6 @@ def retry_failed_webhook(transaction_log_service):
 
         log.processed = True
         db_helper.save(log)
-        logger.info("[INFO] Successfully processed the failed log")
 
 
 def handle_payload(jsonData, is_retry_payload=False):
@@ -117,12 +116,11 @@ def handle_payload(jsonData, is_retry_payload=False):
             if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
                 handle_contact_fields_and_groups(jsonData)
         else:
-            logger.error("[ERROR] No 'contact' key found in the input JSON data.")
+            logger.error(f"No 'contact' key found in the input JSON data. {jsonData}")
             return -1
     except Exception as e:
-        logger.error(f"[ERROR] Exception Occured while handeling payload: {e}")
+        logger.error(f"Exception occurred while handling payload: {e}")
         return False
-    logger.info("[INFO] Payload processing completed successfully.")
     return True
 
 

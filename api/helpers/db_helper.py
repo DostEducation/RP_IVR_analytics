@@ -16,7 +16,7 @@ def get_partner_id_by_system_phone(system_phone):
                 return partner_system_phone.partner_id
     except Exception as e:
         logger.error(
-            f"Error while fetching partner id by system phone {system_phone}: {e}"
+            f"Error while fetching partner id by system phone {system_phone}. Error message: {e}"
         )
     return None
 
@@ -27,7 +27,7 @@ def save(data):
         db.session.commit()
     except Exception as e:
         logger.error(
-            f"Error occurred while commiting the data in the database. Error Message:  {e}"
+            f"Error occurred while committing the data in the database. Error message: {e}"
         )
         logger.debug(traceback.format_exc())
         db.session.rollback()

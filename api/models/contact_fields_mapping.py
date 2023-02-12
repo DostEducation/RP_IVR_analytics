@@ -11,13 +11,17 @@ class ContactFieldsMappingQuery(BaseQuery):
                 ContactFieldsMapping.expected_field_value == field_value,
             ).all()
         except Exception as e:
-            logger.error(f"Exception occurred while getting field name: {e}")
+            logger.error(
+                f"Exception occurred while fetching contact field mapping using field name: {field_name} and value: {field_value}. Error message: {e}"
+            )
 
     def get_by_group_name(self, contact_groups):
         try:
             return self.filter(ContactFieldsMapping.field_name == contact_groups).all()
         except Exception as e:
-            logger.error(f"Exception occurred while getting group name: {e}")
+            logger.error(
+                f"Exception occurred while fetching contact field mapping using group name {contact_groups}. Erorr message: {e}"
+            )
 
     def get_all_contact_fields_mapping(self):
         try:
