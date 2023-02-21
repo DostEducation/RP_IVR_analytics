@@ -30,12 +30,6 @@ class PromptService(object):
             ivr_prompt_response_details = (
                 models.IvrPromptResponse.query.get_by_call_log_id(self.call_log_id)
             )
-            if not ivr_prompt_response_details:
-                logger.error(
-                    "IVR prompt response not found for call log id {}".format(
-                        self.call_log_id
-                    )
-                )
 
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
