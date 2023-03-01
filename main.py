@@ -5,7 +5,6 @@ from utils.loggingutils import logger
 import json
 
 ### Endpoint for Cloud function
-### This Comment is added for the testing of CD in the production
 def webhook(request):
     try:
         if request.method == "POST":
