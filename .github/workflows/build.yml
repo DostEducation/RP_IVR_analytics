@@ -2,7 +2,7 @@ name: build-and-deployment
 
 on:
   push:
-    branches: [develop]
+    branches: [feature/slack-notification-for-continues-deployment-in-the-system]
 
 jobs:
   # build and test jobs will be added later one we have unit tests in place
