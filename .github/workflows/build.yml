@@ -35,8 +35,7 @@ jobs:
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       with:
-        entryPoint: 'slackNotification'
-        args: |
-          --status=success
-          --message='Staging deployment completed successfully!'
-          --slackChannel='${{ secrets.SLACK_CHANNEL }}'
+        status: success
+        message: 'Staging deployment completed successfully!'
+        slack-token: ${{ secrets.SLACK_TOKEN }}
+        slack-channel: ${{ secrets.SLACK_CHANNEL }}
