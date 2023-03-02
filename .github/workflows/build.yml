@@ -57,3 +57,4 @@ jobs:
         entry_point: webhook
         max_instances: 0 # Remove limitation
         env_vars: FLASK_ENV=${{ secrets.FLASK_ENV_PROD }},TESTING=${{ secrets.TESTING_PROD }},DEBUG=${{ secrets.DEBUG_PROD }},DB_USER=${{ secrets.DB_USER_PROD }},DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }},DB_NAME=${{ secrets.DB_NAME_PROD }},DB_PORT=${{ secrets.DB_PORT_PROD }},SECRET_KEY=${{ secrets.SECRET_KEY_PROD }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME_PROD }},RETRY_LOGS_BATCH_LIMIT=${{ secrets.RETRY_LOGS_BATCH_LIMIT_PROD }},MAX_RETRY_ATTEMPTS_FOR_LOGS=${{ secrets.MAX_RETRY_ATTEMPTS_FOR_LOGS_PROD }},DB_HOST=${{ secrets.DB_HOST_PROD }}
+        vpc_connector: projects/${{ secrets.PROJECT_ID }}/locations/${{ secrets.VPC_CONNECTOR_REGION }}/connectors/${{ secrets.VPC_CONNECTOR_NAME }}
