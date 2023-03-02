@@ -44,9 +44,6 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-    - id: 'set-vpc-connector'
-      run: echo "::set-env name=VPC_CONNECTOR_PRIVATE_IP::${{ secrets.VPC_CONNECTOR_PRIVATE_IP }}"
-
     - id: 'deploy-production'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
       with:
