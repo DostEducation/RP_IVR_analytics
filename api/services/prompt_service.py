@@ -205,7 +205,7 @@ class PromptService(object):
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
         try:
-            if keypress and len(keypress) < 5:
+            if keypress and str(keypress).isdigit() and len(keypress) < 5:
                 return_keypress_value = int(keypress)
             else:
                 return_keypress_value = -2
