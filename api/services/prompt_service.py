@@ -44,11 +44,9 @@ class PromptService(object):
                             prompt_name, prompt_response
                         )
                     )
-                    if not ivr_prompt_details:
+                    if not ivr_prompt_details and prompt_response.lower() != "other":
                         logger.error(
-                            "IVR prompt not found for name '{}' and response '{}'".format(
-                                prompt_name, prompt_response
-                            )
+                            f"IVR prompt not found for name '{prompt_name}' and response '{prompt_response}'"
                         )
 
                     if ivr_prompt_details:
