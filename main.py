@@ -10,10 +10,10 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-            except Exception as e:
+            except:
                 logger.warning("[WARN] Could not retrieve JSON data from the request")
                 return jsonify(message="Something went wrong!"), 400
-            
+
             if jsonData.get("flow_category", None) == "dry_flow":
                 handle_dry_flow(jsonData)
             else:
@@ -32,21 +32,16 @@ def webhook(request):
 
 def handle_dry_flow(jsonData):
     # Handle contact groups
-    if (
-        "groups" in jsonData["contact"]
-        and jsonData["contact"]["groups"] is not None
-    ):
+    if "groups" in jsonData["contact"] and jsonData["contact"]["groups"] is not None:
         handle_user_group_data(jsonData)
 
     # Handle custom fields
-    if (
-        "fields" in jsonData["contact"]
-        and jsonData["contact"]["fields"] is not None
-    ):
+    if "fields" in jsonData["contact"] and jsonData["contact"]["fields"] is not None:
         handle_user_custom_field_data(jsonData)
-    
+
     # Handle groups and fields
     handle_contact_fields_and_groups(jsonData)
+
 
 def handle_regular_flow(jsonData):
     transaction_log_service = services.TransactionLogService()
@@ -54,9 +49,7 @@ def handle_regular_flow(jsonData):
         retry_failed_webhook(transaction_log_service)
     else:
         if "contact" in jsonData:
-            webhook_log = transaction_log_service.create_new_webhook_log(
-                jsonData
-            )
+            webhook_log = transaction_log_service.create_new_webhook_log(jsonData)
         processed = handle_payload(jsonData)
 
         if processed is False:
@@ -68,6 +61,7 @@ def handle_regular_flow(jsonData):
 
         if "contact" in jsonData:
             transaction_log_service.mark_webhook_log_as_processed(webhook_log)
+
 
 def retry_failed_webhook(transaction_log_service):
     failed_webhook_logs = transaction_log_service.get_failed_webhook_transaction_log()
