@@ -1,7 +1,5 @@
 # This file is treated as service layer
 from api import models, helpers, db
-from api.helpers.common_helper import current_ist_time
-from utils.loggingutils import logger
 
 
 class UserProgramService(object):
@@ -15,3 +13,12 @@ class UserProgramService(object):
         self.user_phone = helpers.sanitize_phone_string(user_phone)
         user = models.User.query.get_by_phone(self.user_phone)
         self.user_id = user.id
+
+    def mark_user_program_as_completed(self, JsonData):
+        self.set_init_data(JsonData)
+        self.user_program_data = models.UserProgram.get_by_user_id(self.user_id)
+        if self.user_program_data:
+            self.user_program_data.status = (
+                models.UserProgram.UserProgramStatus.COMPLETE
+            )
+            db.session.commit()
