@@ -1,0 +1,49 @@
+output-format: grouped
+
+# strictness: veryhigh
+# doc-warnings: no
+# test-warnings: no
+max-line-length: 120
+# pep8: full
+
+ignore-paths:
+  - __pycache__/
+  - .github/
+  - venv/
+
+mypy:
+  run: true
+  options:
+    ignore-missing-imports: true
+    follow-imports: skip
+
+pylint:
+  options:
+    extension-pkg-allow-list: mypy
+  disable:
+    - too-few-public-methods
+    - missing-docstring
+    - django-not-available
+    - logging-fstring-interpolation
+    - N803
+    - broad-exception-caught
+    - invalid-name
+
+mccabe:
+  run: true
+
+pycodestyle:
+  disable:
+    - E126
+
+pydocstyle:
+  run: false
+  disable:
+    - D100
+    - D101
+    - D102
+    - D103
+    - D107
+    - D205
+    - D400
+    - D401
