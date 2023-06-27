@@ -25,7 +25,17 @@ pylint:
     - missing-docstring
     - django-not-available
     - logging-fstring-interpolation
+    - logging-format-interpolation
     - N803
+    - bare-except
+    - cyclic-import
+    - no-else-return
+    - too-many-locals
+    - simplifiable-if-expression
+    - import-error
+    - protected-access
+    - pointless-string-statement
+    - inconsistent-return-statements
     - broad-exception-caught
     - invalid-name
 
@@ -47,3 +57,8 @@ pydocstyle:
     - D205
     - D400
     - D401
+    - E712
+
+pyflakes:
+  disable:
+    - F401

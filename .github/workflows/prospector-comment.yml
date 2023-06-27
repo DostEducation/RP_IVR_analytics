@@ -1,0 +1,46 @@
+name: Prospector Comment
+
+on: [pull_request]
+
+jobs:
+  prospector-comment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: |
+          pip install prospector  # Install Prospector
+          # Install other necessary dependencies
+
+      - name: Run Prospector
+        run: |
+          prospector --output-format grouped > prospector_output.txt  # Run Prospector and save the output to a file
+          # Other necessary commands
+
+      - name: Extract code violations
+        run: |
+          # Use a script or tool to extract the code violations from the prospector_output.txt file
+          # Store the extracted messages in a variable or a separate file
+
+      - name: Create GitHub comment
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const fs = require('fs');
+            const codeViolations = fs.readFileSync('path/to/extracted/violations.txt', 'utf8');
+            const commentBody = `
+            Prospector Code Violations:
+            ${codeViolations}
+            `;
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              body: commentBody
+            });
