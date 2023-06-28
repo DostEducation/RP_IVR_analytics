@@ -55,6 +55,7 @@ pycodestyle:
     - E126
     - E501
     - E712
+    - E722
 
 pydocstyle:
   run: false
