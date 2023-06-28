@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install prospector[with_mypy,with_bandit]  # Install Prospector with mypy support
+          pip install prospector[with_mypy,with_bandit]
           # Install other necessary dependencies
 
       - name: Run Prospector
@@ -33,12 +33,14 @@ jobs:
         run: prospector --output-format grouped
 
       - name: Create GitHub comment
-        uses: actions/github-script@v4
+        uses: actions/github-script@v5
         with:
           script: |
-            const codeViolations = `prospector_output:${{ steps.run_prospector.outputs.prospector_output }}`;
-            const commentBody = `Prospector Code Violations:${codeViolations}`;
-            github.issues.createComment({
-              issue_number: context.issue.number,
+            const codeViolations = `prospector_output:\n${{ steps.run_prospector.outputs.prospector_output }}`;
+            const commentBody = `Prospector Code Violations:\n${codeViolations}`;
+            github.pulls.createComment({
+              pull_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               body: commentBody
             });
