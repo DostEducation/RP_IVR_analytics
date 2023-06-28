@@ -135,7 +135,7 @@ class RegistrationService(object):
                     f"Failed to update registration for {self.user_phone}. Error message: {e}"
                 )
 
-    def create_user(self, jsonData):
+    def create_user(self):
         user = models.User.query.get_by_phone(self.user_phone)
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
         if not user:
