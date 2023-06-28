@@ -1,10 +1,18 @@
 name: Prospector Comment
 
-on: [pull_request]
+on:
+  pull_request:
 
 jobs:
   prospector-comment:
     runs-on: ubuntu-latest
+    permissions:
+      # Gives the action the necessary permissions for publishing new
+      # comments in pull requests.
+      pull-requests: write
+      # Gives the action the necessary permissions for pushing data to the
+      # comments (to avoid publishing multiple comments in the same PR)
+      contents: write
 
     steps:
       - name: Checkout code
@@ -17,21 +25,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install prospector[with_mypy,with_bandit]
+          pip install prospector  # Install Prospector
+          # Install other necessary dependencies
 
       - name: Run Prospector
         id: run_prospector
         run: prospector --output-format grouped
 
       - name: Create GitHub comment
-        uses: actions/github-script@v5
+        uses: actions/github-script@v4
         with:
           script: |
             const codeViolations = `prospector_output:${{ steps.run_prospector.outputs.prospector_output }}`;
-            const commentBody = `
-            Prospector Code Violations:
-            ${codeViolations}
-            `;
+            const commentBody = `Prospector Code Violations:${codeViolations}`;
             github.issues.createComment({
               issue_number: context.issue.number,
               body: commentBody
