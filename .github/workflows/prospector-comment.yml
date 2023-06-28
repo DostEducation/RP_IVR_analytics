@@ -17,7 +17,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install prospector
+          pip install prospector[with_mypy,with_bandit]
 
       - name: Run Prospector
         id: run_prospector
