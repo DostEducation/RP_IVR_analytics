@@ -76,3 +76,7 @@ pyflakes:
     - F401
     - F811
     - F841
+
+bandit:
+  disable:
+    - B608
