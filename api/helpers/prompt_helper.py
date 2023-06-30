@@ -1,5 +1,6 @@
 from api import helpers, db
 from utils.loggingutils import logger
+from sqlalchemy import text
 
 
 def split_prompt_by_hyphen(data):
@@ -48,8 +49,13 @@ def get_program_prompt_id(jsonData):
 
 def get_column_data_type(table_name, column_name):
     try:
-        get_column_type_query = f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}' AND COLUMN_NAME  = '{column_name}'"
-        column_type = db.session.execute(get_column_type_query)
+        get_column_type_query = text(
+            "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = :table_name AND COLUMN_NAME = :column_name"
+        )
+        column_type = db.session.execute(
+            get_column_type_query,
+            {"table_name": table_name, "column_name": column_name},
+        )
 
         return column_type.fetchone()[0]
     except Exception as e:

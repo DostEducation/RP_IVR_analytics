@@ -33,7 +33,7 @@ class PromptService(object):
 
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
-                logger.error("User not found for phone {}".format(self.user_phone))
+                logger.error(f"User not found for phone {self.user_phone}.")
 
             for key in data:
                 if key != "result" and "category" in data[key] and "name" in data[key]:
@@ -130,8 +130,6 @@ class PromptService(object):
             if not user_details:
                 return False
 
-            prompt_response = data["category"]
-            prompt_name = data["name"]
             ivr_prompt_mapping_data = (
                 models.IvrPromptMapping.query.get_by_ivr_prompt_id(
                     ivr_prompt_details.id

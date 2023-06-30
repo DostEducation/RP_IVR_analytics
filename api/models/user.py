@@ -10,9 +10,6 @@ class UserQuery(BaseQuery):
     def get_by_id(self, id):
         return self.filter(User.id == id).first()
 
-    def get_by_id(self, id):
-        return self.filter(User.id == id).first()
-
 
 class User(TimestampMixin, db.Model):
     query_class = UserQuery

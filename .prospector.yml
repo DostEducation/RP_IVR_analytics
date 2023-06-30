@@ -1,0 +1,82 @@
+output-format: grouped
+
+# strictness: veryhigh
+# doc-warnings: no
+# test-warnings: no
+max-line-length: 120
+# pep8: full
+
+ignore-paths:
+  - __pycache__/
+  - .github/
+  - venv/
+
+mypy:
+  run: true
+  options:
+    ignore-missing-imports: true
+    follow-imports: skip
+
+pylint:
+  options:
+    extension-pkg-allow-list: mypy
+  disable:
+    - too-few-public-methods
+    - missing-docstring
+    - django-not-available
+    - logging-fstring-interpolation
+    - logging-format-interpolation
+    - N803
+    - bare-except
+    - cyclic-import
+    - no-else-return
+    - too-many-locals
+    - simplifiable-if-expression
+    - import-error
+    - useless-object-inheritance
+    - protected-access
+    - unused-import
+    - unused-variable
+    - pointless-string-statement
+    - inconsistent-return-statements
+    - broad-exception-caught
+    - singleton-comparison
+    - invalid-name
+    - line-too-long
+    - unused-argument
+    - redefined-builtin
+    - too-many-function-args
+
+mccabe:
+  run: true
+
+pycodestyle:
+  disable:
+    - E126
+    - E501
+    - E712
+    - E722
+
+pydocstyle:
+  run: false
+  disable:
+    - D100
+    - E722
+    - D101
+    - D102
+    - D103
+    - D107
+    - D205
+    - D400
+    - D401
+    - E712
+
+pyflakes:
+  disable:
+    - F401
+    - F811
+    - F841
+
+bandit:
+  disable:
+    - B608
