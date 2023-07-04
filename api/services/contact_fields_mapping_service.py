@@ -3,7 +3,7 @@ from api import models, db, helpers
 from utils.loggingutils import logger
 
 
-class ContactFieldsMappingService(object):
+class ContactFieldsMappingService:
     def __init__(self):
         self.user_phone = None
 
@@ -28,10 +28,13 @@ class ContactFieldsMappingService(object):
                         self.process_contact_fields_data(
                             contact_field_mapping, user_details, field_value
                         )
+            return True
         except Exception as e:
             logger.error(
-                f"Error occurred while handling custom field mapping for {self.user_phone}. Error message: {e}"
+                f"Error occurred while handling custom field mapping for {self.user_phone}."
+                f"Error message: {e}"
             )
+            return False
 
     def handle_contact_groups_data(self, jsonData):
         try:
@@ -50,8 +53,9 @@ class ContactFieldsMappingService(object):
                         )
         except Exception as e:
             logger.error(
-                f"Error occurred while handling custom field mapping for {self.user_phone}.  Error message: {e}"
+                f"Error occurred while handling custom field mapping for {self.user_phone}. Error message:{e}"
             )
+        return None
 
     def process_contact_fields_data(
         self, user_contact_field_details, user_details, field_value
@@ -117,5 +121,6 @@ class ContactFieldsMappingService(object):
                     db.session.commit()
         except Exception as e:
             logger.error(
-                f"Exception occurred while updating mapped fields for {self.user_phone}. The column name is {column_name} and the value is {mapped_table_column_value}. Error: {e}"
+                f"Exception occurred while updating mapped fields for {self.user_phone}"
+                f"The column name is {column_name} and the value is {mapped_table_column_value}. Error: {e}"
             )

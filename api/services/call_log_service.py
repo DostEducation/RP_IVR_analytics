@@ -4,7 +4,7 @@ from datetime import datetime
 from utils.loggingutils import logger
 
 
-class CallLogService(object):
+class CallLogService:
     def __init__(self):
         self.system_phone = None
         self.user_phone = None
@@ -94,7 +94,7 @@ class CallLogService(object):
 
             if "content_id" in jsonData:
                 content_id = jsonData["content_id"]
-                content_data = models.Content.query.get(content_id)
+                content_data = models.Content.query.get_by_id(content_id)
                 custom_fields = self.get_custom_fields_from_webhook_payload(jsonData)
                 language_id = (
                     custom_fields.get("language_id")
@@ -106,9 +106,8 @@ class CallLogService(object):
                 )
 
                 if not content_data:
-                    """If the content id is not available in the system, it will throw the error.
-                    Mark it as None
-                    """
+                    # If the content id is not available in the system, it will throw the error.
+                    # Mark it as None
                     content_id = None
                     content_version_id = None
 
@@ -137,7 +136,6 @@ class CallLogService(object):
             helpers.save(new_call_log)
             self.call_log = new_call_log
         except Exception as e:
-            # Need to log this
             logger.error(
                 f"Failed to create call log for {self.user_phone}. Error message: {e}"
             )
@@ -158,7 +156,6 @@ class CallLogService(object):
 
             db.session.commit()
         except Exception as e:
-            # Need to log this
             logger.error(
                 f"Failed to update call log for {self.user_phone}. Error message: {e}"
             )
@@ -206,9 +203,8 @@ class CallLogService(object):
                     parent_flow["name"], self.missedcall_flow_identifier
                 )
                 if missedcall_category_list:
-                    """The call category is set to call back if missedcall flow has ran.
-                    For that, the missed call flow name should contain string "missedcall"
-                    """
+                    # The call category is set to call back if missedcall flow has ran.
+                    # For that, the missed call flow name should contain string "missedcall"
                     self.call_category = models.CallLog.CallCategories.CALLBACK
             if "uuid" in jsonData["parent"]:
                 parent_flow_data["parent_flow_run_uuid"] = jsonData["parent"]["uuid"]

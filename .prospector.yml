@@ -15,68 +15,14 @@ mypy:
   run: true
   options:
     ignore-missing-imports: true
-    follow-imports: skip
 
 pylint:
-  options:
-    extension-pkg-allow-list: mypy
   disable:
-    - too-few-public-methods
-    - missing-docstring
-    - django-not-available
-    - logging-fstring-interpolation
-    - logging-format-interpolation
-    - N803
-    - bare-except
-    - cyclic-import
-    - no-else-return
-    - too-many-locals
-    - simplifiable-if-expression
-    - import-error
-    - useless-object-inheritance
-    - protected-access
-    - unused-import
-    - unused-variable
-    - pointless-string-statement
-    - inconsistent-return-statements
-    - broad-exception-caught
-    - singleton-comparison
-    - invalid-name
-    - line-too-long
-    - unused-argument
-    - redefined-builtin
-    - too-many-function-args
-
-mccabe:
-  run: true
-
-pycodestyle:
-  disable:
-    - E126
-    - E501
-    - E712
-    - E722
-
-pydocstyle:
-  run: false
-  disable:
-    - D100
-    - E722
-    - D101
-    - D102
-    - D103
-    - D107
-    - D205
-    - D400
-    - D401
-    - E712
+    - logging-fstring-interpolation # Disabed this violation as we wanted to use f-string for logging.
+    - pylint_django # Disabed this violation as not needed in this application.
+    - django-not-available # Disabed this violation as not needed in this application.
+    - import-error # Disabed this violation to suppress warning "Unable to import sqlalchemy and flask_sqlalchemy".
 
 pyflakes:
   disable:
-    - F401
-    - F811
-    - F841
-
-bandit:
-  disable:
-    - B608
+    - F401 # Disabed F401 violation to suppress unused import errors in __init__.py. Although the imported modules in this file may not be directly utilized, they are essential for the overall functionalties in application.

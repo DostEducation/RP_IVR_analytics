@@ -4,9 +4,11 @@ from flask_sqlalchemy import BaseQuery
 
 
 class RegistrationQuery(BaseQuery):
-    def get_by_id(self, id):
+    def get_by_id(self, registration_id):
         return (
-            self.filter(Registration.id == id).order_by(Registration.id.desc()).first()
+            self.filter(Registration.id == registration_id)
+            .order_by(Registration.id.desc())
+            .first()
         )
 
     def get_by_phone(self, phone):
@@ -27,7 +29,7 @@ class Registration(TimestampMixin, db.Model):
     query_class = RegistrationQuery
     __tablename__ = "registration"
 
-    class RegistrationStatus(object):
+    class RegistrationStatus:
         PENDING = "pending"
         INCOMPLETE = "incomplete"
         COMPLETE = "complete"

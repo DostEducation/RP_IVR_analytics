@@ -3,7 +3,7 @@ from api import models, helpers, db
 from api.helpers.common_helper import current_ist_time
 
 
-class UserProgramService(object):
+class UserProgramService:
     def __init__(self):
         self.user_id = None
         self.user_phone = None

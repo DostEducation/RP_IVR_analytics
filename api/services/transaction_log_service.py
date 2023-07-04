@@ -4,7 +4,7 @@ import json
 from utils.loggingutils import logger
 
 
-class TransactionLogService(object):
+class TransactionLogService:
     def create_new_webhook_log(self, jsonData):
         try:
             new_webhook_log = models.WebhookTransactionLog(
@@ -16,6 +16,7 @@ class TransactionLogService(object):
             logger.error(
                 f"Error while creating new webhook log. Webhook: {jsonData}. Error message: {e}"
             )
+            return None
 
     def mark_webhook_log_as_processed(self, webhook_log):
         try:
@@ -30,7 +31,7 @@ class TransactionLogService(object):
         try:
             failed_webhook_transaction_logs = (
                 models.WebhookTransactionLog.query.filter(
-                    models.WebhookTransactionLog.processed == False
+                    models.WebhookTransactionLog.processed.is_(False)
                 )
                 .filter(
                     models.WebhookTransactionLog.attempts
@@ -46,3 +47,4 @@ class TransactionLogService(object):
             logger.error(
                 f"Error while retrieving failed webhook transaction logs. Error message: {e}"
             )
+            return None

@@ -7,8 +7,8 @@ class UserQuery(BaseQuery):
     def get_by_phone(self, phone):
         return self.filter(User.phone.contains(phone[-10:])).first()
 
-    def get_by_id(self, id):
-        return self.filter(User.id == id).first()
+    def get_by_id(self, user_id):
+        return self.filter(User.id == user_id).first()
 
 
 class User(TimestampMixin, db.Model):
