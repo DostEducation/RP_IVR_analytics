@@ -1,6 +1,5 @@
 from api import db
 import traceback
-from sqlalchemy import inspect
 from utils.loggingutils import logger
 
 
@@ -18,12 +17,10 @@ def save(data):
 
 def get_class_by_tablename(tablename):
     """Return class reference mapped to table.
-
     :param tablename: String with name of table.
     :return: Class reference or None.
     """
-    mapper = inspect(db.Model)
-    for classObject in mapper.mapper_classes:
+    for classObject in db.Model._decl_class_registry.values():
         if (
             hasattr(classObject, "__tablename__")
             and classObject.__tablename__ == tablename

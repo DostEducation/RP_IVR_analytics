@@ -19,9 +19,9 @@ mypy:
 pylint:
   disable:
     - logging-fstring-interpolation # Disabed this violation as we wanted to use f-string for logging.
-    - pylint_django # Disabed this violation as not needed in this application.
     - django-not-available # Disabed this violation as not needed in this application.
     - import-error # Disabed this violation to suppress warning "Unable to import sqlalchemy and flask_sqlalchemy".
+    - protected-access # Disabed this violation to suppress warning "Access to a protected member _decl_class_registry of a client class"
 
 pyflakes:
   disable:
