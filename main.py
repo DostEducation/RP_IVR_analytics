@@ -63,7 +63,7 @@ def handle_regular_flow(jsonData):
 
         if "contact" in jsonData:
             transaction_log_service.mark_webhook_log_as_processed(webhook_log)
-    return jsonify(message="Success"), 200
+    return None
 
 
 def retry_failed_webhook(transaction_log_service):
