@@ -1,7 +1,7 @@
 from api.mixins import TimestampMixin
-from api import db, helpers
+from api import db
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, and_
+from sqlalchemy import and_
 
 
 class UserCustomFieldsQuery(BaseQuery):
@@ -35,7 +35,7 @@ class UserCustomFields(TimestampMixin, db.Model):
     query_class = UserCustomFieldsQuery
     __tablename__ = "user_custom_fields"
 
-    class UserCustomFieldStatus(object):
+    class UserCustomFieldStatus:
         ACTIVE = "active"
         INACTIVE = "inactive"
 
