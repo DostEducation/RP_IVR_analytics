@@ -11,12 +11,12 @@ class CallLogQuery(BaseQuery):
 class CallLog(TimestampMixin, db.Model):
     query_class = CallLogQuery
 
-    class CallCategories(object):
+    class CallCategories:
         SCHEDULED = "scheduled"
         CALLBACK = "callback"
         LIVECALL = "livecall"
 
-    class FlowCategories(object):
+    class FlowCategories:
         REGISTRATION = "registration"
         CONTENT = "content"
         NUDGE = "nudge"

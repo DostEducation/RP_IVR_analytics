@@ -12,16 +12,20 @@ class ContactFieldsMappingQuery(BaseQuery):
             ).all()
         except Exception as e:
             logger.error(
-                f"Exception occurred while fetching contact field mapping using field name: {field_name} and value: {field_value}. Error message: {e}"
+                f"Exception occurred while fetching contact field mapping using"
+                f"field name: {field_name} and value: {field_value}. Error message: {e}"
             )
+            return None
 
     def get_by_group_name(self, contact_groups):
         try:
             return self.filter(ContactFieldsMapping.field_name == contact_groups).all()
         except Exception as e:
             logger.error(
-                f"Exception occurred while fetching contact field mapping using group name {contact_groups}. Erorr message: {e}"
+                f"Exception occurred while fetching contact field mapping using group name {contact_groups}."
+                f"Erorr message: {e}"
             )
+            return None
 
     def get_all_contact_fields_mapping(self):
         try:
@@ -30,6 +34,7 @@ class ContactFieldsMappingQuery(BaseQuery):
             logger.error(
                 f"Exception occurred while getting all contact fiels mappings: {e}"
             )
+            return None
 
 
 class ContactFieldsMapping(db.Model):

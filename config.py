@@ -4,7 +4,7 @@ import os
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
 
 if FLASK_ENV == "development":
-    from os import environ, path
+    from os import path
     from dotenv import load_dotenv
 
     basedir = path.abspath(path.dirname(__file__))

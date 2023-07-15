@@ -12,7 +12,7 @@ class Language(TimestampMixin, db.Model):
     query_class = LanguageQuery
     __tablename__ = "language"
 
-    class LanguageName(object):
+    class LanguageName:
         HINDI = "HINDI"
         ENGLISH = "ENGLISH"
 

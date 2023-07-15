@@ -4,8 +4,8 @@ from flask_sqlalchemy import BaseQuery
 
 
 class ContentVersionQuery(BaseQuery):
-    def get_by_id(self, id):
-        return self.filter(ContentVersion.id == id).first()
+    def get_by_id(self, content_version_id):
+        return self.filter(ContentVersion.id == content_version_id).first()
 
     def get_by_language_and_content_id(self, language_id, content_id):
         return self.filter(
