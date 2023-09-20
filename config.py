@@ -10,6 +10,7 @@ if FLASK_ENV == "development":
     basedir = path.abspath(path.dirname(__file__))
     load_dotenv(path.join(basedir, ".env"))
 
+FLASK_APP = os.environ.get("FLASK_APP")
 TESTING = os.environ.get("TESTING")
 DEBUG = os.environ.get("DEBUG")
 
@@ -43,3 +44,4 @@ DEFAULT_LANGUAGE_ID = 1
 DEFAULT_PROGRAM_TIME_CATEGORY = "AFTERNOON"
 RETRY_LOGS_BATCH_LIMIT = os.environ.get("RETRY_LOGS_BATCH_LIMIT", 1000)
 MAX_RETRY_ATTEMPTS_FOR_LOGS = os.environ.get("MAX_RETRY_ATTEMPTS_FOR_LOGS", 3)
+DEFAULT_LAST_UPDATED_TIME_FOR_DATA_MIGRATION = "2000-01-01 00:00:00"

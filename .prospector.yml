@@ -10,6 +10,8 @@ ignore-paths:
   - __pycache__/
   - .github/
   - venv/
+  - migrations/
+  - manage.py/
 
 mypy:
   run: true
