@@ -1,4 +1,4 @@
-from api import app, db
+from api import db
 
 
 class BigqueryJobs(db.Model):
@@ -10,5 +10,5 @@ class BigqueryJobs(db.Model):
     type = db.Column(db.String(100))
     last_updated_at = db.Column(
         db.DateTime,
-        server_default=app.config["DEFAULT_LAST_UPDATED_TIME_FOR_DATA_MIGRATION"],
+        server_default="2000-01-01 00:00:00",
     )

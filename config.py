@@ -10,7 +10,7 @@ if FLASK_ENV == "development":
     basedir = path.abspath(path.dirname(__file__))
     load_dotenv(path.join(basedir, ".env"))
 
-FLASK_APP = os.environ.get("FLASK_APP")
+FLASK_APP = os.environ.get("FLASK_APP", "manage.py")
 TESTING = os.environ.get("TESTING")
 DEBUG = os.environ.get("DEBUG")
 
