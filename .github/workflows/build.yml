@@ -23,9 +23,9 @@ jobs:
     - name: Run Flask Migrations (Staging)
       env:
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
+        DB_NAME: ${{ secrets.DB_NAME }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_NAME: ${{ secrets.DB_NAME }}
         DB_PORT: ${{ secrets.DB_PORT }}
 
       run: |
@@ -61,10 +61,11 @@ jobs:
     - name: Run Flask Migrations (Production)
       env:
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
+        DB_NAME: ${{ secrets.DB_NAME }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_NAME: ${{ secrets.DB_NAME }}
         DB_PORT: ${{ secrets.DB_PORT }}
+        DB_HOST: ${{ secrets.DB_HOST_PROD }}
 
       run: |
         pip install -r requirements.txt
