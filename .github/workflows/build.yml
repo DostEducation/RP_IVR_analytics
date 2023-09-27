@@ -19,6 +19,19 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
+    # Run Flask migrations on staging environment
+    - name: Run Flask Migrations (Staging)
+      env:
+        FLASK_ENV: ${{ secrets.FLASK_ENV }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+
+      run: |
+        pip install -r requirements.txt
+        flask db upgrade
+
     - id: 'deploy-staging'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
       with:
@@ -43,6 +56,20 @@ jobs:
       uses: 'google-github-actions/auth@v0'
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    # Run Flask migrations on production environment
+    - name: Run Flask Migrations (Production)
+      env:
+        FLASK_ENV: ${{ secrets.FLASK_ENV }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_HOST: ${{ secrets.DB_HOST_PROD }}
+
+      run: |
+        pip install -r requirements.txt
+        flask db upgrade
 
     - id: 'deploy-production'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
