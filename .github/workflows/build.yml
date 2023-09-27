@@ -22,14 +22,7 @@ jobs:
     # Run Flask migrations on staging environment
     - name: Run Flask Migrations (Staging)
       env:
-        FLASK_APP: "manage.py"
-        FLASK_ENV: "staging"
-        DB_NAME: "dost_rp_ivr-staging"
-        DB_USER: "rp-ivr-admin"
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_PORT: 5432
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        CONNECTION_NAME: /cloudsql/cryptic-gate-211900:us-central1:rp-ivr-staging-db
+        SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}s?host=${{ secrets.CONNECTION_NAME }}/"
 
       run: |
         pip install -r requirements.txt
