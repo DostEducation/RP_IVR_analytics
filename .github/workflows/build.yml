@@ -29,7 +29,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_PORT: 5432
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        CONNECTION_NAME: "/cloudsql/cryptic-gate-211900:us-central1:rp-ivr-staging-db"
+        CONNECTION_NAME: /cloudsql/cryptic-gate-211900:us-central1:rp-ivr-staging-db
 
       run: |
         pip install -r requirements.txt
