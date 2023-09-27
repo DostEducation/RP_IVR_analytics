@@ -22,6 +22,12 @@ jobs:
     # Run Flask migrations on staging environment
     - name: Run Flask Migrations (Staging)
       env:
+        FLASK_ENV: ${{ secrets.FLASK_ENV }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
         SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}s?host=${{ secrets.CONNECTION_NAME }}/"
 
       run: |
