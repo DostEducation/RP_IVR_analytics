@@ -19,6 +19,20 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
+    - id: 'deploy-staging'
+      uses: 'google-github-actions/deploy-cloud-functions@v0'
+      with:
+          name: rp-ivr-analytics-staging
+          region: asia-south1
+          description: 'Deploying staging function'
+          memory_mb: 256
+          timeout: 30
+          runtime: python38
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          entry_point: webhook
+          max_instances: 0 # Remove limitation
+          env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
+
     # Run Flask migrations on staging environment
     - name: Run Flask Migrations (Staging)
       env:
@@ -34,19 +48,6 @@ jobs:
         pip install -r requirements.txt
         flask db upgrade
 
-    - id: 'deploy-staging'
-      uses: 'google-github-actions/deploy-cloud-functions@v0'
-      with:
-          name: rp-ivr-analytics-staging
-          region: asia-south1
-          description: 'Deploying staging function'
-          memory_mb: 256
-          timeout: 30
-          runtime: python38
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          entry_point: webhook
-          max_instances: 0 # Remove limitation
-          env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
 
   # deploy-production:
   #   runs-on: ubuntu-latest
