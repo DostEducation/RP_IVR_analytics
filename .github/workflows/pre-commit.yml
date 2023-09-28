@@ -4,36 +4,13 @@ on:
   pull_request:
   push:
     branches:
+      - main
       - feature/414/install-packages-and-create-database-migrations
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: pre-commit/action@v2.0.0
-
-  Run-Flask-migrations:
-    runs-on: ubuntu-latest
-    name: Run Flask Migrations (Staging)
-    env:
-      FLASK_ENV: ${{ secrets.FLASK_ENV }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
-      SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}/"
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-
-      - name: Install dependencies and run migrations
-        run: |
-          pip install -r requirements.txt
-          flask db upgrade
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v2.0.0
