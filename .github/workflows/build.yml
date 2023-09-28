@@ -22,7 +22,8 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install Flask-Migrate
+        export FLASK_APP=manage.py
 
     - name: Run Flask Migrations for Staging
       run: |
@@ -56,7 +57,8 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install Flask-Migrate
+        export FLASK_APP=manage.py
 
     - name: Run Flask Migrations for Staging
       run: |
