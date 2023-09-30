@@ -15,10 +15,10 @@ fileConfig(config.config_file_name)
 logger = logging.getLogger("alembic.env")
 
 
-def get_engine():
+def get_engine(current_app):
     try:
         # this works with Flask-SQLAlchemy<3 and Alchemical
-        return current_app.extensions["migrate"].db.get_engine()
+        return current_app.extensions["migrate"].db.get_engine(current_app)
     except (TypeError, AttributeError):
         # this works with Flask-SQLAlchemy>=3
         return current_app.extensions["migrate"].db.engine
@@ -26,9 +26,13 @@ def get_engine():
 
 def get_engine_url():
     try:
-        return get_engine().url.render_as_string(hide_password=False).replace("%", "%%")
+        return (
+            get_engine(current_app)
+            .url.render_as_string(hide_password=False)
+            .replace("%", "%%")
+        )
     except AttributeError:
-        return str(get_engine().url).replace("%", "%%")
+        return str(get_engine(current_app).url).replace("%", "%%")
 
 
 # add your model's MetaData object here
@@ -91,7 +95,7 @@ def run_migrations_online():
     if conf_args.get("process_revision_directives") is None:
         conf_args["process_revision_directives"] = process_revision_directives
 
-    connectable = get_engine()
+    connectable = get_engine(current_app)
 
     with connectable.connect() as connection:
         context.configure(
