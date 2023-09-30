@@ -15,7 +15,7 @@ fileConfig(config.config_file_name)
 logger = logging.getLogger("alembic.env")
 
 
-def get_engine():
+def get_engine(app=None):
     try:
         # this works with Flask-SQLAlchemy<3 and Alchemical
         return current_app.extensions["migrate"].db.get_engine()
