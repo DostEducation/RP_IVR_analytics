@@ -17,4 +17,3 @@ urllib3==1.26.3
 Werkzeug==1.0.1
 google-cloud-logging==3.5.0
 Flask-Migrate==4.0.5
-Flask-Script==2.0.6
