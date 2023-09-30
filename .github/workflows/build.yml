@@ -26,8 +26,8 @@ jobs:
 
     - name: Run Flask Migrations for Staging
       env:
-        FLASK_APP: manage.py
-        SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}s?host=${{ secrets.CONNECTION_NAME }}/"
+        FLASK_APP: ${{ secrets.FLASK_APP }}
+        SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}"
       run: |
         flask db upgrade
 
