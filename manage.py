@@ -1,12 +1,14 @@
 from __future__ import absolute_import
-from api import app, db
+from api import db, app
 from api.models import *
 
+
 from flask_migrate import Migrate
-from flask.cli import FlaskGroup
+from flask_script import Manager
 
 migrate = Migrate(app, db)
-cli = FlaskGroup(app)
+
+manager = Manager(app)
 
 if __name__ == "__main__":
-    cli()
+    manager.run()

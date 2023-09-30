@@ -2,6 +2,7 @@
 import os
 
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
+FLASK_APP = os.environ.get("FLASK_APP")
 
 if FLASK_ENV == "development":
     from os import path
