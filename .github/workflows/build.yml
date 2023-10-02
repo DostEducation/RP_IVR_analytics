@@ -28,7 +28,7 @@ jobs:
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         export FLASK_APP=${{ secrets.FLASK_APP }}
-        export DATABASE_URL= "postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"% POSTGRES
+        export DATABASE_URL="postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"%POSTGRES
         flask db upgrade
 
     - id: 'deploy-staging'
