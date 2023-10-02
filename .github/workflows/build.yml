@@ -28,6 +28,7 @@ jobs:
       env:
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
+        export FLASK_APP=${{ secrets.FLASK_APP }}
         flask db upgrade
 
     - id: 'deploy-staging'
