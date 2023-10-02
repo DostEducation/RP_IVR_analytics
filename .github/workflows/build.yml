@@ -37,9 +37,9 @@ jobs:
         CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
         RETRY_LOGS_BATCH_LIMIT: 1000
         MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
+        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
       run: |
         #!/bin/bash
-        export SQLALCHEMY_DATABASE_URI=${{ secrets.SQLALCHEMY_DATABASE_URI }}
         flask db upgrade
 
     - id: 'deploy-staging'
