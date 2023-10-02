@@ -25,10 +25,21 @@ jobs:
 
     - name: Run Flask Migrations for Staging
       env:
-        FLASK_APP: ${{ secrets.FLASK_APP }}
+        FLASK_ENV: ${{ secrets.FLASK_ENV }}
+        TESTING: ${{ secrets.TESTING }}
+        DEBUG: ${{ secrets.DEBUG }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
+        RETRY_LOGS_BATCH_LIMIT: 1000
+        MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
       run: |
         export FLASK_APP=${{ secrets.FLASK_APP }}
-        export DATABASE_URL="postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"%POSTGRES
+        export DATABASE_URL= "postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"
+        % POSTGRES
         flask db upgrade
 
     - id: 'deploy-staging'
