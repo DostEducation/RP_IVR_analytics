@@ -38,10 +38,6 @@ jobs:
         MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
       run: |
         #!/bin/bash
-        export FLASK_APP=${{ secrets.FLASK_APP }}
-        echo "FLASK_APP: $FLASK_APP"
-        export SQLALCHEMY_DATABASE_URI="postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"
-        echo "SQLALCHEMY_DATABASE_URI: $SQLALCHEMY_DATABASE_URI"
         flask db upgrade
 
     - id: 'deploy-staging'
