@@ -40,8 +40,8 @@ jobs:
         #!/bin/bash
         export FLASK_APP=${{ secrets.FLASK_APP }}
         echo "FLASK_APP: $FLASK_APP"
-        export DATABASE_URL="postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"
-        echo "DATABASE_URL: $DATABASE_URL"
+        export SQLALCHEMY_DATABASE_URI="postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"
+        echo "SQLALCHEMY_DATABASE_URI: $SQLALCHEMY_DATABASE_URI"
         flask db upgrade
 
     - id: 'deploy-staging'
