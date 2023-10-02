@@ -37,9 +37,9 @@ jobs:
         RETRY_LOGS_BATCH_LIMIT: 1000
         MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
       run: |
+        #!/bin/bash
         export FLASK_APP=${{ secrets.FLASK_APP }}
-        export DATABASE_URL= "postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"
-        % POSTGRES
+        export DATABASE_URL="postgresql://${{ secrets.DB_USER }}:%${{ secrets.DB_PASSWORD }}@/%${{ secrets.DB_NAME }}?host=%${{ secrets.CONNECTION_NAME }}/"
         flask db upgrade
 
     - id: 'deploy-staging'
