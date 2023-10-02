@@ -25,6 +25,7 @@ jobs:
 
     - name: Run Flask Migrations for Staging
       env:
+        FLASK_APP: ${{ secrets.FLASK_APP }}
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
         TESTING: ${{ secrets.TESTING }}
         DEBUG: ${{ secrets.DEBUG }}
