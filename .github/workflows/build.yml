@@ -28,13 +28,24 @@ jobs:
         wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
         chmod +x cloud_sql_proxy
 
-    - name: Start Cloud SQL Proxy
-      run: |
-        ./cloud_sql_proxy -instances=<${{ secrets.CONNECTION_NAME }}>=tcp:5432 &
-
     - name: List Files in Directory
       run: |
         ls -l
+
+    - name: Check System Information
+      run: |
+        uname -a
+
+    - name: Debug Cloud SQL Proxy
+      run: |
+        echo "Current directory: $(pwd)"
+        echo "Contents of the directory: $(ls -l)"
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 &
+
+
+    - name: Start Cloud SQL Proxy
+      run: |
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 &
 
     - name: Run Flask Migrations for Staging
       env:
