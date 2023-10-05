@@ -28,20 +28,6 @@ jobs:
         wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
         chmod +x cloud_sql_proxy
 
-    - name: List Files in Directory
-      run: |
-        ls -l
-
-    - name: Check System Information
-      run: |
-        uname -a
-
-    - name: Debug Cloud SQL Proxy
-      run: |
-        echo "Current directory: $(pwd)"
-        echo "Contents of the directory: $(ls -l)"
-        ./cloud_sql_proxy -instances=${{ secrets.CLOUD_SQL_CONNECTION_NAME }}=tcp:5432 &
-
     - name: Start Cloud SQL Proxy
       run: |
         echo "${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIAL }}" > credentials.json
@@ -59,9 +45,9 @@ jobs:
         DB_PORT: ${{ secrets.DB_PORT }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
-        RETRY_LOGS_BATCH_LIMIT: 1000
-        MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
-        SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CLOUD_SQL_CONNECTION_NAME }}/"
+        # RETRY_LOGS_BATCH_LIMIT: 1000
+        # MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
+        # SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CLOUD_SQL_CONNECTION_NAME }}/"
       run: |
         flask db upgrade
 
