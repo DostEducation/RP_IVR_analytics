@@ -3,9 +3,7 @@ name: pre-commit
 on:
   pull_request:
   push:
-    branches:
-      - main
-      - feature/414/install-packages-and-create-database-migrations
+    branches: [main]
 
 jobs:
   pre-commit:
