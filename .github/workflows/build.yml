@@ -39,7 +39,9 @@ jobs:
         MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
         SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
       run: |
-        #!/bin/bash
+        sudo service postgresql status
+        psql -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }}
+        flask db migrate
         flask db upgrade
 
     - id: 'deploy-staging'
