@@ -44,10 +44,10 @@ jobs:
         DB_NAME: ${{ secrets.DB_NAME }}
         DB_PORT: ${{ secrets.DB_PORT }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+        CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
         # RETRY_LOGS_BATCH_LIMIT: 1000
         # MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
-        # SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CLOUD_SQL_CONNECTION_NAME }}/"
+        # SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}/"
       run: |
         flask db upgrade
 
