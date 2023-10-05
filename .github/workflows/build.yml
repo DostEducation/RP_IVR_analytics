@@ -32,6 +32,10 @@ jobs:
       run: |
         ./cloud_sql_proxy -instances=<${{ secrets.CONNECTION_NAME }}>=tcp:5432 &
 
+    - name: List Files in Directory
+      run: |
+        ls -l
+
     - name: Run Flask Migrations for Staging
       env:
         FLASK_APP: ${{ secrets.FLASK_APP }}
