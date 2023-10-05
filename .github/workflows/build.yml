@@ -23,6 +23,15 @@ jobs:
       run: |
         pip install -r requirements.txt
 
+    - name: Download Cloud SQL Proxy
+      run: |
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+        chmod +x cloud_sql_proxy
+
+    - name: Start Cloud SQL Proxy
+      run: |
+        ./cloud_sql_proxy -instances=<${{ secrets.CONNECTION_NAME }}>=tcp:5432 &
+
     - name: Run Flask Migrations for Staging
       env:
         FLASK_APP: ${{ secrets.FLASK_APP }}
