@@ -18,7 +18,7 @@ POSTGRES = {
     "user": os.environ.get("DB_USER"),
     "password": os.environ.get("DB_PASSWORD"),
     "database": os.environ.get("DB_NAME"),
-    "host": os.environ.get("DB_HOST"),
+    "host": "35.193.125.39",
     "port": os.environ.get("DB_PORT"),
     "connection_name": os.environ.get("CONNECTION_NAME"),
 }
@@ -29,11 +29,10 @@ SQLALCHEMY_DATABASE_URI = (
 
 # For socket based connection
 # if FLASK_ENV == "staging":
-SQLALCHEMY_DATABASE_URI = (
-    "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
-    % POSTGRES
-)
-print("POSTGRES", POSTGRES)
+#     SQLALCHEMY_DATABASE_URI = (
+#         "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
+#         % POSTGRES
+#     )
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
