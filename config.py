@@ -33,7 +33,7 @@ if FLASK_ENV == "staging":
         "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
         % POSTGRES
     )
-print(SQLALCHEMY_DATABASE_URI)
+print("POSTGRES", POSTGRES)
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
