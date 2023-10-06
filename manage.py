@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from api import db, app
 from api.models import *
+from utils.loggingutils import logger
 
 
 from flask_migrate import Migrate
@@ -25,11 +26,11 @@ try:
     connection = engine.connect()
 
     # If the connection was successful, print a success message
-    print("Database connection successful!")
+    logger.warning("Database connection successful!")
 
     # Close the connection
     connection.close()
 
 except OperationalError as e:
     # Handle any exceptions that may occur during the connection attempt
-    print(f"Error connecting to the database: {str(e)}")
+    logger.error(f"Error connecting to the database: {str(e)}")
