@@ -26,7 +26,7 @@ jobs:
     - name: Run Database Migrations
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://testing:TestWithSachin@/rapidpro?host=/cloudsql/cryptic-gate-211900:us-central1:testing"
+        SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://testing:TestWithSachin@/rapidpro?host=/cloudsql/cryptic-gate-211900:asia-south1:testing"
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         flask db upgrade

@@ -10,4 +10,5 @@ migrate = Migrate(app, db)
 cli = FlaskGroup(app)
 
 if __name__ == "__main__":
+    print(f"Database Name: {app.config['SQLALCHEMY_DATABASE_URI']}")
     cli()
