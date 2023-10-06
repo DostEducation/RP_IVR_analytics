@@ -31,7 +31,7 @@ jobs:
     - name: Start Cloud SQL Proxy
       run: |
         echo "${{ secrets.GCP_CREDENTIALS }}" > credentials.json
-        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 -credential_file=credentials.json -debug
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 -credential_file=credentials.json &
 
     - name: Run Flask Migrations for Staging
       env:
@@ -45,9 +45,6 @@ jobs:
         DB_PORT: ${{ secrets.DB_PORT }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
-        # RETRY_LOGS_BATCH_LIMIT: 1000
-        # MAX_RETRY_ATTEMPTS_FOR_LOGS: 3
-        # SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}/"
       run: |
         flask db upgrade
 
