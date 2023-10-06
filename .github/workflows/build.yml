@@ -31,7 +31,7 @@ jobs:
     - name: Start Cloud SQL Proxy
       run: |
         echo '${{ secrets.GCP_CREDENTIALS }}' > credentials.json
-        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 -credential_file=credentials.json &
+        ./cloud_sql_proxy -instances=${{ secrets.CLOUD_SQL_CONNECTION_NAME }}=tcp:5432 -credential_file=credentials.json &
 
     - name: Run Flask Migrations for Staging
       env:
@@ -44,7 +44,7 @@ jobs:
         DB_NAME: ${{ secrets.DB_NAME }}
         DB_PORT: ${{ secrets.DB_PORT }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
+        CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
       run: |
         flask db upgrade
 
