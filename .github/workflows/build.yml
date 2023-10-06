@@ -36,7 +36,7 @@ jobs:
 
     - name: Print DB name
       run: |
-        echo '${{ secrets.DB_NAME }}'
+        echo "SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}"
 
     # - name: Download Cloud SQL Proxy
     #   run: |
