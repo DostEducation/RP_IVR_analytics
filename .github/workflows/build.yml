@@ -32,11 +32,9 @@ jobs:
         sudo systemctl start postgresql
         sudo systemctl enable postgresql
         systemctl status postgresql
+        echo "SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}"
         flask db upgrade
 
-    - name: Print DB name
-      run: |
-        echo "SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}"
 
     # - name: Download Cloud SQL Proxy
     #   run: |
