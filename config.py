@@ -20,7 +20,7 @@ POSTGRES = {
     "database": os.environ.get("DB_NAME"),
     "host": os.environ.get("DB_HOST"),
     "port": os.environ.get("DB_PORT"),
-    "connection_name": os.environ.get("CLOUD_SQL_CONNECTION_NAME"),
+    "connection_name": os.environ.get("CONNECTION_NAME"),
 }
 
 SQLALCHEMY_DATABASE_URI = (
@@ -30,7 +30,7 @@ SQLALCHEMY_DATABASE_URI = (
 # For socket based connection
 if FLASK_ENV == "staging":
     SQLALCHEMY_DATABASE_URI = (
-        "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s"
+        "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
         % POSTGRES
     )
 
