@@ -46,6 +46,8 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
       run: |
+        sudo systemctl start postgresql
+        sudo systemctl enable postgresql
         systemctl status postgresql
         flask db upgrade
 
