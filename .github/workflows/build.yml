@@ -29,6 +29,9 @@ jobs:
         SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://testing:TestWithSachin@/rapidpro?host=/cloudsql/cryptic-gate-211900:asia-south1:testing"
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
+        sudo systemctl start postgresql
+        sudo systemctl enable postgresql
+        systemctl status postgresql
         flask db upgrade
 
     - name: Print DB name
