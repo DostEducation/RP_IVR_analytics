@@ -27,6 +27,7 @@ jobs:
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
+        FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         flask db upgrade
 
