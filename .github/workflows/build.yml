@@ -36,10 +36,11 @@ jobs:
     - name: Run Flask Migrations for Staging
       env:
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
+        FLASK_APP: ${{ secrets.FLASK_APP }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_NAME: ${{ secrets.DB_NAME }}
-        CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+        CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
       run: |
         sudo systemctl start postgresql
         sudo systemctl enable postgresql
