@@ -30,7 +30,7 @@ SQLALCHEMY_DATABASE_URI = (
 # For socket based connection
 if FLASK_ENV == "staging":
     SQLALCHEMY_DATABASE_URI = (
-        "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
+        "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s"
         % POSTGRES
     )
 
