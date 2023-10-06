@@ -20,7 +20,7 @@ POSTGRES = {
     "database": os.environ.get("DB_NAME"),
     "host": os.environ.get("DB_HOST"),
     "port": os.environ.get("DB_PORT"),
-    "connection_name": os.environ.get("CONNECTION_NAME"),
+    "connection_name": os.environ.get("CLOUD_SQL_CONNECTION_NAME"),
 }
 
 SQLALCHEMY_DATABASE_URI = (
