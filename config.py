@@ -18,8 +18,8 @@ POSTGRES = {
     "user": os.environ.get("DB_USER"),
     "password": os.environ.get("DB_PASSWORD"),
     "database": os.environ.get("DB_NAME"),
-    "host": "35.193.125.39",
-    "port": 5432,
+    "host": os.environ.get("DB_HOST"),
+    "port": os.environ.get("DB_PORT"),
     "connection_name": os.environ.get("CONNECTION_NAME"),
 }
 
