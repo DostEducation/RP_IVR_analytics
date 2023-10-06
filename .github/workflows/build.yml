@@ -23,6 +23,13 @@ jobs:
       run: |
         pip install -r requirements.txt
 
+    - name: Run Database Migrations
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
+      run: |
+        flask db upgrade
+
     - name: Download Cloud SQL Proxy
       run: |
         wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
