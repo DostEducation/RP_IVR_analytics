@@ -41,6 +41,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_NAME: ${{ secrets.DB_NAME }}
         CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
+        POSTGRES_PORT: 5432
       run: |
         sudo systemctl start postgresql
         sudo systemctl enable postgresql
