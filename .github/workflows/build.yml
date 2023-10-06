@@ -40,7 +40,7 @@ jobs:
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_NAME: ${{ secrets.DB_NAME }}
-        CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+        CLOUD_SQL_CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
       run: |
         sudo systemctl start postgresql
         sudo systemctl enable postgresql
