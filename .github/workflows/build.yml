@@ -23,23 +23,13 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    - name: Debug Database URI
-      run: |
-        echo "SQLALCHEMY_DATABASE_URI: $SQLALCHEMY_DATABASE_URI"
-        echo "FLASK_APP: $FLASK_APP"
-
     - name: Run Database Migrations
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://testing:TestWithSachin@/rapidpro?host=/cloudsql/cryptic-gate-211900:asia-south1:testing123"
+        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
-        sudo systemctl start postgresql
-        sudo systemctl enable postgresql
-        systemctl status postgresql
-        echo "SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}"
         flask db upgrade
-
 
     # - name: Download Cloud SQL Proxy
     #   run: |
