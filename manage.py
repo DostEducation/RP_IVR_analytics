@@ -7,7 +7,6 @@ from utils.loggingutils import logger
 from flask_migrate import Migrate
 from flask_script import Manager
 from sqlalchemy import create_engine
-from sqlalchemy.exc import OperationalError
 
 migrate = Migrate(app, db)
 
@@ -26,11 +25,11 @@ try:
     connection = engine.connect()
 
     # If the connection was successful, print a success message
-    logger.warning("Database connection successful!")
+    logger.info(f"Database connection successful on URI {SQLALCHEMY_DATABASE_URI}")
 
     # Close the connection
     connection.close()
 
-except OperationalError as e:
+except Exception as e:
     # Handle any exceptions that may occur during the connection attempt
     logger.error(f"Error connecting to the database: {str(e)}")

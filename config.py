@@ -3,6 +3,8 @@ import os
 
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
 
+FLASK_APP = os.environ.get("FLASK_APP", "manage.py")
+
 if FLASK_ENV == "development":
     from os import path
     from dotenv import load_dotenv
