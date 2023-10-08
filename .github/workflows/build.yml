@@ -31,45 +31,19 @@ jobs:
       run: |
         flask db upgrade
 
-    # - name: Download Cloud SQL Proxy
-    #   run: |
-    #     wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
-    #     chmod +x cloud_sql_proxy
-
-    # - name: Start Cloud SQL Proxy
-    #   run: |
-    #     echo '${{ secrets.GCP_CREDENTIALS }}' > credentials.json
-    #     ./cloud_sql_proxy -instances=${{ secrets.CLOUD_SQL_CONNECTION_NAME }}=tcp:5432 -credential_file=credentials.json &
-
-    # - name: Run Flask Migrations for Staging
-    #   env:
-    #     FLASK_ENV: ${{ secrets.FLASK_ENV }}
-    #     FLASK_APP: ${{ secrets.FLASK_APP }}
-    #     DB_USER: ${{ secrets.DB_USER }}
-    #     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-    #     DB_NAME: ${{ secrets.DB_NAME }}
-    #     CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
-    #     DB_HOST: ${{ secrets.DB_HOST }}
-    #     DB_PORT: ${{ secrets.DB_PORT }}
-    #   run: |
-    #     sudo systemctl start postgresql
-    #     sudo systemctl enable postgresql
-    #     systemctl status postgresql
-    #     flask db upgrade
-
-    # - id: 'deploy-staging'
-    #   uses: 'google-github-actions/deploy-cloud-functions@v0'
-    #   with:
-    #       name: rp-ivr-analytics-staging
-    #       region: asia-south1
-    #       description: 'Deploying staging function'
-    #       memory_mb: 256
-    #       timeout: 30
-    #       runtime: python38
-    #       project_id: ${{ secrets.GCP_PROJECT_ID }}
-    #       entry_point: webhook
-    #       max_instances: 0 # Remove limitation
-    #       env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
+    - id: 'deploy-staging'
+      uses: 'google-github-actions/deploy-cloud-functions@v0'
+      with:
+          name: rp-ivr-analytics-staging
+          region: asia-south1
+          description: 'Deploying staging function'
+          memory_mb: 256
+          timeout: 30
+          runtime: python38
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          entry_point: webhook
+          max_instances: 0 # Remove limitation
+          env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
 
   deploy-production:
     runs-on: ubuntu-latest
