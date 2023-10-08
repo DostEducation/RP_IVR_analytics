@@ -18,13 +18,15 @@ if __name__ == "__main__":
 SQLALCHEMY_DATABASE_URI = app.config["SQLALCHEMY_DATABASE_URI"]
 
 
-def select_user_phone_from_db(connection, cursor):
+def select_user_phone_from_db(connection):
     try:
-        cursor.executemany("SELECT phone FROM users")
-        connection.commit()
+        result = connection.execute("SELECT phone FROM users")
+        # Fetch all the rows from the result set
+        user_data = result.fetchall()
+        return user_data
     except Exception as e:
-        connection.rollback()
-        logger.error(f"Error occured while fetching data. Error Message: {e}")
+        logger.error(f"Error occurred while fetching data. Error Message: {e}")
+        return None
 
 
 try:
@@ -37,7 +39,7 @@ try:
 
     # If the connection was successful, print a success message
     logger.info(f"Database connection successful on URI {SQLALCHEMY_DATABASE_URI}")
-    user_data = select_user_phone_from_db(connection, cursor)
+    user_data = select_user_phone_from_db(connection)
     logger.info(f"user data: {user_data}")
 
     # Close the connection
