@@ -23,27 +23,39 @@ jobs:
       run: |
         pip install -r requirements.txt
 
+    - name: Configure Cloud SQL Proxy
+      run: |
+        # Download and install Cloud SQL Proxy
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+        chmod +x cloud_sql_proxy
+
+        # Start Cloud SQL Proxy
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 &
+
+        # Wait for the proxy to start
+        sleep 5
+
     - name: Run Database Migrations
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        SQLALCHEMY_DATABASE_URI: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         flask db upgrade
 
-    - id: 'deploy-staging'
-      uses: 'google-github-actions/deploy-cloud-functions@v0'
-      with:
-          name: rp-ivr-analytics-staging
-          region: asia-south1
-          description: 'Deploying staging function'
-          memory_mb: 256
-          timeout: 30
-          runtime: python38
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          entry_point: webhook
-          max_instances: 0 # Remove limitation
-          env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
+    # - id: 'deploy-staging'
+    #   uses: 'google-github-actions/deploy-cloud-functions@v0'
+    #   with:
+    #       name: rp-ivr-analytics-staging
+    #       region: asia-south1
+    #       description: 'Deploying staging function'
+    #       memory_mb: 256
+    #       timeout: 30
+    #       runtime: python38
+    #       project_id: ${{ secrets.GCP_PROJECT_ID }}
+    #       entry_point: webhook
+    #       max_instances: 0 # Remove limitation
+    #       env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
 
   deploy-production:
     runs-on: ubuntu-latest
