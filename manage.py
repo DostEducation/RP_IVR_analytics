@@ -27,9 +27,19 @@ try:
     logger.info(f"Database connection successful on URI {SQLALCHEMY_DATABASE_URI}")
 
     # Use SQLAlchemy's text function to create an SQL statement
-    sql_statement = text("SELECT phone FROM users")
+    sql_statement = text("CREATE TABLE users (phone VARCHAR)")
 
     # Execute the SQL statement
+    connection.execute(sql_statement)
+
+    # Use SQLAlchemy's text function to create an SQL statement
+    sql_statement = text("INSERT INTO users (phone) VALUES ('1234567890')")
+
+    # Execute the SQL statement
+    connection.execute(sql_statement)
+    # Use SQLAlchemy's text function to create an SQL statement
+    sql_statement = text("SELECT phone FROM users")
+
     result = connection.execute(sql_statement)
 
     # Fetch all the rows from the result set
