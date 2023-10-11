@@ -19,6 +19,13 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
+    - name: Debug Info
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIAL }}
+      run: |
+        echo "GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS"
+        cat $GOOGLE_APPLICATION_CREDENTIALS
+
     - name: Install Python dependencies
       run: |
         pip install -r requirements.txt
