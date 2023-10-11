@@ -19,12 +19,11 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-    # - name: Debug Info
-    #   env:
-    #     GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-    #   run: |
-    #     echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
-    #     cat credentials.json
+    - name: Debug GCP credentials
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
 
     - name: Install Python dependencies
       run: |
@@ -32,13 +31,13 @@ jobs:
 
     - name: Run Database Migrations
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        GOOGLE_APPLICATION_CREDENTIALS: credentials.json
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_NAME: ${{ secrets.DB_NAME }}
         CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
-        SQLALCHEMY_DATABASE_URI: "postgresql:/${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}"
+        SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}"
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         flask db upgrade
