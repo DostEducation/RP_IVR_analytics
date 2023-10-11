@@ -24,7 +24,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIAL }}
       run: |
         echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
-        cat $GOOGLE_APPLICATION_CREDENTIALS
+        cat credentials.json
 
     - name: Install Python dependencies
       run: |
