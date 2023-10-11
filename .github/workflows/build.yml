@@ -31,7 +31,7 @@ jobs:
 
     - name: Set up Cloud SQL Proxy
       run: |
-        wget https://github.com/GoogleCloudPlatform/cloudsql-proxy/releases/download/v2.5.0/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
         chmod +x cloud_sql_proxy
 
     - name: Start Cloud SQL Proxy
