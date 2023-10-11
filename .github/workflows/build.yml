@@ -19,6 +19,10 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+
     - name: Run Database Migrations
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
