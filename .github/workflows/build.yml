@@ -37,7 +37,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_NAME: ${{ secrets.DB_NAME }}
         CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
-        SQLALCHEMY_DATABASE_URI: "postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}"
+        SQLALCHEMY_DATABASE_URI: 'postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}'
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         flask db upgrade
