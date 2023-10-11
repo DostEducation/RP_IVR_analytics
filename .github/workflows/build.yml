@@ -23,7 +23,7 @@ jobs:
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIAL }}
       run: |
-        echo "GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS"
+        echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
         cat $GOOGLE_APPLICATION_CREDENTIALS
 
     - name: Install Python dependencies
@@ -32,7 +32,7 @@ jobs:
 
     - name: Run Database Migrations
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIAL }}
+        GOOGLE_APPLICATION_CREDENTIALS: credentials.json
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
