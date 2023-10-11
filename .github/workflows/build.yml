@@ -21,7 +21,7 @@ jobs:
 
     - name: Debug Info
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIAL }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
       run: |
         echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
         cat credentials.json
