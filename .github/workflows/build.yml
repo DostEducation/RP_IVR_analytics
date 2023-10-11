@@ -41,9 +41,6 @@ jobs:
         SQLALCHEMY_DATABASE_URI: "postgresql:/${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}"
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
-        sudo systemctl start postgresql
-        systemctl status postgresql
-        sudo systemctl enable postgresql
         flask db upgrade
 
     # - id: 'deploy-staging'
