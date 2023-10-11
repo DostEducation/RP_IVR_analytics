@@ -29,18 +29,43 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    - name: Run Database Migrations
+    - name: Set up Cloud SQL Proxy
+      run: |
+        wget https://github.com/GoogleCloudPlatform/cloudsql-proxy/releases/download/v2.5.0/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+        chmod +x cloud_sql_proxy
+
+    - name: Start Cloud SQL Proxy
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: credentials.json
-        FLASK_ENV: ${{ secrets.FLASK_ENV }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_NAME: "github_action"
-        CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
-        SQLALCHEMY_DATABASE_URI: ${{secrets.SQLALCHEMY_DATABASE_URI}}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 -credential_file=credentials.json &
+
+    - name: Run Flask Migration
+      env:
+        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
         FLASK_APP: ${{ secrets.FLASK_APP }}
+        FLASK_ENV: ${{ secrets.FLASK_ENV }}
       run: |
         flask db upgrade
+
+    - name: Stop Cloud SQL Proxy
+      run: |
+        pkill cloud_sql_proxy
+
+
+    # - name: Run Database Migrations
+    #   env:
+    #     GOOGLE_APPLICATION_CREDENTIALS: credentials.json
+    #     FLASK_ENV: ${{ secrets.FLASK_ENV }}
+    #     DB_USER: ${{ secrets.DB_USER }}
+    #     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    #     DB_NAME: "github_action"
+    #     CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
+    #     SQLALCHEMY_DATABASE_URI: ${{secrets.SQLALCHEMY_DATABASE_URI}}
+    #     FLASK_APP: ${{ secrets.FLASK_APP }}
+    #   run: |
+    #     flask db upgrade
 
     # - id: 'deploy-staging'
     #   uses: 'google-github-actions/deploy-cloud-functions@v0'
