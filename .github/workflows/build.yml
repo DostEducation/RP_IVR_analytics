@@ -35,9 +35,9 @@ jobs:
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_NAME: "github_action"
         CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
-        SQLALCHEMY_DATABASE_URI: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}
+        SQLALCHEMY_DATABASE_URI: ${{secrets.SQLALCHEMY_DATABASE_URI}}
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         flask db upgrade
@@ -56,28 +56,28 @@ jobs:
     #       max_instances: 0 # Remove limitation
     #       env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
 
-  deploy-production:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-    - uses: 'actions/checkout@v3'
+  # deploy-production:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #   - uses: 'actions/checkout@v3'
 
-    - id: 'auth'
-      uses: 'google-github-actions/auth@v0'
-      with:
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+  #   - id: 'auth'
+  #     uses: 'google-github-actions/auth@v0'
+  #     with:
+  #       credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-    - id: 'deploy-production'
-      uses: 'google-github-actions/deploy-cloud-functions@v0'
-      with:
-        name: rp-ivr-analytics-prod
-        region: asia-south1
-        description: 'Deploying production function'
-        memory_mb: 512
-        timeout: 300
-        runtime: python38
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        entry_point: webhook
-        max_instances: 0 # Remove limitation
-        env_vars: FLASK_ENV=${{ secrets.FLASK_ENV_PROD }},TESTING=${{ secrets.TESTING_PROD }},DEBUG=${{ secrets.DEBUG_PROD }},DB_USER=${{ secrets.DB_USER_PROD }},DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }},DB_NAME=${{ secrets.DB_NAME_PROD }},DB_PORT=${{ secrets.DB_PORT_PROD }},SECRET_KEY=${{ secrets.SECRET_KEY_PROD }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME_PROD }},RETRY_LOGS_BATCH_LIMIT=${{ secrets.RETRY_LOGS_BATCH_LIMIT_PROD }},MAX_RETRY_ATTEMPTS_FOR_LOGS=${{ secrets.MAX_RETRY_ATTEMPTS_FOR_LOGS_PROD }},DB_HOST=${{ secrets.DB_HOST_PROD }}
-        vpc_connector: projects/${{ secrets.PROJECT_ID }}/locations/${{ secrets.VPC_CONNECTOR_REGION }}/connectors/${{ secrets.VPC_CONNECTOR_NAME }}
+  #   - id: 'deploy-production'
+  #     uses: 'google-github-actions/deploy-cloud-functions@v0'
+  #     with:
+  #       name: rp-ivr-analytics-prod
+  #       region: asia-south1
+  #       description: 'Deploying production function'
+  #       memory_mb: 512
+  #       timeout: 300
+  #       runtime: python38
+  #       project_id: ${{ secrets.GCP_PROJECT_ID }}
+  #       entry_point: webhook
+  #       max_instances: 0 # Remove limitation
+  #       env_vars: FLASK_ENV=${{ secrets.FLASK_ENV_PROD }},TESTING=${{ secrets.TESTING_PROD }},DEBUG=${{ secrets.DEBUG_PROD }},DB_USER=${{ secrets.DB_USER_PROD }},DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }},DB_NAME=${{ secrets.DB_NAME_PROD }},DB_PORT=${{ secrets.DB_PORT_PROD }},SECRET_KEY=${{ secrets.SECRET_KEY_PROD }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME_PROD }},RETRY_LOGS_BATCH_LIMIT=${{ secrets.RETRY_LOGS_BATCH_LIMIT_PROD }},MAX_RETRY_ATTEMPTS_FOR_LOGS=${{ secrets.MAX_RETRY_ATTEMPTS_FOR_LOGS_PROD }},DB_HOST=${{ secrets.DB_HOST_PROD }}
+  #       vpc_connector: projects/${{ secrets.PROJECT_ID }}/locations/${{ secrets.VPC_CONNECTOR_REGION }}/connectors/${{ secrets.VPC_CONNECTOR_NAME }}

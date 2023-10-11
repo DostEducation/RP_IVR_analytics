@@ -22,6 +22,10 @@ try:
 
     # Attempt to establish a connection to the database
     connection = engine.connect()
+    # Accessing the underlying engine and connection details
+    connection_url = str(engine.url)
+
+    print(f"Manage py database connection: {connection_url}")
 
     # If the connection was successful, print a success message
     logger.info(f"Database connection successful on URI {SQLALCHEMY_DATABASE_URI}")
