@@ -25,7 +25,7 @@ jobs:
 
     - name: Run Database Migrations
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIAL }}
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
