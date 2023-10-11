@@ -35,6 +35,10 @@ if FLASK_ENV == "staging":
         "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
         % POSTGRES
     )
+    print(
+        "GOOGLE_APPLICATION_CREDENTIALS:",
+        os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"),
+    )
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_ECHO = True
