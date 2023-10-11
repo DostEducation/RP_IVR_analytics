@@ -19,26 +19,14 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-    - name: Install Python dependencies
-      run: |
-        pip install -r requirements.txt
-
-    - name: Configure Cloud SQL Proxy
-      run: |
-        # Download and install Cloud SQL Proxy
-        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
-        chmod +x cloud_sql_proxy
-
-        # Start Cloud SQL Proxy
-        ./cloud_sql_proxy -instances=${{ secrets.CLOUD_SQL_CONNECTION_NAME }}=tcp:5432 &
-
-        # Wait for the proxy to start
-        sleep 5
-
     - name: Run Database Migrations
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        CONNECTION_NAME: ${{ secrets.CONNECTION_NAME }}
+        SQLALCHEMY_DATABASE_URI: "postgresql:/${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}/${{ secrets.DB_NAME }}?host=${{ secrets.CONNECTION_NAME }}"
         FLASK_APP: ${{ secrets.FLASK_APP }}
       run: |
         flask db upgrade

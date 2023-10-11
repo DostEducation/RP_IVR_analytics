@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
 SQLALCHEMY_DATABASE_URI = app.config["SQLALCHEMY_DATABASE_URI"]
 
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 
 try:
     # Create a SQLAlchemy engine using the database URI
@@ -25,26 +25,6 @@ try:
 
     # If the connection was successful, print a success message
     logger.info(f"Database connection successful on URI {SQLALCHEMY_DATABASE_URI}")
-
-    # Use SQLAlchemy's text function to create an SQL statement
-    sql_statement = text("CREATE TABLE users (phone VARCHAR)")
-
-    # Execute the SQL statement
-    connection.execute(sql_statement)
-
-    # Use SQLAlchemy's text function to create an SQL statement
-    sql_statement = text("INSERT INTO users (phone) VALUES ('1234567890')")
-
-    # Execute the SQL statement
-    connection.execute(sql_statement)
-    # Use SQLAlchemy's text function to create an SQL statement
-    sql_statement = text("SELECT phone FROM users")
-
-    result = connection.execute(sql_statement)
-
-    # Fetch all the rows from the result set
-    user_data = result.fetchall()
-    logger.info(f"user data: {user_data}")
 
     # Close the connection
     connection.close()
