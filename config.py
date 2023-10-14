@@ -3,8 +3,6 @@ import os
 
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
 
-FLASK_APP = os.environ.get("FLASK_APP", "manage.py")
-
 if FLASK_ENV == "development":
     from os import path
     from dotenv import load_dotenv
@@ -25,23 +23,16 @@ POSTGRES = {
     "connection_name": os.environ.get("CONNECTION_NAME"),
 }
 
-SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
+SQLALCHEMY_DATABASE_URI = (
+    "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
+)
 
-
-# SQLALCHEMY_DATABASE_URI = (
-#     "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
-# )
-
-# # For socket based connection
-# if FLASK_ENV == "staging":
-#     SQLALCHEMY_DATABASE_URI = (
-#         "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
-#         % POSTGRES
-#     )
-#     print(
-#         "GOOGLE_APPLICATION_CREDENTIALS:",
-#         os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"),
-#     )
+# For socket based connection
+if FLASK_ENV == "staging":
+    SQLALCHEMY_DATABASE_URI = (
+        "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
+        % POSTGRES
+    )
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_ECHO = True

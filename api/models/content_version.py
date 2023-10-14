@@ -27,4 +27,3 @@ class ContentVersion(TimestampMixin, db.Model):
     version = db.Column(db.Float)
     duration = db.Column(db.Integer)
     status = db.Column(db.String(50))
-    new_status = db.Column(db.String(50))
