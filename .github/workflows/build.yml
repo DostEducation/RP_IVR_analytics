@@ -3,14 +3,14 @@ name: build-and-deployment
 on:
   push:
     branches:
-      - develop
+      - feature/414/install-packages-and-create-database-migrations
       - main
 
 jobs:
   # build and test jobs will be added later one we have unit tests in place
   deploy-staging:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/feature/414/install-packages-and-create-database-migrations'
     steps:
     - uses: 'actions/checkout@v3'
 
@@ -43,7 +43,7 @@ jobs:
 
     - name: Run Flask Migration
       env:
-        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
+        SQLALCHEMY_DATABASE_URI_GITHUB_ACTION: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
         FLASK_APP: ${{ secrets.FLASK_APP }}
         FLASK_ENV: ${{ secrets.FLASK_ENV }}
       run: |
@@ -102,7 +102,7 @@ jobs:
 
     - name: Run Flask Migration
       env:
-        SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}
+        SQLALCHEMY_DATABASE_URI_GITHUB_ACTION: ${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}
         FLASK_APP: ${{ secrets.FLASK_APP }}
         FLASK_ENV: ${{ secrets.FLASK_ENV_PROD }}
       run: |

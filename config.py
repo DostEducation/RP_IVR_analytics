@@ -29,10 +29,15 @@ SQLALCHEMY_DATABASE_URI = (
 
 # For socket based connection
 if FLASK_ENV == "staging":
-    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI_GITHUB_ACTION")
+
+    if SQLALCHEMY_DATABASE_URI is None:
+        SQLALCHEMY_DATABASE_URI = (
+            "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
+            % POSTGRES
+        )
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
-SQLALCHEMY_ECHO = True
 WTF_CSRF_ENABLED = True
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
