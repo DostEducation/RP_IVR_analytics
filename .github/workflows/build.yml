@@ -3,14 +3,14 @@ name: build-and-deployment
 on:
   push:
     branches:
-      - feature/414/install-packages-and-create-database-migrations
+      - develop
       - main
 
 jobs:
   # build and test jobs will be added later one we have unit tests in place
   deploy-staging:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/feature/414/install-packages-and-create-database-migrations'
+    if: github.ref == 'refs/heads/develop'
     steps:
     - uses: 'actions/checkout@v3'
 
