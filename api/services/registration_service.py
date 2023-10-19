@@ -93,6 +93,7 @@ class RegistrationService:
                 status=registration_status,
                 program_id=self.selected_program_id,
                 partner_id=partner_system_phone.partner_id,
+                language_id=app.config["DEFAULT_LANGUAGE_ID"],
                 user_id=self.user_id,
                 has_dropped_missedcall=True,
                 has_received_callback=True,
