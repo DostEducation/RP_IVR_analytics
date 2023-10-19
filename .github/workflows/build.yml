@@ -39,7 +39,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
       run: |
         echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
-        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME }}=tcp:5432 -credential_file=credentials.json &
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME_GITHUB_ACTION }}=tcp:5432 -credential_file=credentials.json &
 
     - name: Run Flask Migration
       env:
@@ -98,7 +98,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
       run: |
         echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
-        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME_PROD }}=tcp:5432 -credential_file=credentials.json &
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME_PROD_GITHUB_ACTION }}=tcp:5432 -credential_file=credentials.json &
 
     - name: Run Flask Migration
       env:
