@@ -22,3 +22,6 @@ from .program_sequence import *
 from .language import *
 from .content_version import *
 from .contact_fields_mapping import *
+from .bigquery_jobs import *
+from .call_log_event import *
+from .ivr_callback_transaction_log import *
