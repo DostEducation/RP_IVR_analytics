@@ -12,6 +12,7 @@ ignore-paths:
   - venv/
   - migrations/
   - manage.py/
+  - config.py/
 
 mypy:
   run: true
