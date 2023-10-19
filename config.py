@@ -27,7 +27,7 @@ SQLALCHEMY_DATABASE_URI = (
     "postgresql://%(user)s:%(password)s@%(host)s:%(port)s/%(database)s" % POSTGRES
 )
 
-# For socket based connections
+# For socket based connection
 if FLASK_ENV == "staging":
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
 
