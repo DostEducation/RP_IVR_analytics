@@ -25,8 +25,17 @@ This is a cloud function based webhook that is being using to get webhook calls 
     python -m venv venv
     ```
 3. Activate the virtual environment
+    For Unix or MacOS, using the bash shell:
     ```sh
     source ./venv/bin/activate
+    ```
+    For Windows using the Command Prompt. For example it may look like `c:/RP_IVR_analytics/venv/Scripts/Activate.bat`:
+    ```sh
+     ./venv/bin/activate.bat
+    ```
+    For windows using PowerShell. For example it may look like `c:/RP_IVR_analytics/venv/Scripts/Activate.ps1`:
+    ```sh
+     ./venv/bin/activate.ps1
     ```
 4. Install the dependencies:
     ```sh
