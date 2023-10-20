@@ -2,7 +2,7 @@ from api import models, helpers
 from utils.loggingutils import logger
 
 
-class ProgramSequenceService(object):
+class ProgramSequenceService:
     def __init__(self):
         self.content_id = None
         self.user_phone = None

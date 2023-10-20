@@ -4,7 +4,7 @@ from datetime import datetime
 from utils.loggingutils import logger
 
 
-class RegistrationService(object):
+class RegistrationService:
     def __init__(self):
         self.system_phone = None
         self.user_phone = None
@@ -46,7 +46,7 @@ class RegistrationService(object):
                     )
 
                 if registration_data:
-                    self.update_registration(registration_data, jsonData)
+                    self.update_registration(registration_data)
                     user_program = (
                         models.UserProgram.query.get_latest_active_user_program(
                             registration_data.user_id
@@ -55,11 +55,13 @@ class RegistrationService(object):
                     if user_program:
                         if self.has_default_program_selection:
                             user_program_data["program_id"] = user_program.program_id
-                        models.UserProgram.query.update(user_program, user_program_data)
+                        models.UserProgram.query.update_user_program_data(
+                            user_program, user_program_data
+                        )
                     else:
                         models.UserProgram.query.create(self.user_id, user_program_data)
                 else:
-                    self.register(jsonData)
+                    self.register()
                     models.UserProgram.query.create(self.user_id, user_program_data)
 
         except Exception as e:
@@ -68,10 +70,10 @@ class RegistrationService(object):
             )
 
     # Handle new user registration
-    def register(self, jsonData):
+    def register(self):
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
         if self.selected_program_id:
-            self.user_id = self.create_user(jsonData)
+            self.user_id = self.create_user()
 
         registration_status = (
             models.Registration.RegistrationStatus.INCOMPLETE
@@ -79,13 +81,19 @@ class RegistrationService(object):
             else models.Registration.RegistrationStatus.COMPLETE
         )
         if system_phone_details:
+            partner_system_phone = (
+                models.PartnerSystemPhone.query.get_by_system_phone_id(
+                    system_phone_details.id
+                )
+            )
             registrant = models.Registration(
                 user_phone=self.user_phone,
                 system_phone=self.system_phone,
                 state=system_phone_details.state,
                 status=registration_status,
                 program_id=self.selected_program_id,
-                partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
+                partner_id=partner_system_phone.partner_id,
+                language_id=app.config["DEFAULT_LANGUAGE_ID"],
                 user_id=self.user_id,
                 has_dropped_missedcall=True,
                 has_received_callback=True,
@@ -101,7 +109,7 @@ class RegistrationService(object):
                     f"Failed to save registration data for user with phone {self.user_phone}. Error message: {e}"
                 )
 
-    def update_registration(self, registration, jsonData):
+    def update_registration(self, registration):
         """Updates the registration data
 
         Args:
@@ -111,7 +119,7 @@ class RegistrationService(object):
         if not registration:
             return
 
-        self.user_id = self.create_user(jsonData) if self.selected_program_id else None
+        self.user_id = self.create_user() if self.selected_program_id else None
 
         if registration.status != models.Registration.RegistrationStatus.COMPLETE:
             if not (registration.program_id and self.has_default_program_selection):
@@ -135,14 +143,17 @@ class RegistrationService(object):
                     f"Failed to update registration for {self.user_phone}. Error message: {e}"
                 )
 
-    def create_user(self, jsonData):
+    def create_user(self):
         user = models.User.query.get_by_phone(self.user_phone)
         system_phone_details = models.SystemPhone.query.get_by_phone(self.system_phone)
+        partner_system_phone = models.PartnerSystemPhone.query.get_by_system_phone_id(
+            system_phone_details.id
+        )
         if not user:
             user = models.User(
                 state=system_phone_details.state,
                 phone=self.user_phone,
-                partner_id=helpers.get_partner_id_by_system_phone(self.system_phone),
+                partner_id=partner_system_phone.partner_id,
             )
             helpers.save(user)
         return user.id

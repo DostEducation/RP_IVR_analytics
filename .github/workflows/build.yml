@@ -2,12 +2,15 @@ name: build-and-deployment
 
 on:
   push:
-    branches: [develop]
+    branches:
+      - develop
+      - main
 
 jobs:
   # build and test jobs will be added later one we have unit tests in place
-  deploy:
+  deploy-staging:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     steps:
     - uses: 'actions/checkout@v3'
 
@@ -16,7 +19,41 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-    - id: 'deploy'
+    - name: Debug GCP credentials
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Set up Cloud SQL Proxy
+      run: |
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+        chmod +x cloud_sql_proxy
+
+    - name: Start Cloud SQL Proxy
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME_GITHUB_ACTION }}=tcp:5432 -credential_file=credentials.json &
+
+    - name: Run Flask Migration
+      env:
+        SQLALCHEMY_DATABASE_URI_GITHUB_ACTION: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
+        FLASK_APP: ${{ secrets.FLASK_APP }}
+        FLASK_ENV: ${{ secrets.FLASK_ENV }}
+      run: |
+        flask db upgrade
+
+    - name: Stop Cloud SQL Proxy
+      run: |
+        pkill cloud_sql_proxy
+
+    - id: 'deploy-staging'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
       with:
           name: rp-ivr-analytics-staging
@@ -39,3 +76,63 @@ jobs:
         message: 'Staging deployment completed successfully!'
         slack-token: ${{ secrets.SLACK_TOKEN }}
         slack-channel: ${{ secrets.SLACK_CHANNEL }}
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: 'actions/checkout@v3'
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Debug GCP credentials
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Set up Cloud SQL Proxy
+      run: |
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+        chmod +x cloud_sql_proxy
+
+    - name: Start Cloud SQL Proxy
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "$GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+        ./cloud_sql_proxy -instances=${{ secrets.CONNECTION_NAME_PROD_GITHUB_ACTION }}=tcp:5432 -credential_file=credentials.json &
+
+    - name: Run Flask Migration
+      env:
+        SQLALCHEMY_DATABASE_URI_GITHUB_ACTION: ${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}
+        FLASK_APP: ${{ secrets.FLASK_APP }}
+        FLASK_ENV: ${{ secrets.FLASK_ENV_PROD }}
+      run: |
+        flask db upgrade
+
+    - name: Stop Cloud SQL Proxy
+      run: |
+        pkill cloud_sql_proxy
+
+    - id: 'deploy-production'
+      uses: 'google-github-actions/deploy-cloud-functions@v0'
+      with:
+        name: rp-ivr-analytics-prod
+        region: asia-south1
+        description: 'Deploying production function'
+        memory_mb: 512
+        timeout: 300
+        runtime: python38
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        entry_point: webhook
+        max_instances: 0 # Remove limitation
+        env_vars: FLASK_ENV=${{ secrets.FLASK_ENV_PROD }},TESTING=${{ secrets.TESTING_PROD }},DEBUG=${{ secrets.DEBUG_PROD }},DB_USER=${{ secrets.DB_USER_PROD }},DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }},DB_NAME=${{ secrets.DB_NAME_PROD }},DB_PORT=${{ secrets.DB_PORT_PROD }},SECRET_KEY=${{ secrets.SECRET_KEY_PROD }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME_PROD }},RETRY_LOGS_BATCH_LIMIT=${{ secrets.RETRY_LOGS_BATCH_LIMIT_PROD }},MAX_RETRY_ATTEMPTS_FOR_LOGS=${{ secrets.MAX_RETRY_ATTEMPTS_FOR_LOGS_PROD }},DB_HOST=${{ secrets.DB_HOST_PROD }}
+        vpc_connector: projects/${{ secrets.PROJECT_ID }}/locations/${{ secrets.VPC_CONNECTOR_REGION }}/connectors/${{ secrets.VPC_CONNECTOR_NAME }}

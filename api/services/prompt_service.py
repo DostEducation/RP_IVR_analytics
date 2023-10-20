@@ -1,24 +1,26 @@
 # This file is treated as service layer
-from api import models, db, helpers, app
+from api import models, db
 from datetime import datetime
-from api.helpers import prompt_helper
+from api.helpers import prompt_helper, common_helper, db_helper
 from utils.loggingutils import logger
 
 
-class PromptService(object):
+class PromptService:
     def __init__(self):
         self.user_phone = None
         self.call_log_id = None
         self.content_version_id = None
 
     def set_init_data(self, jsonData):
-        user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
-        self.user_phone = helpers.sanitize_phone_string(user_phone)
-        flow_run_uuid = helpers.fetch_by_key(
+        user_phone = common_helper.fetch_by_key("urn", jsonData["contact"])
+        self.user_phone = common_helper.sanitize_phone_string(user_phone)
+        flow_run_uuid = common_helper.fetch_by_key(
             "run_uuid", jsonData
         )  # Need to remove once we are done with making changes in webhooks
         if "flow_run_details" in jsonData:
-            flow_run_uuid = helpers.fetch_by_key("uuid", jsonData["flow_run_details"])
+            flow_run_uuid = common_helper.fetch_by_key(
+                "uuid", jsonData["flow_run_details"]
+            )
         call_log_details = models.CallLog.query.get_by_flow_run_uuid(flow_run_uuid)
         self.call_log_id = call_log_details.id
         self.content_version_id = call_log_details.content_version_id
@@ -33,7 +35,7 @@ class PromptService(object):
 
             user_details = models.User.query.get_by_phone(self.user_phone)
             if not user_details:
-                logger.error("User not found for phone {}".format(self.user_phone))
+                logger.error(f"User not found for phone {self.user_phone}.")
 
             for key in data:
                 if key != "result" and "category" in data[key] and "name" in data[key]:
@@ -44,11 +46,9 @@ class PromptService(object):
                             prompt_name, prompt_response
                         )
                     )
-                    if not ivr_prompt_details:
+                    if not ivr_prompt_details and prompt_response.lower() != "other":
                         logger.error(
-                            "IVR prompt not found for name '{}' and response '{}'".format(
-                                prompt_name, prompt_response
-                            )
+                            f"IVR prompt not found for name '{prompt_name}' and response '{prompt_response}'"
                         )
 
                     if ivr_prompt_details:
@@ -56,7 +56,6 @@ class PromptService(object):
                             data[key]["category"]
                         )
                         self.handle_prompt_mapping(
-                            data[key],
                             user_details,
                             ivr_prompt_details,
                             prompt_response_value,
@@ -111,19 +110,21 @@ class PromptService(object):
                 if data.get("log_created_on", None)
                 else datetime.utcnow(),
             )
-            helpers.save(ivr_prompt_response)
+            db_helper.save(ivr_prompt_response)
         except Exception as e:
             logger.error(
                 f"An error occurred while adding prompt response for {self.user_phone}. Error: {e}"
             )
 
     def fetch_prompt_response(self, prompt):
-        split_prompt_by_underscore = helpers.split_prompt_by_underscore(prompt)
+        split_prompt_by_underscore = prompt_helper.split_the_prompt_by_underscore(
+            prompt
+        )
 
         return split_prompt_by_underscore[-1]
 
     def handle_prompt_mapping(
-        self, data, user_details, ivr_prompt_details, prompt_response_value
+        self, user_details, ivr_prompt_details, prompt_response_value
     ):
         """This function will be populating different other table column based on the user prompt response.
         Note: The table need to be associated with user.
@@ -132,8 +133,6 @@ class PromptService(object):
             if not user_details:
                 return False
 
-            prompt_response = data["category"]
-            prompt_name = data["name"]
             ivr_prompt_mapping_data = (
                 models.IvrPromptMapping.query.get_by_ivr_prompt_id(
                     ivr_prompt_details.id
@@ -144,17 +143,19 @@ class PromptService(object):
                 self.process_mapped_fields(
                     user_details, ivr_prompt_mapping_data, prompt_response_value
                 )
+            return True
         except Exception as e:
             logger.error(
                 f"Exception occurred while handling prompt mapping for user phone {self.user_phone}. Error message: {e}"
             )
+            return None
 
     def process_mapped_fields(
         self, user_details, ivr_prompt_mapping_data, prompt_response_value
     ):
         try:
             for mapped_class in ivr_prompt_mapping_data:
-                class_object = helpers.get_class_by_tablename(
+                class_object = db_helper.get_class_by_tablename(
                     mapped_class.mapped_table_name
                 )
                 if class_object:
@@ -186,7 +187,8 @@ class PromptService(object):
                     )
         except Exception as e:
             logger.error(
-                f"Failed to process mapped fields for prompt value '{prompt_response_value}' and for user phone {self.user_phone}. Error message:{e}"
+                f"Failed to process mapped fields for prompt value '{prompt_response_value}' and for "
+                f"user phone {self.user_phone}. Error message:{e}"
             )
 
     def update_mapped_fields(
@@ -199,13 +201,14 @@ class PromptService(object):
                 db.session.commit()
         except Exception as e:
             logger.error(
-                f"Exception occurred while updating mapped fields for prompt value = {prompt_response_value} and for {self.user_phone}. Error message {e}"
+                f"Exception occurred while updating mapped fields for prompt response value {prompt_response_value} "
+                f"and for user phone {self.user_phone}. Error message {e}"
             )
 
     def sanitize_keypress(self, data):
         keypress = data["keypress"]
         try:
-            if keypress and len(keypress) < 5:
+            if keypress and str(keypress).isdigit() and len(keypress) < 5:
                 return_keypress_value = int(keypress)
             else:
                 return_keypress_value = -2

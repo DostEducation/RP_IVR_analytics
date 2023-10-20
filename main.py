@@ -11,40 +11,59 @@ def webhook(request):
             try:
                 jsonData = request.get_json()
             except Exception as e:
-                logger.warning("[WARN] Could not retrieve JSON data from the request")
+                logger.warning(
+                    f"[WARN] Could not retrieve JSON data from the request. Error:{e}"
+                )
                 return jsonify(message="Something went wrong!"), 400
 
-            transaction_log_service = services.TransactionLogService()
-
-            if jsonData and jsonData.get("type", None) != ("retry_failed_log"):
-                if "contact" in jsonData:
-                    webhook_log = transaction_log_service.create_new_webhook_log(
-                        jsonData
-                    )
-                processed = handle_payload(jsonData)
-
-                if processed is False:
-                    logger.error(f"Error processing the payload: {jsonData}")
-                    return jsonify(message="Something went wrong!"), 400
-                elif processed == -1:
-                    logger.warning("Contact not found in the payload")
-                    return jsonify(message="Contact"), 400
-
-                if "contact" in jsonData:
-                    transaction_log_service.mark_webhook_log_as_processed(webhook_log)
-            elif jsonData and jsonData.get("type", None) == "retry_failed_log":
-                retry_failed_webhook(transaction_log_service)
-
+            if jsonData.get("flow_category", None) == "dry_flow":
+                handle_dry_flow(jsonData)
+            else:
+                handle_regular_flow(jsonData)
             return jsonify(message="Success"), 200
-        else:
-            logger.warning("[WARN] Received a GET request instead of POST")
-            return (
-                jsonify(message="Currently, the system do not accept a GET request"),
-                405,
-            )
+
+        logger.warning("[WARN] Received a GET request instead of POST")
+        return (
+            jsonify(message="Currently, the system does not accept a GET request"),
+            405,
+        )
     except Exception as e:
         logger.error(f"An unexpected error occurred. Error message: {e}")
         return jsonify(message="Internal server error"), 500
+
+
+def handle_dry_flow(jsonData):
+    # Handle contact groups
+    if "groups" in jsonData["contact"] and jsonData["contact"]["groups"] is not None:
+        handle_user_group_data(jsonData)
+
+    # Handle custom fields
+    if "fields" in jsonData["contact"] and jsonData["contact"]["fields"] is not None:
+        handle_user_custom_field_data(jsonData)
+
+    # Handle groups and fields
+    handle_contact_fields_and_groups(jsonData)
+
+
+def handle_regular_flow(jsonData):
+    transaction_log_service = services.TransactionLogService()
+    if jsonData and jsonData.get("type", None) == "retry_failed_log":
+        retry_failed_webhook(transaction_log_service)
+    else:
+        if "contact" in jsonData:
+            webhook_log = transaction_log_service.create_new_webhook_log(jsonData)
+        processed = handle_payload(jsonData)
+
+        if processed is False:
+            logger.error(f"Error processing the payload: {jsonData}")
+            return jsonify(message="Something went wrong!"), 400
+        if processed == -1:
+            logger.warning("Contact not found in the payload")
+            return jsonify(message="Contact"), 400
+
+        if "contact" in jsonData:
+            transaction_log_service.mark_webhook_log_as_processed(webhook_log)
+    return None
 
 
 def retry_failed_webhook(transaction_log_service):
@@ -56,8 +75,7 @@ def retry_failed_webhook(transaction_log_service):
 
         json_data = json.loads(log.payload)
         json_data["log_created_on"] = log.created_on
-        processed = handle_payload(json_data, True)
-
+        processed = handle_payload(json_data)
         if processed is not True:
             continue
 
@@ -65,16 +83,18 @@ def retry_failed_webhook(transaction_log_service):
         db_helper.save(log)
 
 
-def handle_payload(jsonData, is_retry_payload=False):
+def handle_payload(jsonData):
     try:
         if "contact" in jsonData:
             # Conditions based on the flow categories
-            if "flow_category" in jsonData and jsonData["flow_category"] != "dry_flow":
+            if "flow_category" in jsonData:
                 handle_flow_category_data(jsonData)
-
                 # Handle call logs
                 calllog_service = services.CallLogService()
                 calllog_service.handle_call_log(jsonData)
+
+            if jsonData.get("is_last_content", None) is True:
+                update_user_program(jsonData)
 
             # All the prompt responses are captured with results
             if "results" in jsonData:
@@ -93,28 +113,6 @@ def handle_payload(jsonData, is_retry_payload=False):
                     calllog_service.update_program_sequence_id_in_call_log(
                         program_sequence_id
                     )
-
-            # Handle contact groups
-            if (
-                "groups" in jsonData["contact"]
-                and jsonData["contact"]["groups"] is not None
-                and jsonData.get("flow_category", None) == "dry_flow"
-                and not is_retry_payload
-            ):
-                handle_user_group_data(jsonData)
-
-            # Handle custom fields
-            if (
-                "fields" in jsonData["contact"]
-                and jsonData["contact"]["fields"] is not None
-                and jsonData.get("flow_category", None) == "dry_flow"
-                and not is_retry_payload
-            ):
-                handle_user_custom_field_data(jsonData)
-
-            # Handle groups and fields
-            if jsonData.get("flow_category") == "dry_flow" and not is_retry_payload:
-                handle_contact_fields_and_groups(jsonData)
         else:
             logger.error(f"No 'contact' key found in the input JSON data. {jsonData}")
             return -1
@@ -153,3 +151,8 @@ def handle_contact_fields_and_groups(JsonData):
 
     if contact_data.get("groups"):
         custom_fields_mapping_service.handle_contact_groups_data(JsonData)
+
+
+def update_user_program(JsonData):
+    user_program_service = services.UserProgramService()
+    user_program_service.mark_user_program_as_completed(JsonData)

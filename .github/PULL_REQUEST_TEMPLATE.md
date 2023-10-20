@@ -1,3 +1,11 @@
+<!-- Pull Request Title Guidelines -->
+<!--
+Please follow the format: #<issue_id> <Title>
+- <issue_id>: Id of the issue for which the PR belongs to (e.g., #1023)
+- <Title>: A brief summary of the change (e.g., Add user authentication functionality)
+Example of Pull Request Title: #1023 Add user authentication functionality
+-->
+
 #[ISSUE_ID]
 <!--- If there is an open issue, please link to the issue here by replacing [ISSUE_ID]-->
 <!-- Make sure the PR is against the `develop` branch -->

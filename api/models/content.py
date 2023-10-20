@@ -4,8 +4,8 @@ from flask_sqlalchemy import BaseQuery
 
 
 class ContentQuery(BaseQuery):
-    def get(self, id):
-        return self.filter(Content.id == id).first()
+    def get_by_id(self, content_id):
+        return self.filter(Content.id == content_id).first()
 
 
 class Content(TimestampMixin, db.Model):
@@ -14,3 +14,5 @@ class Content(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), unique=True, nullable=False)
     type = db.Column(db.String(100))
+    duration = db.Column(db.Integer)
+    status = db.Column(db.String(50))

@@ -1,0 +1,31 @@
+output-format: grouped
+
+# strictness: veryhigh
+# doc-warnings: no
+# test-warnings: no
+max-line-length: 120
+# pep8: full
+
+ignore-paths:
+  - __pycache__/
+  - .github/
+  - venv/
+  - migrations/
+  - manage.py/
+  - config.py/
+
+mypy:
+  run: true
+  options:
+    ignore-missing-imports: true
+
+pylint:
+  disable:
+    - logging-fstring-interpolation # Disabed this violation as we wanted to use f-string for logging.
+    - django-not-available # Disabed this violation as not needed in this application.
+    - import-error # Disabed this violation to suppress warning "Unable to import sqlalchemy and flask_sqlalchemy".
+    - protected-access # Disabed this violation to suppress warning "Access to a protected member _decl_class_registry of a client class"
+
+pyflakes:
+  disable:
+    - F401 # Disabed F401 violation to suppress unused import errors in __init__.py. Although the imported modules in this file may not be directly utilized, they are essential for the overall functionalties in application.

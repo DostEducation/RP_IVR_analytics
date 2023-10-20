@@ -1,6 +1,6 @@
 from api.mixins import TimestampMixin
-from api import db, models
-from sqlalchemy import desc, and_
+from api import db
+from sqlalchemy import desc, and_, func
 from flask_sqlalchemy import BaseQuery
 
 
@@ -10,7 +10,7 @@ class IvrPromptQuery(BaseQuery):
             self.filter(
                 and_(
                     IvrPrompt.prompt_name == name,
-                    IvrPrompt.status == models.IvrPrompt.IvrStatus.ACTIVE,
+                    IvrPrompt.status == IvrPrompt.IvrStatus.ACTIVE,
                 )
             )
             .order_by(desc(IvrPrompt.created_on))
@@ -21,9 +21,9 @@ class IvrPromptQuery(BaseQuery):
         return (
             self.filter(
                 and_(
-                    IvrPrompt.prompt_name == name,
-                    IvrPrompt.possible_response == response,
-                    IvrPrompt.status == models.IvrPrompt.IvrStatus.ACTIVE,
+                    func.upper(IvrPrompt.prompt_name) == name.upper(),
+                    func.upper(IvrPrompt.possible_response) == response.upper(),
+                    IvrPrompt.status == IvrPrompt.IvrStatus.ACTIVE,
                 )
             )
             .order_by(desc(IvrPrompt.created_on))
@@ -35,7 +35,7 @@ class IvrPrompt(TimestampMixin, db.Model):
     query_class = IvrPromptQuery
     __tablename__ = "ivr_prompt"
 
-    class IvrStatus(object):
+    class IvrStatus:
         ACTIVE = "active"
         INACTIVE = "inactive"
 

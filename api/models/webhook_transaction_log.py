@@ -1,12 +1,13 @@
 from api.mixins import TimestampMixin
-from api import db, helpers
+from api import db
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, and_
 
 
 class WebhookTransactionLogQuery(BaseQuery):
-    def get_by_id(self, id):
-        return self.filter(WebhookTransactionLog.id == id).first()
+    def get_by_id(self, webhook_transaction_log_id):
+        return self.filter(
+            WebhookTransactionLog.id == webhook_transaction_log_id
+        ).first()
 
 
 class WebhookTransactionLog(TimestampMixin, db.Model):

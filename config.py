@@ -4,7 +4,7 @@ import os
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
 
 if FLASK_ENV == "development":
-    from os import environ, path
+    from os import path
     from dotenv import load_dotenv
 
     basedir = path.abspath(path.dirname(__file__))
@@ -33,6 +33,11 @@ if FLASK_ENV == "staging":
         "postgresql://%(user)s:%(password)s@/%(database)s?host=%(connection_name)s/"
         % POSTGRES
     )
+
+github_action_db_url = os.environ.get("SQLALCHEMY_DATABASE_URI_GITHUB_ACTION", None)
+
+if github_action_db_url:
+    SQLALCHEMY_DATABASE_URI = github_action_db_url
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
