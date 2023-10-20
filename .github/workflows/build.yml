@@ -67,6 +67,16 @@ jobs:
           max_instances: 0 # Remove limitation
           env_vars: FLASK_ENV=${{ secrets.FLASK_ENV }},TESTING=${{ secrets.TESTING }},DEBUG=${{ secrets.DEBUG }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},SECRET_KEY=${{ secrets.SECRET_KEY }},CONNECTION_NAME=${{ secrets.CONNECTION_NAME }},RETRY_LOGS_BATCH_LIMIT=1000,MAX_RETRY_ATTEMPTS_FOR_LOGS=3
 
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2.0.2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      with:
+        status: success
+        message: 'Staging deployment completed successfully!'
+        slack-token: ${{ secrets.SLACK_TOKEN }}
+        slack-channel: ${{ secrets.SLACK_CHANNEL }}
+
   deploy-production:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
