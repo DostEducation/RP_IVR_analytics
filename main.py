@@ -95,10 +95,10 @@ def handle_payload(jsonData):
             if jsonData.get("is_last_content", None) is True:
                 update_user_program_to_complete(jsonData)
 
-            if json.get("unsub", None) is True:
+            if jsonData.get("unsub", None) is True:
                 update_user_program_to_unsub(jsonData)
 
-            if json.get("group", None) == "final-dost-churn":
+            if jsonData.get("group", None) == "final-dost-churn":
                 update_user_program_to_terminate(jsonData)
 
             # All the prompt responses are captured with results
