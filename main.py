@@ -12,8 +12,10 @@ def webhook(request):
         if request.method == "POST":
             try:
                 jsonData = request.get_json()
-            except:
-                logger.warning("[WARN] Could not retrieve JSON data from the request")
+            except Exception as e:
+                logger.warning(
+                    f"[WARN] Could not retrieve JSON data from the request. Error:{e}"
+                )
                 return jsonify(message="Something went wrong!"), 400
 
             if jsonData.get("flow_category", None) == "dry_flow":
@@ -21,12 +23,12 @@ def webhook(request):
             else:
                 handle_regular_flow(jsonData)
             return jsonify(message="Success"), 200
-        else:
-            logger.warning("[WARN] Received a GET request instead of POST")
-            return (
-                jsonify(message="Currently, the system do not accept a GET request"),
-                405,
-            )
+
+        logger.warning("[WARN] Received a GET request instead of POST")
+        return (
+            jsonify(message="Currently, the system does not accept a GET request"),
+            405,
+        )
     except Exception as e:
         logger.error(f"An unexpected error occurred. Error message: {e}")
         return jsonify(message="Internal server error"), 500
@@ -47,7 +49,7 @@ def handle_dry_flow(jsonData):
 
 def handle_regular_flow(jsonData):
     transaction_log_service = services.TransactionLogService()
-    if jsonData and jsonData.get("type", None) == ("retry_failed_log"):
+    if jsonData and jsonData.get("type", None) == "retry_failed_log":
         retry_failed_webhook(transaction_log_service)
     else:
         if "contact" in jsonData:
@@ -57,12 +59,13 @@ def handle_regular_flow(jsonData):
         if processed is False:
             logger.error(f"Error processing the payload: {jsonData}")
             return jsonify(message="Something went wrong!"), 400
-        elif processed == -1:
+        if processed == -1:
             logger.warning("Contact not found in the payload")
             return jsonify(message="Contact"), 400
 
         if "contact" in jsonData:
             transaction_log_service.mark_webhook_log_as_processed(webhook_log)
+    return None
 
 
 def retry_failed_webhook(transaction_log_service):

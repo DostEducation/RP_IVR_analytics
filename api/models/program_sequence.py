@@ -16,7 +16,7 @@ class ProgramSequence(TimestampMixin, db.Model):
     query_class = ProgramSequenceQuery
     __tablename__ = "program_sequence"
 
-    class ContentStatus(object):
+    class ContentStatus:
         ACTIVE = "active"
         INACTIVE = "inactive"
 

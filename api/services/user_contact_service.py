@@ -3,7 +3,7 @@ from api import models, db, helpers
 from utils.loggingutils import logger
 
 
-class UserContactService(object):
+class UserContactService:
     def __init__(self):
         self.user_phone = None
         self.user_data = None
@@ -14,8 +14,10 @@ class UserContactService(object):
     def init_data(self, jsonData):
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
-        self.user_data = helpers.get_user_by_phone(self.user_phone)
-        self.registration_data = helpers.get_registrant_by_phone(self.user_phone)
+        self.user_data = models.User.query.get_by_phone(self.user_phone)
+        self.registration_data = models.Registration.query.get_latest_by_phone(
+            self.user_phone
+        )
         self.flow_run_uuid = helpers.fetch_by_key(
             "run_uuid", jsonData
         )  # Need to remove once we are done with making changes in webhooks
@@ -121,41 +123,14 @@ class UserContactService(object):
 
             user_custom_contact_data = []
 
-            for field_name, field_value in custom_fields.items():
-                custom_fields_conditions = self.custom_fields_conditions(
-                    field_name, field_value
-                )
+            self.process_fields(
+                custom_fields,
+                fields_key_values,
+                active_custom_fields_key_values,
+                user_custom_contact_data,
+            )
 
-                if (
-                    custom_fields_conditions
-                    and self.check_if_exist(fields_key_values, field_name, field_value)
-                    == False
-                ):
-                    userdata = self.get_user_custom_fields_object(
-                        field_name, field_value
-                    )
-                    user_custom_contact_data.extend(userdata)
-                elif custom_fields_conditions and not self.check_if_exist(
-                    active_custom_fields_key_values, field_name, field_value
-                ):
-                    models.UserCustomFields.query.set_custom_field_as_active(
-                        field_name, field_value, self.user_phone
-                    )
-                elif custom_fields_conditions and self.check_if_exist(
-                    active_custom_fields_key_values, field_name, field_value
-                ):
-                    active_custom_fields_key_values.pop(
-                        str(field_name) + "_" + str(field_value)
-                    )
-
-            for (
-                custom_field_name,
-                custom_field_value,
-            ) in active_custom_fields_key_values.items():
-                custom_field_key = custom_field_name[: -(len(custom_field_value) + 1)]
-                models.UserCustomFields.query.set_custom_field_as_inactive(
-                    self.user_phone, custom_field_key, custom_field_value
-                )
+            self.process_active_custom_fields(active_custom_fields_key_values)
 
             if user_custom_contact_data:
                 helpers.save_batch(user_custom_contact_data)
@@ -164,10 +139,45 @@ class UserContactService(object):
                 f"Failed to process custom fields for user phone {self.user_phone}. Error: {e}"
             )
 
+    def process_fields(
+        self,
+        custom_fields,
+        fields_key_values,
+        active_custom_fields_key_values,
+        user_custom_contact_data,
+    ):
+        for field_name, field_value in custom_fields.items():
+            custom_fields_conditions = self.custom_fields_conditions(
+                field_name, field_value
+            )
+
+            if custom_fields_conditions and not self.check_if_exist(
+                fields_key_values, field_name, field_value
+            ):
+                userdata = self.get_user_custom_fields_object(field_name, field_value)
+                user_custom_contact_data.extend(userdata)
+            elif custom_fields_conditions and not self.check_if_exist(
+                active_custom_fields_key_values, field_name, field_value
+            ):
+                models.UserCustomFields.query.set_custom_field_as_active(
+                    field_name, field_value, self.user_phone
+                )
+
+    def process_active_custom_fields(self, active_custom_fields_key_values):
+        for (
+            custom_field_name,
+            custom_field_value,
+        ) in active_custom_fields_key_values.items():
+            custom_field_key = custom_field_name[: -(len(custom_field_value) + 1)]
+            models.UserCustomFields.query.set_custom_field_as_inactive(
+                self.user_phone, custom_field_key, custom_field_value
+            )
+
     def fetch_fields_key_value(self, user_custom_field_data):
         """Format the existing fields in key value pair
         Args:
-            user_custom_field_data (model object): It is user custom field data model object we are getting on running query.
+            user_custom_field_data (model object):
+            It is user custom field data model object we are getting on running query.
         Returns:
             dict: Dictionary
         """
@@ -185,8 +195,9 @@ class UserContactService(object):
         return data_list
 
     def check_if_exist(self, fields_key_values, field_name, field_value):
-        """This function is use to check whether the field name and it's similar value already exists in database or not.
-        As there can be multiple entries for same field name, using field name and field value as index
+        """This function is use to check whether the field name and it's similar value
+        already exists in database or not. As there can be multiple entries for same field name,
+        using field name and field value as index
 
         Args:
             fields_key_values (dict): Dictionary we are getting from fetch_fields_key_value
@@ -198,14 +209,10 @@ class UserContactService(object):
         """
         #
         key_index = str(field_name) + "_" + str(field_value)
-        return (
-            True
-            if (
-                fields_key_values
-                and key_index in fields_key_values
-                and field_value == fields_key_values[key_index]
-            )
-            else False
+        return bool(
+            fields_key_values
+            and key_index in fields_key_values
+            and field_value == fields_key_values[key_index]
         )
 
     def get_user_custom_fields_object(self, field_name, field_value):
@@ -224,11 +231,8 @@ class UserContactService(object):
         ]
 
     def custom_fields_conditions(self, field_name, field_value):
-        return (
-            True
-            if field_value is not None
-            and field_name.startswith(self.custom_field_prefix)
-            else False
+        return bool(
+            field_value is not None and field_name.startswith(self.custom_field_prefix)
         )
 
     def mark_user_groups_as_inactive(self, group_uuid):
@@ -251,7 +255,9 @@ class UserContactService(object):
                     if data.status
                     == models.UserCustomFields.UserCustomFieldStatus.ACTIVE
                 ]
+            return None
         except Exception as e:
             logger.error(
                 f"Failed to get active custom fields for {self.user_phone}. Error:{e}"
             )
+            return None
