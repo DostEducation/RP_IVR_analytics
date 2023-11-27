@@ -93,13 +93,13 @@ def handle_payload(jsonData):
                 calllog_service.handle_call_log(jsonData)
 
             if jsonData.get("is_last_content", None) is True:
-                update_user_program_to_complete(jsonData)
+                update_user_program(jsonData, status="completed")
 
             if jsonData.get("unsub", None) is True:
-                update_user_program_to_unsub(jsonData)
+                update_user_program(jsonData, status="unsub")
 
-            if jsonData.get("group", None) == "final-dost-churn":
-                update_user_program_to_terminate(jsonData)
+            if jsonData.get("churned", None) is True:
+                update_user_program(jsonData, status="terminated")
 
             # All the prompt responses are captured with results
             if "results" in jsonData:
@@ -158,13 +158,10 @@ def handle_contact_fields_and_groups(JsonData):
         custom_fields_mapping_service.handle_contact_groups_data(JsonData)
 
 
-def update_user_program_to_complete(JsonData):
-    user_program_service.mark_user_program_as_completed(JsonData)
-
-
-def update_user_program_to_unsub(JsonData):
-    user_program_service.mark_user_program_as_unsub(JsonData)
-
-
-def update_user_program_to_terminate(JsonData):
-    user_program_service.mark_user_program_as_terminated(JsonData)
+def update_user_program(jsonData, status):
+    if status == "completed":
+        user_program_service.mark_user_program_as_completed(jsonData)
+    elif status == "unsub":
+        user_program_service.mark_user_program_as_unsub(jsonData)
+    elif status == "terminated":
+        user_program_service.mark_user_program_as_terminated(jsonData)
