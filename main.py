@@ -37,6 +37,8 @@ def webhook(request):
 def handle_dry_flow(jsonData):
     # Handle contact groups
     if "groups" in jsonData["contact"] and jsonData["contact"]["groups"] is not None:
+        if jsonData.get("churned") is True:
+            update_user_program(jsonData, status="terminated")
         handle_user_group_data(jsonData)
 
     # Handle custom fields
@@ -100,9 +102,6 @@ def handle_payload(jsonData):
 
             if jsonData.get("unsub", None) is True:
                 update_user_program(jsonData, status="unsub")
-
-            if jsonData.get("churned", None) is True:
-                update_user_program(jsonData, status="terminated")
 
             # All the prompt responses are captured with results
             if "results" in jsonData:
