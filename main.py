@@ -1,4 +1,4 @@
-from api import services
+from api import services, models
 from flask import jsonify
 from api.helpers import db_helper
 from utils.loggingutils import logger
@@ -38,7 +38,9 @@ def handle_dry_flow(jsonData):
     # Handle contact groups
     if "groups" in jsonData["contact"] and jsonData["contact"]["groups"] is not None:
         if jsonData.get("churned") is True:
-            update_user_program(jsonData, status="terminated")
+            update_user_program(
+                jsonData, status=models.UserProgram.UserProgramStatus.TERMINATED
+            )
         handle_user_group_data(jsonData)
 
     # Handle custom fields
@@ -98,10 +100,14 @@ def handle_payload(jsonData):
                 calllog_service.handle_call_log(jsonData)
 
             if jsonData.get("is_last_content", None) is True:
-                update_user_program(jsonData, status="completed")
+                update_user_program(
+                    jsonData, status=models.UserProgram.UserProgramStatus.COMPLETE
+                )
 
             if jsonData.get("unsub", None) is True:
-                update_user_program(jsonData, status="unsub")
+                update_user_program(
+                    jsonData, status=models.UserProgram.UserProgramStatus.UNSUB
+                )
 
             # All the prompt responses are captured with results
             if "results" in jsonData:
@@ -161,9 +167,11 @@ def handle_contact_fields_and_groups(JsonData):
 
 
 def update_user_program(jsonData, status):
-    if status == "completed":
-        user_program_service.mark_user_program_as_completed(jsonData)
-    elif status == "unsub":
-        user_program_service.mark_user_program_as_unsub(jsonData)
-    elif status == "terminated":
-        user_program_service.mark_user_program_as_terminated(jsonData)
+    status_mapping = {
+        models.UserProgram.UserProgramStatus.COMPLETE: user_program_service.mark_user_program_as_completed,
+        models.UserProgram.UserProgramStatus.UNSUB: user_program_service.mark_user_program_as_unsub,
+        models.UserProgram.UserProgramStatus.TERMINATED: user_program_service.mark_user_program_as_terminated,
+    }
+
+    if status in status_mapping:
+        status_mapping[status](jsonData)
