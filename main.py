@@ -37,7 +37,7 @@ def webhook(request):
 def handle_dry_flow(jsonData):
     # Handle contact groups
     if "groups" in jsonData["contact"] and jsonData["contact"]["groups"] is not None:
-        if jsonData.get("churned") is True:
+        if jsonData.get("churned", None) is True:
             update_user_program(
                 jsonData, status=models.UserProgram.UserProgramStatus.TERMINATED
             )
