@@ -12,15 +12,39 @@ if FLASK_ENV == "development":
 
 TESTING = os.environ.get("TESTING")
 DEBUG = os.environ.get("DEBUG")
+SERVER_TYPE = os.environ.get("SERVER_TYPE")
 
 # Database configuration
+DB_NAME = (
+    os.environ.get("DB_NAME")
+    if SERVER_TYPE != "test"
+    else os.environ.get("TEST_DB_NAME")
+)
+DB_USER = (
+    os.environ.get("DB_USER")
+    if SERVER_TYPE != "test"
+    else os.environ.get("TEST_DB_USER")
+)
+DB_HOST = (
+    os.environ.get("DB_HOST")
+    if SERVER_TYPE != "test"
+    else os.environ.get("TEST_DB_HOST")
+)
+DB_PWD = (
+    os.environ.get("DB_PWD") if SERVER_TYPE != "test" else os.environ.get("TEST_DB_PWD")
+)
+DB_PORT = (
+    os.environ.get("DB_PORT")
+    if SERVER_TYPE != "test"
+    else os.environ.get("TEST_DB_PORT")
+)
 POSTGRES = {
-    "user": os.environ.get("DB_USER"),
-    "password": os.environ.get("DB_PASSWORD"),
-    "database": os.environ.get("DB_NAME"),
-    "host": os.environ.get("DB_HOST"),
-    "port": os.environ.get("DB_PORT"),
-    "connection_name": os.environ.get("CONNECTION_NAME"),
+    "user": DB_USER,
+    "password": DB_PWD,
+    "database": DB_NAME,
+    "host": DB_HOST,
+    "port": DB_PORT,
+    # "connection_name": os.environ.get("CONNECTION_NAME"),
 }
 
 SQLALCHEMY_DATABASE_URI = (
