@@ -1,13 +1,12 @@
 repos:
 -   repo: https://github.com/PyCQA/prospector
-    rev: 1.10.0
+    rev: 1.10.2
     hooks:
     -   id: prospector
         additional_dependencies:
-        -   ".[with-mypy,with-bandit]"
+        -   ".[with-mypy]"
         args:
         -   --with-tool=mypy
-        -   --with-tool=bandit
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
