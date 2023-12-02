@@ -21,4 +21,9 @@ class Registration:
 
 if __name__ == "__main__":
     seeder = Registration()
-    seeder.create_registration("+911234567890", "9876543210", 1, 1)
+    seeder.create_registration(
+        user_phone_number="+911234567890",
+        system_phone_number="9876543210",
+        partner_id=1,
+        user_id=1,
+    )

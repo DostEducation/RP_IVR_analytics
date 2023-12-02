@@ -2,6 +2,7 @@ import os
 import pytest
 from flask_sqlalchemy import SQLAlchemy
 from api import app as flask_app
+from migrations.seeders import testing_seeder
 
 
 def is_testing_server():
@@ -41,4 +42,4 @@ def setup_test_environment(db):
     except:
         os.system("flask db upgrade")
 
-    # testing_seeder.main()
+    testing_seeder.main()
