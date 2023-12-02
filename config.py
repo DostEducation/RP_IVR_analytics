@@ -31,7 +31,9 @@ DB_HOST = (
     else os.environ.get("TEST_DB_HOST")
 )
 DB_PWD = (
-    os.environ.get("DB_PWD") if SERVER_TYPE != "test" else os.environ.get("TEST_DB_PWD")
+    os.environ.get("DB_PASSWORD")
+    if SERVER_TYPE != "test"
+    else os.environ.get("TEST_DB_PASSWORD")
 )
 DB_PORT = (
     os.environ.get("DB_PORT")
@@ -44,7 +46,7 @@ POSTGRES = {
     "database": DB_NAME,
     "host": DB_HOST,
     "port": DB_PORT,
-    # "connection_name": os.environ.get("CONNECTION_NAME"),
+    "connection_name": os.environ.get("CONNECTION_NAME"),
 }
 
 SQLALCHEMY_DATABASE_URI = (
