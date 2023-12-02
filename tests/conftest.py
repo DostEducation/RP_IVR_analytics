@@ -1,13 +1,10 @@
 import os
-
-print(os.getcwd())
 import pytest
 from flask_sqlalchemy import SQLAlchemy
 from api import app as flask_app
 
 
 def is_testing_server():
-    print(flask_app.config)
     if flask_app.config["SERVER_TYPE"] != "test":
         return False
     return True

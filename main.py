@@ -1,8 +1,10 @@
-from api import services
+from api import services, models
 from flask import jsonify
 from api.helpers import db_helper
 from utils.loggingutils import logger
 import json
+
+user_program_service = services.UserProgramService()
 
 ### Endpoint for Cloud function
 def webhook(request):
@@ -35,6 +37,10 @@ def webhook(request):
 def handle_dry_flow(jsonData):
     # Handle contact groups
     if "groups" in jsonData["contact"] and jsonData["contact"]["groups"] is not None:
+        if jsonData.get("churned", None) is True:
+            user_program_service.update_user_program_status(
+                jsonData, status=models.UserProgram.UserProgramStatus.TERMINATED
+            )
         handle_user_group_data(jsonData)
 
     # Handle custom fields
@@ -94,7 +100,14 @@ def handle_payload(jsonData):
                 calllog_service.handle_call_log(jsonData)
 
             if jsonData.get("is_last_content", None) is True:
-                update_user_program(jsonData)
+                user_program_service.update_user_program_status(
+                    jsonData, status=models.UserProgram.UserProgramStatus.COMPLETE
+                )
+
+            if jsonData.get("unsub", None) is True:
+                user_program_service.update_user_program_status(
+                    jsonData, status=models.UserProgram.UserProgramStatus.UNSUB
+                )
 
             # All the prompt responses are captured with results
             if "results" in jsonData:
@@ -151,8 +164,3 @@ def handle_contact_fields_and_groups(JsonData):
 
     if contact_data.get("groups"):
         custom_fields_mapping_service.handle_contact_groups_data(JsonData)
-
-
-def update_user_program(JsonData):
-    user_program_service = services.UserProgramService()
-    user_program_service.mark_user_program_as_completed(JsonData)
