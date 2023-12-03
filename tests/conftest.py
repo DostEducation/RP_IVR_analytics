@@ -36,7 +36,7 @@ def db():
 @pytest.fixture(scope="session")
 def setup_test_environment(db):
     try:
-        os.system("flask db downgrade f4c3bfdad519")
+        os.system("flask db downgrade 31955a9b7348")
         os.system("flask db downgrade")
         os.system("flask db upgrade")
     except:
