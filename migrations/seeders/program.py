@@ -6,7 +6,7 @@ from typing import List
 
 
 class Program:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def create_programs(self) -> List:
         program_start_date = "2021-02-23"

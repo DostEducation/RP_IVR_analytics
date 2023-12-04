@@ -14,7 +14,7 @@ class CreatedUserInstance:
 
 
 class User:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def generate_random_phone_numbers(self):
         return randint(10000000, 99999999)

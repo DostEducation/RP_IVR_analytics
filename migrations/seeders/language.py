@@ -4,7 +4,7 @@ from api import db
 
 
 class Language:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def create_language(self, name) -> LanguageModel:
         language_record = LanguageModel()

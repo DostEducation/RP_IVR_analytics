@@ -6,7 +6,7 @@ from typing import List
 
 
 class UserProgram:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def randomly_select_preferred_timing_slot(self):
         slot_names = ["EVENING", "AFTERNOON", "MORNING"]

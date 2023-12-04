@@ -1,5 +1,6 @@
 """Flask configuration."""
 import os
+from common_utils import CommonUtils
 
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
 
@@ -15,31 +16,11 @@ DEBUG = os.environ.get("DEBUG")
 SERVER_TYPE = os.environ.get("SERVER_TYPE")
 
 # Database configuration
-DB_NAME = (
-    os.environ.get("DB_NAME")
-    if SERVER_TYPE != "test"
-    else os.environ.get("TEST_DB_NAME")
-)
-DB_USER = (
-    os.environ.get("DB_USER")
-    if SERVER_TYPE != "test"
-    else os.environ.get("TEST_DB_USER")
-)
-DB_HOST = (
-    os.environ.get("DB_HOST")
-    if SERVER_TYPE != "test"
-    else os.environ.get("TEST_DB_HOST")
-)
-DB_PWD = (
-    os.environ.get("DB_PASSWORD")
-    if SERVER_TYPE != "test"
-    else os.environ.get("TEST_DB_PASSWORD")
-)
-DB_PORT = (
-    os.environ.get("DB_PORT")
-    if SERVER_TYPE != "test"
-    else os.environ.get("TEST_DB_PORT")
-)
+DB_NAME = CommonUtils.get_env_sensative_variable("DB_NAME")
+DB_USER = CommonUtils.get_env_sensative_variable("DB_USER")
+DB_HOST = CommonUtils.get_env_sensative_variable("DB_HOST")
+DB_PWD = CommonUtils.get_env_sensative_variable("DB_PASSWORD")
+DB_PORT = CommonUtils.get_env_sensative_variable("DB_PORT")
 POSTGRES = {
     "user": DB_USER,
     "password": DB_PWD,

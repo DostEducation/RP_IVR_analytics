@@ -4,7 +4,7 @@ from api import db
 
 
 class Registration:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def create_registration(
         self, user_phone_number, system_phone_number, partner_id, user_id

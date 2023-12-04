@@ -6,7 +6,7 @@ from typing import List
 
 
 class Content:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def get_random_duration(self):
         return randint(5, 100)

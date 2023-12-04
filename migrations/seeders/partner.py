@@ -5,7 +5,7 @@ from api import db
 
 
 class Partner:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def create_partner(self, name, email):
         partner_instance = PartnerInstance()
