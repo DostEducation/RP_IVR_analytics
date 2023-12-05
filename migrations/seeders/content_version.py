@@ -5,7 +5,7 @@ from api import db
 
 
 class ContentVersion:
-    faker = Faker()
+    faker = Faker()  # Kept for future use
 
     def create_content_version(self, language_id: int, contents: List[ContentModel]):
         content_version_instances = []

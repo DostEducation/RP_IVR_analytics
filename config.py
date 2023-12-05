@@ -4,16 +4,17 @@ from common_utils import CommonUtils
 
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
 
-if FLASK_ENV == "development":
+if FLASK_ENV in ["development", "testing"]:
     from os import path
     from dotenv import load_dotenv
 
     basedir = path.abspath(path.dirname(__file__))
     load_dotenv(path.join(basedir, ".env"))
 
+    FLASK_ENV = os.environ.get("FLASK_ENV")
+
 TESTING = os.environ.get("TESTING")
 DEBUG = os.environ.get("DEBUG")
-SERVER_TYPE = os.environ.get("SERVER_TYPE")
 
 # Database configuration
 DB_NAME = CommonUtils.get_env_sensative_variable("DB_NAME")
@@ -21,6 +22,7 @@ DB_USER = CommonUtils.get_env_sensative_variable("DB_USER")
 DB_HOST = CommonUtils.get_env_sensative_variable("DB_HOST")
 DB_PWD = CommonUtils.get_env_sensative_variable("DB_PASSWORD")
 DB_PORT = CommonUtils.get_env_sensative_variable("DB_PORT")
+
 POSTGRES = {
     "user": DB_USER,
     "password": DB_PWD,

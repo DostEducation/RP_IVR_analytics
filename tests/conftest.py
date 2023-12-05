@@ -6,7 +6,7 @@ from migrations.seeders import testing_seeder
 
 
 def is_testing_server():
-    if flask_app.config["SERVER_TYPE"] != "test":
+    if os.environ["FLASK_ENV"] != "testing":
         return False
     return True
 
