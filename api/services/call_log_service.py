@@ -19,9 +19,6 @@ class CallLogService:
         user_phone = helpers.fetch_by_key("urn", jsonData["contact"])
         self.system_phone = helpers.fetch_by_key("address", jsonData["channel"])
         self.user_phone = helpers.sanitize_phone_string(user_phone)
-        self.flow_run_uuid = helpers.fetch_by_key(
-            "run_uuid", jsonData
-        )  # TODO: need to remove this once every flow has flow_run_details variable in webhook
         self.handle_flow_run_details(jsonData)
 
     def handle_flow_run_details(self, jsonData):
@@ -30,6 +27,11 @@ class CallLogService:
             jsonData (json): json data that we are getting from webhook
         """
         try:
+            if "run_uuid" in jsonData:
+                self.flow_run_uuid = helpers.fetch_by_key(
+                    "run_uuid", jsonData
+                )  # Keeping this code to establish backward campatibility
+
             if "flow_run_details" in jsonData:
                 self.flow_run_uuid = helpers.fetch_by_key(
                     "uuid", jsonData["flow_run_details"]
