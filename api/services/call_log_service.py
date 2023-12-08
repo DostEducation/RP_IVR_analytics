@@ -27,11 +27,6 @@ class CallLogService:
             jsonData (json): json data that we are getting from webhook
         """
         try:
-            if "run_uuid" in jsonData:
-                self.flow_run_uuid = helpers.fetch_by_key(
-                    "run_uuid", jsonData
-                )  # Keeping this code to establish backward campatibility
-
             if "flow_run_details" in jsonData:
                 self.flow_run_uuid = helpers.fetch_by_key(
                     "uuid", jsonData["flow_run_details"]
@@ -39,6 +34,10 @@ class CallLogService:
                 self.flow_run_created_on = helpers.fetch_by_key(
                     "created_on", jsonData["flow_run_details"]
                 )
+            elif "run_uuid" in jsonData:
+                self.flow_run_uuid = helpers.fetch_by_key(
+                    "run_uuid", jsonData
+                )  # Keeping this code to establish backward campatibility:
 
         except Exception as e:
             logger.error(
