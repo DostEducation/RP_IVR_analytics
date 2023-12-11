@@ -20,7 +20,7 @@ env:
   admin_server: 127.0.0.1
   FLASK_ENV: "testing"
   TESTING: True
-  DEBUG: False
+  DEBUG: True
   SECRET_KEY: ""
   RETRY_LOGS_BATCH_LIMIT: 1000
   MAX_RETRY_ATTEMPTS_FOR_LOGS: 3%
