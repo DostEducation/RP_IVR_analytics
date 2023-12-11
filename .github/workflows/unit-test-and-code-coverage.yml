@@ -61,7 +61,7 @@ jobs:
       # - name: Create logs folder
       #   run: mkdir /home/runner/work/RP_IVR_ANALYTICS/RP_IVR_ANALYTICS/logs
       - name: Setup Flask App
-        run: export FLASK_APP="manage.py"
+        run: export FLASK_APP=manage.py
       - name: Setup Python path
         run: export PYTHONPATH=/opt/hostedtoolcache/Python/3.9.18/x64
       - name: Copy .env
