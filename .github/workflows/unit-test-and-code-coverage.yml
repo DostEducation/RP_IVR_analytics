@@ -21,7 +21,7 @@ env:
   FLASK_ENV: "testing"
   TESTING: True
   DEBUG: False
-  SECRET_KEY:
+  SECRET_KEY: ""
   RETRY_LOGS_BATCH_LIMIT: 1000
   MAX_RETRY_ATTEMPTS_FOR_LOGS: 3%
 
@@ -60,10 +60,10 @@ jobs:
           python-version: 3.9
       # - name: Create logs folder
       #   run: mkdir /home/runner/work/RP_IVR_ANALYTICS/RP_IVR_ANALYTICS/logs
-      - name: Setup Flask App
-        run: export FLASK_APP=manage.py
-      - name: Setup Python path
-        run: export PYTHONPATH=/opt/hostedtoolcache/Python/3.9.18/x64
+      # - name: Setup Flask App
+      #   run: export FLASK_APP=manage.py
+      # - name: Setup Python path
+      #   run: export PYTHONPATH=/opt/hostedtoolcache/Python/3.9.18/x64
       - name: Copy .env
         run: cp .env.example .env
       - name: Install dependencies
