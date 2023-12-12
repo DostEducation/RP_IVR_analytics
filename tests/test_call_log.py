@@ -31,6 +31,12 @@ def test_create_call_log(app, db, setup_test_environment):
     # Update user phone number to payload.
     payload["contact"]["urn"] = f"tel:{user.phone}"
 
+    # Get a specific system phone number
+    system_phone: SystemPhone = SystemPhone.query.get_by_id(1)
+
+    # Update system phone number to payload.
+    payload["channel"]["address"] = f"+91{system_phone.phone}"
+
     # Get a specific content
     content_version: ContentVersion = ContentVersion.query.get_by_id(1)
 

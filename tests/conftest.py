@@ -35,13 +35,6 @@ def db():
 
 @pytest.fixture(scope="session")
 def setup_test_environment(db):
-    # Cleaning the existing schema and creating a new one.
-    try:
-        db.engine.execute("drop schema public cascade")
-        db.engine.execute("create schema public")
-    except:
-        db.session.rollback()
-
     # Creating tables.
     try:
         os.system("flask db downgrade 31955a9b7348")
