@@ -40,12 +40,8 @@ def setup_test_environment(db):
         os.system("flask db downgrade 31955a9b7348")
         os.system("flask db downgrade")
         os.system("flask db upgrade")
-    except Exception as e:
+    except:
         os.system("flask db upgrade")
 
     # Loading pre-filled data for running tests.
     testing_seeder.main()
-    # try:
-    #     testing_seeder.main()
-    # except:
-    #     db.session.rollback()
