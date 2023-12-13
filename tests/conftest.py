@@ -36,16 +36,12 @@ def db():
 @pytest.fixture(scope="session")
 def setup_test_environment(db):
     # Creating tables.
-    os.system("flask db downgrade 31955a9b7348")
-    os.system("flask db downgrade")
-    os.system("flask db upgrade")
-    # try:
-    #     os.system("flask db downgrade 31955a9b7348")
-    #     os.system("flask db downgrade")
-    #     os.system("flask db upgrade")
-    # except Exception as e:
-    #     raise e
-    # os.system("flask db upgrade")
+    try:
+        os.system("flask db downgrade 31955a9b7348")
+        os.system("flask db downgrade")
+        os.system("flask db upgrade")
+    except Exception as e:
+        os.system("flask db upgrade")
 
     # Loading pre-filled data for running tests.
     testing_seeder.main()
