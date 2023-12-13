@@ -40,8 +40,9 @@ def setup_test_environment(db):
         os.system("flask db downgrade 31955a9b7348")
         os.system("flask db downgrade")
         os.system("flask db upgrade")
-    except:
-        os.system("flask db upgrade")
+    except Exception as e:
+        raise e
+        # os.system("flask db upgrade")
 
     # Loading pre-filled data for running tests.
     try:
