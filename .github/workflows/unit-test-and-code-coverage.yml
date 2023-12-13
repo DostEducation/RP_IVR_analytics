@@ -12,11 +12,11 @@ on:
 
 env:
   FLASK_APP: "/home/runner/work/RP_IVR_ANALYTICS/RP_IVR_ANALYTICS/manage.py"
-  test_db_user: "postgres"
-  test_db_pwd: "postgres"
-  test_db_name: "dost_test"
-  test_db_host: 127.0.0.1
-  test_db_port: 5432
+  TEST_DB_USER: "postgres"
+  TEST_DB_PASSWORD: "postgres"
+  TEST_DB_NAME: "dost_test"
+  TEST_DB_HOST: 127.0.0.1
+  TEST_DB_PORT: 5432
   admin_server: 127.0.0.1
   FLASK_ENV: "testing"
   TESTING: True
