@@ -72,8 +72,8 @@ jobs:
       - name: Upgrade db
         run: python -m flask db upgrade
       - name: Launch tests & generate report
-        # run: python -m pytest --junitxml=pytest.xml --cov > pytest-coverage.txt
-        run: python -m pytest
+        run: python -m pytest --junitxml=pytest.xml --cov > pytest-coverage.txt
+        # run: python -m pytest
       - name: Print Coverage report
         run: cat pytest-coverage.txt
       - name: Pytest coverage comment
