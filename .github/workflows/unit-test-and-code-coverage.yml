@@ -58,24 +58,19 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
-      # - name: Create logs folder
-      #   run: mkdir /home/runner/work/RP_IVR_ANALYTICS/RP_IVR_ANALYTICS/logs
-      # - name: Setup Flask App
-      #   run: export FLASK_APP=manage.py
-      # - name: Setup Python path
-      #   run: export PYTHONPATH=/opt/hostedtoolcache/Python/3.9.18/x64
       - name: Copy .env
         run: cp .env.example .env
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Launch tests & generate report
-        run: python -m pytest --junitxml=pytest.xml --cov > pytest-coverage.txt
-        # run: python -m pytest
-      - name: Print Coverage report
-        run: cat pytest-coverage.txt
-      - name: Pytest coverage comment
-        uses: MishaKav/pytest-coverage-comment@main
-        with:
-          pytest-coverage-path: pytest-coverage.txt
-          junitxml-path: pytest.xml
-          hide-report: true
+        # TODO: Uncomment the following line once the code coverage is implemented.
+        # run: python -m pytest --junitxml=pytest.xml --cov > pytest-coverage.txt
+        run: python -m pytest
+      # - name: Print Coverage report
+      #   run: cat pytest-coverage.txt
+      # - name: Pytest coverage comment
+      #   uses: MishaKav/pytest-coverage-comment@main
+      #   with:
+      #     pytest-coverage-path: pytest-coverage.txt
+      #     junitxml-path: pytest.xml
+      #     hide-report: true
