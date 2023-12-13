@@ -17,7 +17,7 @@ class User:
     faker = Faker()  # Kept for future use
 
     def generate_random_phone_numbers(self):
-        return randint(10000000, 99999999)
+        return randint(1000000000, 9999999999)
 
     def create_user(self, count=10, partner_id=1):
         already_used_phone_numbers = set({})
