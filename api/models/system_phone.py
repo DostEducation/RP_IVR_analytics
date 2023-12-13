@@ -7,6 +7,9 @@ class SystemPhoneQuery(BaseQuery):
     def get_by_phone(self, phone):
         return self.filter(SystemPhone.phone.contains(phone[-10:])).first()
 
+    def get_by_id(self, system_phone_id):
+        return self.filter(SystemPhone.id == system_phone_id).first()
+
 
 class SystemPhone(TimestampMixin, db.Model):
     query_class = SystemPhoneQuery
