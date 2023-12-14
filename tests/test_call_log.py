@@ -60,7 +60,7 @@ def test_update_call_log(app, db, setup_test_environment):
     new_content_id = None
     new_language_id = None
     while not stop_iteration:
-        random_index = randint(0, len(all_content_version_records))
+        random_index = randint(0, len(all_content_version_records) - 1)
         if (
             all_content_version_records[random_index].id
             != pytest.initial_content_version_id

@@ -44,7 +44,4 @@ def setup_test_environment(db):
         os.system("flask db upgrade")
 
     # Loading pre-filled data for running tests.
-    try:
-        testing_seeder.main()
-    except:
-        db.session.rollback()
+    testing_seeder.main()

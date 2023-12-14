@@ -1,0 +1,77 @@
+name: Run Tests and Generate Code Coverage
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  FLASK_APP: "/home/runner/work/RP_IVR_ANALYTICS/RP_IVR_ANALYTICS/manage.py"
+  TEST_DB_USER: "postgres"
+  TEST_DB_PASSWORD: "postgres"
+  TEST_DB_DATABASE: "dost_test"
+  TEST_DB_HOST: 127.0.0.1
+  TEST_DB_POST: 5432
+  admin_server: 127.0.0.1
+  FLASK_ENV: "testing"
+  TESTING: True
+  DEBUG: True
+  SECRET_KEY: ""
+  RETRY_LOGS_BATCH_LIMIT: 1000
+  MAX_RETRY_ATTEMPTS_FOR_LOGS: 3%
+  SQLALCHEMY_DATABASE_URI_GITHUB_ACTION: "postgresql://postgres:postgres@127.0.0.1:5432/dost_test"
+
+jobs:
+  test:
+    name: Run tests & display coverage
+    runs-on: ubuntu-latest
+    permissions:
+      # Gives the action the necessary permissions for publishing new
+      # comments in pull requests.
+      pull-requests: write
+      # Gives the action the necessary permissions for pushing data to the
+      # python-coverage-comment-action branch, and for editing existing
+      # comments (to avoid publishing multiple comments in the same PR)
+      contents: write
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: dost_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - uses: actions/checkout@v3
+      - name: Install Python 3
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Copy .env
+        run: cp .env.example .env
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Upgrade db
+        run: python -m flask db upgrade
+      - name: Launch tests & generate report
+        run: python -m pytest --junitxml=pytest.xml --cov > pytest-coverage.txt
+      - name: Print Coverage report
+        run: cat pytest-coverage.txt
+      - name: Pytest coverage comment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: pytest-coverage.txt
+          junitxml-path: pytest.xml
+          hide-report: true

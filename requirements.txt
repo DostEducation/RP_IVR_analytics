@@ -21,3 +21,4 @@ Flask-Script==2.0.6
 pytest==7.4.3
 faker==20.1.0
 setuptools==68.2.2
+pytest-cov==4.0.0
