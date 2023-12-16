@@ -1,25 +1,34 @@
 """Flask configuration."""
 import os
+from common_utils import CommonUtils
 
 FLASK_ENV = os.environ.get("FLASK_ENV", "development")
 
-if FLASK_ENV == "development":
+if FLASK_ENV in ["development", "testing"]:
     from os import path
     from dotenv import load_dotenv
 
     basedir = path.abspath(path.dirname(__file__))
     load_dotenv(path.join(basedir, ".env"))
 
+    FLASK_ENV = os.environ.get("FLASK_ENV")
+
 TESTING = os.environ.get("TESTING")
 DEBUG = os.environ.get("DEBUG")
 
 # Database configuration
+DB_NAME = CommonUtils.get_env_sensative_variable("DB_NAME")
+DB_USER = CommonUtils.get_env_sensative_variable("DB_USER")
+DB_HOST = CommonUtils.get_env_sensative_variable("DB_HOST")
+DB_PWD = CommonUtils.get_env_sensative_variable("DB_PASSWORD")
+DB_PORT = CommonUtils.get_env_sensative_variable("DB_PORT")
+
 POSTGRES = {
-    "user": os.environ.get("DB_USER"),
-    "password": os.environ.get("DB_PASSWORD"),
-    "database": os.environ.get("DB_NAME"),
-    "host": os.environ.get("DB_HOST"),
-    "port": os.environ.get("DB_PORT"),
+    "user": DB_USER,
+    "password": DB_PWD,
+    "database": DB_NAME,
+    "host": DB_HOST,
+    "port": DB_PORT,
     "connection_name": os.environ.get("CONNECTION_NAME"),
 }
 
