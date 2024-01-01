@@ -1,6 +1,6 @@
 # Includes dev dependencies on top of requirements.txt
 -r requirements.txt
-functions-framework==2.1.2
+functions-framework==3.5.0
 flake8==3.8.4
 flake8-polyfill==1.0.2
 pep8-naming==0.10.0

@@ -1,6 +1,6 @@
 from api.mixins import TimestampMixin
 from api import db, app
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query as BaseQuery
 from api.helpers import common_helper, db_helper
 from utils.loggingutils import logger
 
