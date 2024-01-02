@@ -25,56 +25,59 @@ def pytest_namespace():
 
 
 def test_create_call_log(app, db, setup_test_environment):
-    # Get a specific user
-    user: User = User.query.get_by_id(1)
+    with app.app_context():
+        # Get a specific user
+        user: User = User.query.get_by_id(1)
 
-    # Update user phone number to payload.
-    payload["contact"]["urn"] = f"tel:{user.phone}"
+        # Update user phone number to payload.
+        payload["contact"]["urn"] = f"tel:{user.phone}"
 
-    # Get a specific system phone number
-    system_phone: SystemPhone = SystemPhone.query.get_by_id(1)
+        # Get a specific system phone number
+        system_phone: SystemPhone = SystemPhone.query.get_by_id(1)
 
-    # Update system phone number to payload.
-    payload["channel"]["address"] = f"+91{system_phone.phone}"
+        # Update system phone number to payload.
+        payload["channel"]["address"] = f"+91{system_phone.phone}"
 
-    # Get a specific content
-    content_version: ContentVersion = ContentVersion.query.get_by_id(1)
+        # Get a specific content
+        content_version: ContentVersion = ContentVersion.query.get_by_id(1)
 
-    payload["content_id"] = content_version.content_id
-    payload["language_id"] = content_version.language_id
+        payload["content_id"] = content_version.content_id
+        payload["language_id"] = content_version.language_id
 
-    # Initialize the call log service.
-    call_log_service_instance = CallLogService()
-    call_log_service_instance.handle_call_log(payload)
+        # Initialize the call log service.
+        call_log_service_instance = CallLogService()
+        call_log_service_instance.handle_call_log(payload)
 
-    call_log_model = CallLog.query.get_by_flow_run_uuid(new_run_uuid)
-    pytest.initial_content_version_id = call_log_model.content_version_id
-    assert call_log_model != None
+        call_log_model = CallLog.query.get_by_flow_run_uuid(new_run_uuid)
+        pytest.initial_content_version_id = call_log_model.content_version_id
+        assert call_log_model != None
 
 
 def test_update_call_log(app, db, setup_test_environment):
-    # Get all content version records
-    all_content_version_records = ContentVersion.query.all()
+    with app.app_context():
 
-    stop_iteration = False
-    new_content_id = None
-    new_language_id = None
-    while not stop_iteration:
-        random_index = randint(0, len(all_content_version_records) - 1)
-        if (
-            all_content_version_records[random_index].id
-            != pytest.initial_content_version_id
-        ):
-            new_content_id = all_content_version_records[random_index].content_id
-            new_language_id = all_content_version_records[random_index].language_id
-            stop_iteration = True
+        # Get all content version records
+        all_content_version_records = ContentVersion.query.all()
 
-    payload["content_id"] = new_content_id
-    payload["contact"]["fields"]["language_id"] = new_language_id
+        stop_iteration = False
+        new_content_id = None
+        new_language_id = None
+        while not stop_iteration:
+            random_index = randint(0, len(all_content_version_records) - 1)
+            if (
+                all_content_version_records[random_index].id
+                != pytest.initial_content_version_id
+            ):
+                new_content_id = all_content_version_records[random_index].content_id
+                new_language_id = all_content_version_records[random_index].language_id
+                stop_iteration = True
 
-    # Initialize the call log service.
-    call_log_service_instance = CallLogService()
-    call_log_service_instance.handle_call_log(payload)
+        payload["content_id"] = new_content_id
+        payload["contact"]["fields"]["language_id"] = new_language_id
 
-    call_log_model = CallLog.query.get_by_flow_run_uuid(new_run_uuid)
-    assert call_log_model.content_version_id != pytest.initial_content_version_id
+        # Initialize the call log service.
+        call_log_service_instance = CallLogService()
+        call_log_service_instance.handle_call_log(payload)
+
+        call_log_model = CallLog.query.get_by_flow_run_uuid(new_run_uuid)
+        assert call_log_model.content_version_id != pytest.initial_content_version_id
