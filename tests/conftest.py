@@ -27,8 +27,7 @@ def client(app):
 
 @pytest.fixture(scope="session")
 def db():
-    db = SQLAlchemy(flask_app)
-    db.init_app(flask_app)
+    db = SQLAlchemy()
 
     return db
 
@@ -36,12 +35,13 @@ def db():
 @pytest.fixture(scope="session")
 def setup_test_environment(db):
     # Creating tables.
-    try:
-        os.system("flask db downgrade 31955a9b7348")
-        os.system("flask db downgrade")
-        os.system("flask db upgrade")
-    except:
-        os.system("flask db upgrade")
+    with flask_app.app_context():
+        try:
+            os.system("flask db downgrade 31955a9b7348")
+            os.system("flask db downgrade")
+            os.system("flask db upgrade")
+        except:
+            os.system("flask db upgrade")
 
-    # Loading pre-filled data for running tests.
-    testing_seeder.main()
+        # Loading pre-filled data for running tests.
+        testing_seeder.main()
