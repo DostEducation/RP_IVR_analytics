@@ -1,6 +1,5 @@
-from api import services, models
 from flask import jsonify
-from api.helpers import db_helper
+from api import helpers, services, models
 from utils.loggingutils import logger
 import json
 
@@ -77,7 +76,7 @@ def retry_failed_webhook(transaction_log_service):
 
     for log in failed_webhook_logs:
         log.attempts += 1
-        db_helper.save(log)
+        helpers.db_helper.save(log)
 
         json_data = json.loads(log.payload)
         json_data["log_created_on"] = log.created_on
@@ -86,7 +85,7 @@ def retry_failed_webhook(transaction_log_service):
             continue
 
         log.processed = True
-        db_helper.save(log)
+        helpers.db_helper.save(log)
 
 
 def handle_payload(jsonData):
