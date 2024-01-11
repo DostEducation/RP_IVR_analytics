@@ -61,7 +61,7 @@ jobs:
           description: 'Deploying staging function'
           memory_mb: 256
           timeout: 30
-          runtime: python38
+          runtime: python311
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           entry_point: webhook
           max_instances: 0 # Remove limitation
@@ -120,7 +120,7 @@ jobs:
         description: 'Deploying production function'
         memory_mb: 512
         timeout: 300
-        runtime: python38
+        runtime: python311
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         entry_point: webhook
         max_instances: 0 # Remove limitation
