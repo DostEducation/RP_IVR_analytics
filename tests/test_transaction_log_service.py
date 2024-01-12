@@ -33,13 +33,13 @@ def test_create_transaction_log(app, db, setup_test_environment):
         # Update system phone number to payload.
         payload["channel"]["address"] = f"+91{system_phone.phone}"
 
-        # Get a specific content
+        # Get a specific content version.
         content_version: ContentVersion = ContentVersion.query.get_by_id(1)
 
         payload["content_id"] = content_version.content_id
         payload["language_id"] = content_version.language_id
 
-        # Initialize the registration service.
+        # Initialize the Transaction Log Service.
         transaction_log_instance = TransactionLogService()
         transaction_log_instance.create_new_webhook_log(payload)
 

@@ -41,7 +41,7 @@ def test_get_program_sequence(app, db, setup_test_environment):
 
         payload["content_id"] = module_content.content_id
 
-        # Initialize the registration service.
+        # Initialize the Program Sequence service.
         program_sequence_service = ProgramSequenceService()
         sequence_id = program_sequence_service.get_program_sequence_id(payload)
 

@@ -19,12 +19,7 @@ new_run_uuid = str(uuid4())
 payload["flow_run_details"]["uuid"] = new_run_uuid
 
 
-def pytest_namespace():
-    # We will record the content version from the create operation for future reference
-    return {"initial_content_version_id": None}
-
-
-def test_create_call_log(app, db, setup_test_environment):
+def test_create_registration(app, db, setup_test_environment):
     with app.app_context():
         # Get a specific user
         user: User = User.query.get_by_id(1)

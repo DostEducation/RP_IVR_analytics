@@ -45,7 +45,7 @@ def test_prompt_response(app, db, setup_test_environment):
         payload["content_id"] = content_version.content_id
         payload["language_id"] = content_version.language_id
 
-        # Initialize the registration service.
+        # Initialize the Prompt service.
         prompt_service_instance = PromptService()
         prompt_service_instance.handle_prompt_response(payload)
 
