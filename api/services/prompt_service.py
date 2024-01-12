@@ -1,8 +1,9 @@
 # This file is treated as service layer
-from api import models, db
+from api import db
 from datetime import datetime
 from api.helpers import prompt_helper, common_helper, db_helper
 from utils.loggingutils import logger
+from api import models
 
 
 class PromptService:

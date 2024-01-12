@@ -1,6 +1,5 @@
-from api import services, models
 from flask import jsonify
-from api.helpers import db_helper
+from api import app, helpers, services, models
 from utils.loggingutils import logger
 import json
 
@@ -8,30 +7,31 @@ user_program_service = services.UserProgramService()
 
 ### Endpoint for Cloud function
 def webhook(request):
-    try:
-        if request.method == "POST":
-            try:
-                jsonData = request.get_json()
-            except Exception as e:
-                logger.warning(
-                    f"[WARN] Could not retrieve JSON data from the request. Error:{e}"
-                )
-                return jsonify(message="Something went wrong!"), 400
+    with app.app_context():
+        try:
+            if request.method == "POST":
+                try:
+                    jsonData = request.get_json()
+                except Exception as e:
+                    logger.warning(
+                        f"[WARN] Could not retrieve JSON data from the request. Error:{e}"
+                    )
+                    return jsonify(message="Something went wrong!"), 400
 
-            if jsonData.get("flow_category", None) == "dry_flow":
-                handle_dry_flow(jsonData)
-            else:
-                handle_regular_flow(jsonData)
-            return jsonify(message="Success"), 200
+                if jsonData.get("flow_category", None) == "dry_flow":
+                    handle_dry_flow(jsonData)
+                else:
+                    handle_regular_flow(jsonData)
+                return jsonify(message="Success"), 200
 
-        logger.warning("[WARN] Received a GET request instead of POST")
-        return (
-            jsonify(message="Currently, the system does not accept a GET request"),
-            405,
-        )
-    except Exception as e:
-        logger.error(f"An unexpected error occurred. Error message: {e}")
-        return jsonify(message="Internal server error"), 500
+            logger.warning("[WARN] Received a GET request instead of POST")
+            return (
+                jsonify(message="Currently, the system does not accept a GET request"),
+                405,
+            )
+        except Exception as e:
+            logger.error(f"An unexpected error occurred. Error message: {e}")
+            return jsonify(message="Internal server error"), 500
 
 
 def handle_dry_flow(jsonData):
@@ -77,7 +77,7 @@ def retry_failed_webhook(transaction_log_service):
 
     for log in failed_webhook_logs:
         log.attempts += 1
-        db_helper.save(log)
+        helpers.db_helper.save(log)
 
         json_data = json.loads(log.payload)
         json_data["log_created_on"] = log.created_on
@@ -86,7 +86,7 @@ def retry_failed_webhook(transaction_log_service):
             continue
 
         log.processed = True
-        db_helper.save(log)
+        helpers.db_helper.save(log)
 
 
 def handle_payload(jsonData):

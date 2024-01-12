@@ -1,6 +1,6 @@
 from api.mixins import TimestampMixin
 from api import db
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query as BaseQuery
 
 
 class WebhookTransactionLogQuery(BaseQuery):
@@ -8,6 +8,9 @@ class WebhookTransactionLogQuery(BaseQuery):
         return self.filter(
             WebhookTransactionLog.id == webhook_transaction_log_id
         ).first()
+
+    def get_last_record(self):
+        return self.filter().order_by(WebhookTransactionLog.id.desc()).first()
 
 
 class WebhookTransactionLog(TimestampMixin, db.Model):

@@ -48,7 +48,6 @@ github_action_db_url = os.environ.get("SQLALCHEMY_DATABASE_URI_GITHUB_ACTION", N
 if github_action_db_url:
     SQLALCHEMY_DATABASE_URI = github_action_db_url
 
-SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CSRF_ENABLED = True
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
