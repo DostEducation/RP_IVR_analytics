@@ -1,18 +1,6 @@
 from faker import Faker
 from typing import List
-from migrations.seeders.user import User
-from migrations.seeders.system_phone import SystemPhone
-from migrations.seeders.partner import Partner
-from migrations.seeders.registration import Registration
-from migrations.seeders.program import Program
-from migrations.seeders.language import Language
-from migrations.seeders.content_version import ContentVersion
-from migrations.seeders.content import Content
-from migrations.seeders.user_program import UserProgram
-from migrations.seeders.module import Module
-from migrations.seeders.module_content import ModuleContent
-from migrations.seeders.program_module import ProgramModule
-from migrations.seeders.program_sequence import ProgramSequence
+from migrations.seeders import *
 
 
 def main():
@@ -25,7 +13,7 @@ def main():
     created_contents = content.create_content()
 
     content_version = ContentVersion()
-    content_version.create_content_version(
+    created_content_versions = content_version.create_content_version(
         language_id=language_instance.id, contents=created_contents
     )
 
@@ -72,4 +60,11 @@ def main():
         program_id=created_programs[0].id,
         content_id=created_contents[0].id,
         module_id=created_module.id,
+    )
+
+    call_log = CallLog()
+    call_log.create_call_log(
+        phone_number=created_user_instances[0].phone,
+        content_id=created_content_versions[0].content_id,
+        content_version_id=created_content_versions[0].id,
     )
