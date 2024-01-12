@@ -22,6 +22,8 @@ class ContentVersion:
         db.session.add_all(content_version_instances)
         db.session.commit()
 
+        return content_version_instances
+
 
 if __name__ == "__main__":
     seeder = ContentVersion()

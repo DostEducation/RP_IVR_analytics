@@ -9,6 +9,9 @@ class WebhookTransactionLogQuery(BaseQuery):
             WebhookTransactionLog.id == webhook_transaction_log_id
         ).first()
 
+    def get_last_record(self):
+        return self.filter().order_by(WebhookTransactionLog.id.desc()).first()
+
 
 class WebhookTransactionLog(TimestampMixin, db.Model):
     query_class = WebhookTransactionLogQuery
