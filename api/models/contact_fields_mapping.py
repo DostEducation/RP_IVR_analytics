@@ -1,5 +1,5 @@
 from api import db
-from flask_sqlalchemy.query import Query as BaseQuery
+from flask_sqlalchemy import BaseQuery
 from utils.loggingutils import logger
 
 

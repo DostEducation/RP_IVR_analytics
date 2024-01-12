@@ -1,6 +1,8 @@
 from api.mixins import TimestampMixin
 from api import db
-from flask_sqlalchemy.query import Query as BaseQuery
+
+# from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy import BaseQuery
 
 
 class RegistrationQuery(BaseQuery):
@@ -23,6 +25,9 @@ class RegistrationQuery(BaseQuery):
             .order_by(Registration.id.desc())
             .first()
         )
+
+    def get_latest_record(self):
+        return self.filter().order_by(Registration.id.desc()).first()
 
 
 class Registration(TimestampMixin, db.Model):

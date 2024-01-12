@@ -9,6 +9,10 @@ from migrations.seeders.language import Language
 from migrations.seeders.content_version import ContentVersion
 from migrations.seeders.content import Content
 from migrations.seeders.user_program import UserProgram
+from migrations.seeders.module import Module
+from migrations.seeders.module_content import ModuleContent
+from migrations.seeders.program_module import ProgramModule
+from migrations.seeders.program_sequence import ProgramSequence
 
 
 def main():
@@ -48,4 +52,24 @@ def main():
     user_program = UserProgram()
     created_user_programs: List = user_program.create_user_program(
         created_programs, [user.user_id for user in created_user_instances]
+    )
+
+    module = Module()
+    created_module = module.create_module(program_id=created_programs[0].id)
+
+    module_content = ModuleContent()
+    created_module_content = module_content.create_module_content(
+        module_id=created_module.id, content_id=created_contents[0].id
+    )
+
+    program_module = ProgramModule()
+    create_program_module = program_module.create_program_module(
+        program_id=created_programs[0].id, module_id=created_module.id
+    )
+
+    program_sequence = ProgramSequence()
+    created_program_sequence = program_sequence.create_program_sequence(
+        program_id=created_programs[0].id,
+        content_id=created_contents[0].id,
+        module_id=created_module.id,
     )
