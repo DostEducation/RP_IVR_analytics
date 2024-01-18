@@ -24,6 +24,9 @@ class RegistrationQuery(BaseQuery):
             .first()
         )
 
+    def get_latest_record(self):
+        return self.filter().order_by(Registration.id.desc()).first()
+
 
 class Registration(TimestampMixin, db.Model):
     query_class = RegistrationQuery
