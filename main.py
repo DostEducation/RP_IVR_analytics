@@ -41,14 +41,6 @@ def handle_dry_flow(jsonData):
             user_program_service.update_user_program_status(
                 jsonData, status=models.UserProgram.UserProgramStatus.TERMINATED
             )
-        handle_user_group_data(jsonData)
-
-    # Handle custom fields
-    if "fields" in jsonData["contact"] and jsonData["contact"]["fields"] is not None:
-        handle_user_custom_field_data(jsonData)
-
-    # Handle groups and fields
-    handle_contact_fields_and_groups(jsonData)
 
 
 def handle_regular_flow(jsonData):
@@ -141,26 +133,6 @@ def handle_flow_category_data(jsonData):
         registration_service.handle_registration(jsonData)
 
 
-def handle_user_group_data(jsonData):
-    user_contact_service = services.UserContactService()
-    user_contact_service.handle_contact_group(jsonData)
-
-
-def handle_user_custom_field_data(jsonData):
-    user_contact_service = services.UserContactService()
-    user_contact_service.handle_custom_fields(jsonData)
-
-
 def handle_prompts(jsonData):
     prompt_service = services.PromptService()
     prompt_service.handle_prompt_response(jsonData)
-
-
-def handle_contact_fields_and_groups(JsonData):
-    custom_fields_mapping_service = services.ContactFieldsMappingService()
-    contact_data = JsonData["contact"]
-    if contact_data.get("fields"):
-        custom_fields_mapping_service.handle_contact_fields_data(JsonData)
-
-    if contact_data.get("groups"):
-        custom_fields_mapping_service.handle_contact_groups_data(JsonData)
