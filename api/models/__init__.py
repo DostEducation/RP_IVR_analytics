@@ -14,14 +14,11 @@ from .partner_system_phone import *
 from .program_module import *
 from .ivr_prompt import *
 from .ivr_prompt_response import *
-from .user_group import *
-from .user_custom_fields import *
 from .ivr_prompt_mapping import *
 from .webhook_transaction_log import *
 from .program_sequence import *
 from .language import *
 from .content_version import *
-from .contact_fields_mapping import *
 from .bigquery_jobs import *
 from .call_log_event import *
 from .ivr_callback_transaction_log import *
